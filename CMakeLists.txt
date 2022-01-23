@@ -1,0 +1,38 @@
+cmake_minimum_required(VERSION 3.17)
+project(WGForgeProject)
+
+set(CMAKE_CXX_STANDARD 17)
+
+set(JSON_VERSION "json-3.10.5")
+include_directories(third-party/${JSON_VERSION}/include)
+
+
+link_libraries(ws2_32)
+
+
+# Set all modules here
+set(CLIENT
+        modules/client/Client.cpp
+        modules/client/Client.h
+        )
+
+set(CORE
+        modules/core/Core.cpp
+        modules/core/Core.h
+        )
+
+set(STRATEGY
+        modules/strategy/Strategy.cpp
+        modules/strategy/Strategy.h
+        )
+
+
+add_executable(
+        WGForgeProject
+        main.cpp
+
+        # Add all modules here
+        ${CLIENT}
+        ${CORE}
+        ${STRATEGY}
+)
