@@ -24,6 +24,11 @@ set(CORE
 set(STRATEGY
         modules/strategy/Strategy.cpp
         modules/strategy/Strategy.h
+)
+
+set(MAP
+        modules/map/Hex.cpp
+        modules/map/Hex.h
         )
 
 
@@ -35,4 +40,5 @@ add_executable(
         ${CLIENT}
         ${CORE}
         ${STRATEGY}
+        ${MAP}
 )
