@@ -37,8 +37,8 @@ add_executable(
         main.cpp
 
         # Add all modules here
-        ${CLIENT}
-        ${CORE}
-        ${STRATEGY}
-        ${MAP}
+         ${CLIENT}
+         ${CORE}
+         ${STRATEGY}
+         ${MAP}
 )
