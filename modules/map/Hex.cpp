@@ -19,7 +19,7 @@ Hex &Hex::operator+=(const Hex &hex) {
 }
 
 Hex operator+(Hex &a, const Hex &b) {
-    return Hex(a.x + b.x, a.y + b.y, a.y + b.y);
+    return Hex(a.x + b.x, a.y + b.y, a.z + b.z);
 }
 
 Hex &Hex::operator-=(const Hex &hex) {
@@ -30,7 +30,7 @@ Hex &Hex::operator-=(const Hex &hex) {
 }
 
 Hex operator-(Hex &a, const Hex &b) {
-    return Hex(a.x - b.x, a.y - b.y, a.y - b.y);
+    return Hex(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
 
