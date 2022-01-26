@@ -65,3 +65,7 @@ json Hex::get_json(){
     j["z"] = this->z;
     return j;
 }
+
+bool Hex::operator==(Hex hex) {
+    return this->get_json() == hex.get_json();
+}

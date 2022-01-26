@@ -13,6 +13,7 @@ using json = nlohmann::json;
 
 class Hex {
 public:
+    int id;
     int x;
     int y;
     int z;
@@ -52,5 +53,6 @@ public:
         return stream;
     }
 
+    bool operator==(Hex hex);
 
 };
