@@ -1,11 +1,11 @@
 #include "Hex.h"
 #include "../content/vehicles/MediumTank.h"
 
-std::vector<Hex> hex_directions = {Hex(1, 0, -1), Hex(1, -1, 0), Hex(0, -1, 1), Hex(-1, 0, 1), Hex(-1, 1, 0),
-                                   Hex(0, 1, -1)};
+const static std::vector<Hex> hex_directions =
+        {Hex(1, 0, -1), Hex(1, -1, 0), Hex(0, -1, 1), Hex(-1, 0, 1), Hex(-1, 1, 0),Hex(0, 1, -1)};
 
-std::vector<Hex> hex_diagonals = {Hex(2, -1, -1), Hex(1, -2, 1), Hex(-1, -1, 2), Hex(-2, 1, 1), Hex(-1, 2, -1),
-                                  Hex(1, 1, -2)};
+const static std::vector<Hex> hex_diagonals =
+        {Hex(2, -1, -1), Hex(1, -2, 1), Hex(-1, -1, 2), Hex(-2, 1, 1), Hex(-1, 2, -1), Hex(1, 1, -2)};
 
 Hex::Hex(int x, int y, int z, ContentType content_type, json data) : x(x), y(y), z(z) {
     this->setHex(content_type, data);
