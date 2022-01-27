@@ -1,6 +1,6 @@
 #pragma once
 
-enum class ContentType{
+enum class ContentType {
     VEHICLE,
     BASE,
     CATAPULT,
@@ -10,7 +10,7 @@ enum class ContentType{
     EMPTY
 };
 
-class Content{
+class Content {
 public:
     bool is_reacheble;
     ContentType content_type;

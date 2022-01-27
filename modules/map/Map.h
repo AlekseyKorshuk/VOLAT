@@ -14,6 +14,7 @@ using json = nlohmann::json;
 
 class Map {
 public:
+
     std::vector<Hex *> hexes;
     std::map<std::vector<int>, Hex *> hexes_map;
     std::vector<Hex *> player_vehicles;

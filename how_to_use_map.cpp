@@ -23,16 +23,28 @@ int main() {
 
     map.setMap(client1.game_state().msg);
 
-    for (auto it: map.findPath(Hex(-3,10,-7), Hex(-7,10,-3))){
+    for (auto it: map.findPath(Hex(-3, 10, -7), Hex(-7, 10, -3))) {
         std::cout << *it << "-" << static_cast<int>(it->content->content_type) << " ";
     }
-    std::cout <<  std::endl;
-    for (auto it: map.player_vehicles){
+    std::cout << std::endl;
+    for (auto it: map.player_vehicles) {
         std::cout << *it << " ";
     }
-    std::cout <<  std::endl;
-    for (auto it: map.opponent_vehicles){
-        Tank* c = static_cast<Tank*>(it->content);
+    std::cout << std::endl;
+    for (auto it: map.opponent_vehicles) {
+        std::shared_ptr<Tank> c = static_pointer_cast<Tank>(it->content);
+        std::cout << *c << "\n";
+    }
+    std::cout << std::endl;
+    for (auto it: map.opponent_vehicles) {
+        std::shared_ptr<Tank> c = static_pointer_cast<Tank>(it->content);
+        std::cout << *c << "\n";
+    }
+
+    map.setMap(client1.game_state().msg);
+    std::cout << std::endl;
+    for (auto it: map.opponent_vehicles) {
+        std::shared_ptr<Tank> c = static_pointer_cast<Tank>(it->content);
         std::cout << *c << "\n";
     }
 

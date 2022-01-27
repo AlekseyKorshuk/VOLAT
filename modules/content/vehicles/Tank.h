@@ -15,6 +15,7 @@ using HexList = std::vector<Hex>;
 class Tank : public Content {
 public:
     Tank(int x, int y, int z, int health_points, int capture_points);
+
     Tank(json data);
 
     virtual HexList getAvailableHexesForMove() const = 0;
@@ -37,11 +38,11 @@ public:
 
     Strategy current_strategy;
 
-    friend std::ostream& operator<< (std::ostream& stream, const Tank& tank){
-        stream << tank.getPosition() << " HP: " << tank.health_points << ", CP: " << tank.capture_points << ", SP: " << tank.speed_points;
+    friend std::ostream &operator<<(std::ostream &stream, const Tank &tank) {
+        stream << tank.getPosition() << " HP: " << tank.health_points << ", CP: " << tank.capture_points << ", SP: "
+               << tank.speed_points;
         return stream;
     }
-
 
 
 };

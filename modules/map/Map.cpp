@@ -20,7 +20,13 @@ void Map::setBase(json map_json) {
 }
 
 void Map::setMap(json state) {
+    for (auto hex: player_vehicles)
+        hex->clear();
     player_vehicles.clear();
+    for (auto hex: opponent_vehicles)
+        hex->clear();
+    opponent_vehicles.clear();
+
     int player_id = state["current_player_idx"].get<std::int32_t>();
     for (auto it = state["vehicles"].begin(); it != state["vehicles"].end(); ++it) {
         int vehicle_id = stoi(it.key());
