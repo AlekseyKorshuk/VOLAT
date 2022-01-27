@@ -33,14 +33,27 @@ set(MAP
         modules/map/Map.h
         )
 
+set(CONTENT
+        modules/content/Content.h
+        modules/content/Content.cpp
+        )
+
+set(VEHICLES
+        modules/content/vehicles/Tank.cpp
+        modules/content/vehicles/Tank.h
+        modules/content/vehicles/MediumTank.h
+        modules/content/vehicles/MediumTank.cpp
+        )
 
 add_executable(
         WGForgeProject
         main.cpp
 
         # Add all modules here
-         ${CLIENT}
-         ${CORE}
-         ${STRATEGY}
-         ${MAP}
+        ${CLIENT}
+        ${CORE}
+        ${STRATEGY}
+        ${MAP}
+        ${CONTENT}
+        ${VEHICLES}
 )

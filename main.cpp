@@ -2,7 +2,6 @@
 #include "modules/client/Client.h"
 #include "modules/core/Core.h"
 
-
 using json = nlohmann::json;
 
 int main() {
