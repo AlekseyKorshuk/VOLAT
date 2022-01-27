@@ -4,7 +4,7 @@ const static std::vector<Hex> hex_directions =
         {Hex(1, 0, -1), Hex(1, -1, 0), Hex(0, -1, 1), Hex(-1, 0, 1), Hex(-1, 1, 0), Hex(0, 1, -1)};
 
 HexList MediumTank::getAvailableHexesForMove() const {
-
+    return {};
 }
 
 std::vector<HexList> MediumTank::getShootingHexesAreas() const {

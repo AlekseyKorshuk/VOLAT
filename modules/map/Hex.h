@@ -26,6 +26,8 @@ public:
 
     void setHex(ContentType content_type = ContentType::EMPTY, json data = json::parse("{}"));
 
+    bool operator<(const Hex& other);
+
     Hex &operator+=(const Hex &hex);
 
     friend Hex operator+(Hex &a, const Hex &b);
