@@ -76,8 +76,14 @@ void Hex::setHex(ContentType content_type, json data) {
         case ContentType::VEHICLE: {
             std::string temp_vehicle_type = data["vehicle_type"].get<std::string>();
             if (temp_vehicle_type == "medium_tank"){
-                this->content = new MediumTank(x, y, z, data["health"].get<std::int32_t>(), data["capture_points"].get<std::int32_t>());
+                MediumTank* tank = new MediumTank(x, y, z, data["health"].get<std::int32_t>(), data["capture_points"].get<std::int32_t>());
+                tank->player_id = data["player_id"].get<std::int32_t>();
+                this->content = tank;
             }
+            break;
+        }
+        case ContentType::BASE:{
+            this->is_occupied = false;
             break;
         }
         default:{

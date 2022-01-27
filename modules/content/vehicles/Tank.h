@@ -33,6 +33,7 @@ public:
     int speed_points;
     int damage;
     int destruction_points;
+    int player_id = -1;
 
     Strategy current_strategy;
 
