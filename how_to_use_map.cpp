@@ -23,8 +23,8 @@ int main() {
 
     map.setMap(client1.game_state().msg);
 
-    for (auto it: map.findPath(Hex(-3, 10, -7), Hex(-7, 10, -3))) {
-        std::cout << *it << "-" << static_cast<int>(it->content->content_type) << " ";
+    for (auto it: map.findPath(Hex(-3, 10, -7), Hex(-7, 9, -2))) {
+        std::cout << *it << " ";
     }
     std::cout << std::endl;
     for (auto it: map.player_vehicles) {
