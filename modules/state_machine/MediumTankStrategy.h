@@ -1,0 +1,14 @@
+//
+// Created by Akel on 28.01.2022.
+//
+
+#ifndef WGFORGEPROJECT_MEDIUMTANKSTRATEGY_H
+#define WGFORGEPROJECT_MEDIUMTANKSTRATEGY_H
+
+
+class MediumTankStrategy {
+
+};
+
+
+#endif //WGFORGEPROJECT_MEDIUMTANKSTRATEGY_H
