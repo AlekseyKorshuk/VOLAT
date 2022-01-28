@@ -45,9 +45,24 @@ set(VEHICLES
         modules/content/vehicles/MediumTank.cpp
         )
 
+SET(STATE
+        modules/state/State.cpp
+        modules/state/State.h
+        modules/state/StateCapture.cpp
+        modules/state/StateCapture.h
+        )
+
+SET(STATE_MACHINE
+        modules/state_machine/StateMachine.cpp
+        modules/state_machine/StateMachine.h
+        modules/state_machine/MediumTankStrategy.cpp
+        modules/state_machine/MediumTankStrategy.h)
+
 add_executable(
         WGForgeProject
         main.cpp
+
+        #how_to_use_map.cpp
 
         # Add all modules here
         ${CLIENT}
@@ -56,4 +71,6 @@ add_executable(
         ${MAP}
         ${CONTENT}
         ${VEHICLES}
+        ${STATE}
+        ${STATE_MACHINE}
 )

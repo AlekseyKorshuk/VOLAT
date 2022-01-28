@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Tank.h"
+#include "../../map/Hex.h"
+#include "../Content.h"
+using HexList = std::vector<Hex>;
 
 
 class MediumTank : public Tank {

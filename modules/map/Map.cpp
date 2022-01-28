@@ -139,7 +139,6 @@ std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends) {
     bool reached_end = false;
     start->visited = true;
     Queue.push(start);
-
     while (!Queue.empty() && !reached_end) {
         Hex *current_node = Queue.front();
         Queue.pop();

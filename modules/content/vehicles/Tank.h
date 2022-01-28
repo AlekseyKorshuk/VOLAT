@@ -5,7 +5,10 @@
 #include "../Content.h"
 #include "../../map/Hex.h"
 #include "../../map/Map.h"
-#include "../../strategy/Strategy.h"
+#include "../../state_machine/StateMachine.h"
+
+class StateMachine;
+
 
 enum class TankType { // new ones will be added next time
     MEDIUM
@@ -29,6 +32,7 @@ public:
 
     friend std::ostream &operator<<(std::ostream &stream, const Tank &tank);
 
+    StateMachine* current_strategy_;
 protected:
     TankType type_;
     ContentType content_type;
@@ -41,6 +45,5 @@ protected:
     int damage_;
     int destruction_points_;
     int player_id_ = -1;
-    Strategy current_strategy_;
 };
 

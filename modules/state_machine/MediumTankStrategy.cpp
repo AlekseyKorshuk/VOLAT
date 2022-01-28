@@ -1,5 +1,9 @@
-//
-// Created by Akel on 28.01.2022.
-//
-
 #include "MediumTankStrategy.h"
+
+MediumTankStrategy::MediumTankStrategy(Tank* tank, Map* map) : StateMachine(tank, map) {
+
+}
+
+void MediumTankStrategy::updateState() {
+    changeState(new StateCapture(tank, map));
+}

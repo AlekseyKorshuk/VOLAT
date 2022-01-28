@@ -1,14 +1,13 @@
-//
-// Created by Akel on 28.01.2022.
-//
-
-#ifndef WGFORGEPROJECT_MEDIUMTANKSTRATEGY_H
-#define WGFORGEPROJECT_MEDIUMTANKSTRATEGY_H
+#pragma once
 
 
-class MediumTankStrategy {
+#include "../state/StateCapture.h"
+#include "StateMachine.h"
 
+class MediumTankStrategy : public StateMachine{
+public:
+    virtual void updateState();
+    MediumTankStrategy(Tank*, Map*);
 };
 
 
-#endif //WGFORGEPROJECT_MEDIUMTANKSTRATEGY_H

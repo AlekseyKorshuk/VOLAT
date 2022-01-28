@@ -94,10 +94,12 @@ void Hex::setHex(ContentType content_type, json data, int id) {
         }
         case ContentType::BASE: {
             this->is_occupied = false;
+            this->content = std::make_shared<Content>(true, ContentType::BASE);
             break;
         }
         default: {
             this->is_occupied = false;
+            this->content = std::make_shared<Content>(true, ContentType::EMPTY);
             break;
         }
     }
