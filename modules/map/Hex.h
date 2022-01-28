@@ -26,6 +26,8 @@ public:
 
     void setHex(ContentType content_type = ContentType::EMPTY, json data = json::parse("{}"));
 
+    bool operator<(const Hex& other) const;
+
     Hex &operator+=(const Hex &hex);
 
     friend Hex operator+(Hex &a, const Hex &b);
@@ -40,7 +42,7 @@ public:
 
     Hex getDiagonalNeighbor(int direction);
 
-    int getLength();
+    int getLength() const;
 
     int getDistance(Hex hex);
 

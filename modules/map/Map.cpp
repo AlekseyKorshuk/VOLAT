@@ -1,7 +1,7 @@
 #include "Map.h"
 
 
-Map::Map(json map_json, int radius) {
+Map::Map(json map_json, int radius) : radius_(radius) {
     hexes = generateEmptyMap(radius);
     setBase(map_json);
 }
@@ -115,7 +115,11 @@ std::vector<Hex *> Map::generateEmptyMap(int radius) {
     return hexes;
 }
 
-Hex *Map::getHex(const Hex &hex) {
+bool Map::belongs(const Hex& h) const {
+    return h.getLength() <= radius_;
+}
+
+Hex *Map::getHex(const Hex &hex) const {
     std::vector<int> v1 = {hex.x, hex.y, hex.z};
     return this->hexes_map.find(v1)->second;
 }

@@ -15,6 +15,7 @@ using json = nlohmann::json;
 class Map {
 public:
 
+    int radius_;
     std::vector<Hex *> hexes;
     std::map<std::vector<int>, Hex *> hexes_map;
     std::vector<Hex *> player_vehicles;
@@ -29,9 +30,11 @@ public:
 
     void clearPath();
 
+    bool belongs(const Hex& h) const;
+
     std::vector<Hex *> generateEmptyMap(int radius);
 
-    Hex *getHex(const Hex &hex);
+    Hex *getHex(const Hex &hex) const;
 
     std::vector<Hex *> findPath(Hex start, std::vector<Hex> ends);
 
