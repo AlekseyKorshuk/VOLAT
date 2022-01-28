@@ -13,7 +13,7 @@ Hex::Hex(int x, int y, int z, ContentType content_type, json data) : x(x), y(y),
     this->setHex(content_type, data);
 }
 
-bool Hex::operator<(const Hex& other) {
+bool Hex::operator<(const Hex& other) const {
     return std::tie(x, y, z) < std::tie(other.x, other.y, other.z);
 }
 
@@ -52,7 +52,7 @@ Hex Hex::getDiagonalNeighbor(int direction) {
     return *this + hex_diagonals[direction];
 }
 
-int Hex::getLength() {
+int Hex::getLength() const {
     return int((abs(this->x) + abs(this->y) + abs(this->z)) / 2);
 }
 

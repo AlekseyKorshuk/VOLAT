@@ -4,6 +4,7 @@
 
 #include "../Content.h"
 #include "../../map/Hex.h"
+#include "../../map/Map.h"
 #include "../../strategy/Strategy.h"
 
 enum class TankType { // new ones will be added next time
@@ -18,9 +19,9 @@ public:
 
     Tank(json data);
 
-    virtual HexList getAvailableHexesForMove() const = 0;
+    virtual HexList getAvailableHexesForMove(const Map& map) const = 0;
 
-    virtual std::vector<HexList> getShootingHexesAreas() const = 0;
+    virtual std::vector<HexList> getShootingHexesAreas(const Map& map) const = 0;
 
     void setPlayerId(int player_id);
 
