@@ -33,7 +33,7 @@ void Map::setMap(json state) {
         json vehicle = it.value();
         json position = vehicle["position"];
         Hex *hex = this->getHex(Hex(position["x"], position["y"], position["z"]));
-        hex->setHex(ContentType::VEHICLE, vehicle);
+        hex->setHex(ContentType::VEHICLE, vehicle, vehicle_id);
 //        std::cout << *hex << std::endl;
         if (player_id == vehicle["player_id"].get<std::int32_t>())
             player_vehicles.push_back(hex);
@@ -145,14 +145,19 @@ std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends) {
         Queue.pop();
         for (Hex *node: current_node->neighbors) {
             if (!node->visited && !node->is_occupied) {
-                node->visited = true;
-                Queue.push(node);
-                node->prev = current_node;
-                if (std::find(ends.begin(), ends.end(), node) != ends.end()) {
-                    reached_end = true;
-                    end = node;
-                    break;
+                if (node->content != nullptr){
+                    if (node->content->is_reacheble){
+                        node->visited = true;
+                        Queue.push(node);
+                        node->prev = current_node;
+                        if (std::find(ends.begin(), ends.end(), node) != ends.end()) {
+                            reached_end = true;
+                            end = node;
+                            break;
+                        }
+                    }
                 }
+
             }
         }
     }

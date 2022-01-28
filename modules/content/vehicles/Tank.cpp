@@ -8,17 +8,18 @@ Hex Tank::getPosition() const {
     return Hex(x_, y_, z_);
 }
 
-Tank::Tank(int x, int y, int z, int health_points, int capture_points)
+Tank::Tank(int x, int y, int z, int health_points, int capture_points, int id)
     : Content(is_reacheble = false
-    , content_type = ContentType::VEHICLE)
+    , content_type = ContentType::VEHICLE
+    , id=id)
     , x_(x), y_(y), z_(z)
     , health_points_(health_points)
     , capture_points_(capture_points)
 {
 }
 
-Tank::Tank(json data)
-    : Content(is_reacheble = false, content_type = ContentType::VEHICLE)
+Tank::Tank(json data, int id)
+    : Content(is_reacheble = false, content_type = ContentType::VEHICLE, id=id)
     , x_(data["position"]["x"].get<std::int32_t>())
     , y_(data["position"]["y"].get<std::int32_t>())
     , z_(data["position"]["z"].get<std::int32_t>())
@@ -27,7 +28,7 @@ Tank::Tank(json data)
 }
 
 std::ostream &operator<<(std::ostream &stream, const Tank &tank) {
-    stream << tank.getPosition() << " HP: " << tank.health_points_ << ", CP: " << tank.capture_points_ << ", SP: "
+    stream << tank.getPosition() << " Type: " << static_cast<int>(tank.type_) << ",ID: " << tank.id << ",HP: " << tank.health_points_ << ",CP: " << tank.capture_points_ << ",SP: "
            << tank.speed_points_;
     return stream;
 }

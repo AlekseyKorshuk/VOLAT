@@ -15,9 +15,9 @@ using HexList = std::vector<Hex>;
 
 class Tank : public Content {
 public:
-    Tank(int x, int y, int z, int health_points, int capture_points);
+    Tank(int x, int y, int z, int health_points, int capture_points, int id);
 
-    Tank(json data);
+    Tank(json data, int id);
 
     virtual HexList getAvailableHexesForMove(const Map& map) const = 0;
 

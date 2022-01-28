@@ -5,7 +5,7 @@
 
 class MediumTank : public Tank {
 public:
-    MediumTank(int x, int y, int z, int health_points, int capture_points);
+    MediumTank(int x, int y, int z, int health_points, int capture_points, int id);
 
     virtual HexList getAvailableHexesForMove(const Map& map) const;
 

@@ -43,8 +43,8 @@ std::vector<HexList> MediumTank::getShootingHexesAreas(const Map& map) const {
     return areas;
 }
 
-MediumTank::MediumTank(int x, int y, int z, int health_points, int capture_points)
-    : Tank(x, y, z, health_points, capture_points) {
+MediumTank::MediumTank(int x, int y, int z, int health_points, int capture_points, int id)
+    : Tank(x, y, z, health_points, capture_points, id) {
     this->type_ = TankType::MEDIUM;
     this->speed_points_ = 2;
     this->damage_ = 1;
