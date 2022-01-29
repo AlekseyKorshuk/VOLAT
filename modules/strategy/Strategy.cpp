@@ -11,12 +11,13 @@
 
 using json = nlohmann::json;
 
-Strategy::Strategy(json map_json) {
-    map = Map(map_json);
+Strategy::Strategy(json map_json, json state_json) {
+    game = Game(map_json, state_json);
 
-    for (auto it: map.player_vehicles) {
-        std::shared_ptr<Tank> c = std::static_pointer_cast<Tank>(it->content);
-        c->current_strategy_ = new MediumTankStrategy(c.get(), &map);
+
+
+    for (auto tank: game.player_vehicles) {
+        tank->current_strategy_ = new MediumTankStrategy(tank.get(), &game);
     }
 }
 
@@ -25,33 +26,16 @@ json Strategy::calculate_actions(json state) {
 
     std::string actions;
 
+    game.update(state);
 
-
-    map.setMap(state);
-
-
-    for (auto it: map.player_vehicles) {
-        std::shared_ptr<Tank> c = std::static_pointer_cast<Tank>(it->content);
-        c->current_strategy_ = new MediumTankStrategy(c.get(), &map);
+    for (auto tank: game.player_vehicles) {
+        tank->current_strategy_->updateState();
     }
-
-
-    for (auto it: map.player_vehicles) {
-        std::shared_ptr<Tank> c = std::static_pointer_cast<Tank>(it->content);
-        c->current_strategy_ = new MediumTankStrategy(c.get(), &map);
-    }
-
-
-    for (auto it: map.player_vehicles) {
-        std::shared_ptr<Tank> c = std::static_pointer_cast<Tank>(it->content);
-        c->current_strategy_->updateState();
-    }
-
 
     int k = 0;
-    for (auto it: map.player_vehicles) {
-        std::shared_ptr<Tank> c = std::static_pointer_cast<Tank>(it->content);
-        std::string action = c->current_strategy_->calculateAction();
+    for (auto tank: game.player_vehicles) {
+
+        std::string action = tank->current_strategy_->calculateAction();
         if (!action.empty()) {
             if (!actions.empty()) {
                 actions += ',';

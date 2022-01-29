@@ -16,7 +16,7 @@ public:
     int x;
     int y;
     int z;
-    bool is_occupied;
+    bool is_occupied = false;
     std::shared_ptr<Content> content = nullptr;
     std::vector<Hex *> neighbors;
     bool visited = false;

@@ -19,9 +19,9 @@ void Core::play(string game, int num_turns, int num_players) {
     Client client = Client();
     response resp = client.login(this->name, this->password, game, num_turns, num_players);
 
-
     json map_json = client.map().msg;
-    Strategy strategy(map_json);
+    json state_json = client.game_state().msg;
+    Strategy strategy(map_json, state_json);
 
     int idx = resp.msg["idx"].get<std::int32_t>();
 

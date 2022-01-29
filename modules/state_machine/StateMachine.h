@@ -5,6 +5,7 @@
 #include "../map/Map.h"
 #include "../content/vehicles/Tank.h"
 #include "../state/State.h"
+#include "../game/Game.h"
 
 
 class Tank;
@@ -12,7 +13,7 @@ class State;
 
 class StateMachine {
 public:
-    StateMachine(Tank*, Map*);
+    StateMachine(Tank*, Game*);
 
     virtual void updateState() = 0;
 
@@ -22,7 +23,7 @@ public:
 
 protected:
     State* state = nullptr;
-    Map* map = nullptr;
+    Game* game = nullptr;
     Tank* tank = nullptr;
 };
 

@@ -7,7 +7,7 @@
 class MediumTankStrategy : public StateMachine{
 public:
     virtual void updateState();
-    MediumTankStrategy(Tank*, Map*);
+    MediumTankStrategy(Tank*, Game*);
 };
 
 

@@ -8,16 +8,17 @@
 #include "../content/vehicles/Tank.h"
 
 class Tank;
+class Game;
 
 class State {
 public:
-    State(Tank*, Map*);
+    State(Tank*, Game*);
     virtual std::string getType() = 0;
     virtual std::string calculateAction() = 0;
 
 protected:
     Tank* tank;
-    Map* map;
+    Game* game;
 
 
     std::string moveToString(Hex*);

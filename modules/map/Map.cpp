@@ -60,6 +60,10 @@ void Map::setMap(json state) {
     }
 }
 
+void Map::changeOccupied(Hex hex, bool is_occupied) {
+    getHex(hex)->is_occupied = is_occupied;
+}
+
 void Map::clearPath() {
     for (auto hex: hexes) {
         hex->visited = false;

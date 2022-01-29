@@ -1,9 +1,9 @@
 #include "MediumTankStrategy.h"
 
-MediumTankStrategy::MediumTankStrategy(Tank* tank, Map* map) : StateMachine(tank, map) {
+MediumTankStrategy::MediumTankStrategy(Tank* tank, Game* game) : StateMachine(tank, game) {
 
 }
 
 void MediumTankStrategy::updateState() {
-    changeState(new StateCapture(tank, map));
+    changeState(new StateCapture(tank, game));
 }

@@ -30,6 +30,8 @@ public:
 
     void setMap(json state);
 
+    void changeOccupied(Hex, bool);
+
     void clearPath();
 
     bool belongs(const Hex& h) const;

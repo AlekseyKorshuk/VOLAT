@@ -1,14 +1,15 @@
 #include "StateMachine.h"
 
-StateMachine::StateMachine(Tank* tank, Map* map)  {
+StateMachine::StateMachine(Tank* tank, Game* game)  {
     this->tank = tank;
-    this->map = map;
+    this->game = game;
 };
 
 void StateMachine::changeState(State* new_state) {
-    //if (new_state->getType() != state->getType()) {
-    state = new_state;
-    //}
+    if (state == nullptr || new_state->getType() != state->getType()) {
+        state = new_state;
+    }
+
 }
 
 std::string StateMachine::calculateAction()
