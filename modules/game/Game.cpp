@@ -1,11 +1,10 @@
 #include "Game.h"
 #include "../content/vehicles/MediumTank.h"
 
-Game::Game(json map_json, json state_json)
+Game::Game(int idx, json map_json, json state_json) : idx(idx)
 {
     map = Map(map_json);
 
-    int player_id = state_json["current_player_idx"].get<std::int32_t>();
     for (auto it = state_json["vehicles"].begin(); it != state_json["vehicles"].end(); ++it) {
         int vehicle_id = stoi(it.key());
         json vehicle = it.value();
@@ -38,7 +37,7 @@ Game::Game(json map_json, json state_json)
 
         map.changeOccupied(tank->getPosition(),true);
 
-        if (vehicle["player_id"].get<std::int32_t>() == player_id) {
+        if (vehicle["player_id"].get<std::int32_t>() == idx) {
             player_vehicles.push_back(tank);
         } else {
             opponent_vehicles.push_back(tank);

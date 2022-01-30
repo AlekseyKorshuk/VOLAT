@@ -17,7 +17,7 @@ int main() {
     client3.login("VOLAT3", "", game);
     */
 
-    core.play(game,15,1);
+    core.play(game,45,3);
 
     return 0;
 }

@@ -11,8 +11,8 @@
 
 using json = nlohmann::json;
 
-Strategy::Strategy(json map_json, json state_json) {
-    game = Game(map_json, state_json);
+Strategy::Strategy(int idx, json map_json, json state_json){
+    game = Game(idx, map_json, state_json);
 
 
 
@@ -21,7 +21,7 @@ Strategy::Strategy(json map_json, json state_json) {
     }
 }
 
-json Strategy::calculate_actions(json state) {
+json Strategy::calculate_actions(int idx, json state) {
     // TODO calculate actions
 
     std::string actions;
