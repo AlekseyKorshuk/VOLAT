@@ -60,6 +60,10 @@ void Map::setMap(json state) {
     }
 }
 
+void Map::changeOccupied(Hex hex, bool is_occupied) {
+    getHex(hex)->is_occupied = is_occupied;
+}
+
 void Map::clearPath() {
     for (auto hex: hexes) {
         hex->visited = false;
@@ -139,7 +143,6 @@ std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends) {
     bool reached_end = false;
     start->visited = true;
     Queue.push(start);
-
     while (!Queue.empty() && !reached_end) {
         Hex *current_node = Queue.front();
         Queue.pop();

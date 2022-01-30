@@ -15,10 +15,13 @@ Core::Core(string name, string password) {
 }
 
 void Core::play(string game, int num_turns, int num_players) {
-    Strategy strategy = Strategy();
+
     Client client = Client();
     response resp = client.login(this->name, this->password, game, num_turns, num_players);
 
+    json map_json = client.map().msg;
+    json state_json = client.game_state().msg;
+    Strategy strategy(map_json, state_json);
 
     int idx = resp.msg["idx"].get<std::int32_t>();
 
@@ -35,9 +38,12 @@ void Core::play(string game, int num_turns, int num_players) {
 //        }
 
 
+
+
         if (idx == state["current_player_idx"].get<std::int32_t>()){
             cout << "Our turn!" << endl;
             json actions = strategy.calculate_actions(state);
+
             for (json::iterator it = actions.begin(); it != actions.end(); ++it) {
                 json action = it.value();
                 json data = action["data"];

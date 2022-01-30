@@ -77,8 +77,10 @@ bool Hex::operator==(Hex hex) {
 }
 
 void Hex::setHex(ContentType content_type, json data, int id) {
+    //???
     this->is_occupied = true;
     switch (content_type) {
+        /*
         case ContentType::VEHICLE: {
             std::string temp_vehicle_type = data["vehicle_type"].get<std::string>();
             if (temp_vehicle_type == "medium_tank") {
@@ -92,12 +94,15 @@ void Hex::setHex(ContentType content_type, json data, int id) {
             }
             break;
         }
+        */
         case ContentType::BASE: {
             this->is_occupied = false;
+            this->content = std::make_shared<Content>(true, ContentType::BASE);
             break;
         }
         default: {
             this->is_occupied = false;
+            this->content = std::make_shared<Content>(true, ContentType::EMPTY);
             break;
         }
     }
