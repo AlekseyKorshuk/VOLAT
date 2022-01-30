@@ -8,18 +8,19 @@ from svgpath2mpl import parse_path
 from modules.core.permanent import VEHICLE_TYPES
 
 from prettytable import PrettyTable
-
+import copy
 
 class Map:
     def __init__(self, client, radius: int = 11, plot: bool = True):
         self.client = client
         self.radius = radius
         if plot:
-            plt.ion()
-            self.map = self._get_default_map()
+            # plt.ion()
+            self.get_default_map = copy.deepcopy(self._get_default_map())
+            self.map = self.get_default_map
             self.vehicle_to_marker = self.parse_markers()
-            self.fig, self.ax = plt.subplots(1, figsize=(10, 10))
-            self.fig.canvas.set_window_title('WGForge')
+            self.fig, self.ax = plt.subplots(1, figsize=(16, 9))
+            # self.fig.canvas.set_window_title('WGForge')
             self.colors = ['#ff8c42', '#53caf2', '#e170db']
             self.colors_text = ['orange', 'blue', 'purple']
             self.plot_map()
@@ -71,11 +72,18 @@ class Map:
                     index += 1
         return hexes
 
-    def plot_map(self):
+    def plot_map(self, current_position=True):
+        position_key = 'position' if current_position else 'spawn_position'
         plt.cla()
+        self.ax.spines['top'].set_visible(False)
+        self.ax.spines['right'].set_visible(False)
+        self.ax.spines['bottom'].set_visible(False)
+        self.ax.spines['left'].set_visible(False)
+        plt.gca().axes.get_yaxis().set_visible(False)
+        plt.gca().axes.get_xaxis().set_visible(False)
 
         state = self.client.game_state()
-        self.update_map(state)
+        self.update_map(state, position_key)
 
 
         coord = self.map.keys()
@@ -104,26 +112,21 @@ class Map:
                                 marker=self.vehicle_to_marker[l['vehicle_type']])
         self.ax.scatter([-10, 10], [-10, 10], s=250, c=[None, None], alpha=0.7,
                         marker='*')
-        self.ax.spines['top'].set_visible(False)
-        self.ax.spines['right'].set_visible(False)
-        self.ax.spines['bottom'].set_visible(False)
-        self.ax.spines['left'].set_visible(False)
-        plt.gca().axes.get_yaxis().set_visible(False)
-        plt.gca().axes.get_xaxis().set_visible(False)
 
-        plt.show(block=False)
+
+        # plt.show(block=False)
         return state
 
-    def update_map(self, state):
-
+    def update_map(self, state, position_key):
+        self.map = copy.deepcopy(self.get_default_map)
         text_field = self.get_state_table(state, False, replace=True)
-        self.ax.text(-0.1, 0.9, text_field, bbox={'facecolor': 'red',
-                                                  'alpha': 0.5, 'pad': 20},
+        self.ax.text(-0.3, 0.9, text_field, bbox={'facecolor': 'red',
+                                                  'alpha': 0.5, 'pad': 15},
                      transform=self.ax.transAxes, ha="center")
         players_colors = {}
         for vehicle in state['vehicles'].values():
             if vehicle['health'] > 0:
-                position = vehicle['position'].values()
+                position = vehicle[position_key].values()
                 if vehicle['player_id'] not in players_colors:
                     players_colors[vehicle['player_id']] = self.colors[len(players_colors.keys())]
                 self.map[
@@ -134,14 +137,17 @@ class Map:
                 }
 
     def get_state_table(self, state, border: bool = False, replace: bool = False):
-        x = PrettyTable(border=border)
-        x.field_names = [f"Turn {state['current_turn']}/{state['num_turns']}", "Name", "Color", "Capture", "Kill"]
-        for i, player in enumerate(state['players']):
-            x.add_row(['->' if state['current_player_idx'] == player['idx'] else '  ', player['name'], self.colors_text[i],
-                       *state['win_points'][str(player['idx'])].values()])
+        try:
+            x = PrettyTable(border=border)
+            x.field_names = [f"Turn {state['current_turn']}/{state['num_turns']}", "Name", "Color", "Capture", "Kill"]
+            for i, player in enumerate(state['players']):
+                x.add_row(['->' if state['current_player_idx'] == player['idx'] else '  ', player['name'], self.colors_text[i],
+                           *state['win_points'][str(player['idx'])].values()])
 
-        text_field = x.get_string()
-        if replace:
-            # text_field = text_field.replace(' ', '⠀')
-            text_field = text_field.replace(' ', '  ')
-        return text_field
+            text_field = x.get_string()
+            if replace:
+                # text_field = text_field.replace(' ', '⠀')
+                text_field = text_field.replace(' ', '  ')
+            return text_field
+        except:
+            return None
