@@ -23,5 +23,9 @@ public:
     std::vector<std::shared_ptr<Tank>> opponent_vehicles;
 
     std::vector<Player> players;
+private:
+    void addTank(json, int);
+    void addPlayer(json);
+
 };
 

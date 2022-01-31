@@ -16,7 +16,8 @@ Strategy::Strategy(int idx, json map_json, json state_json){
 
 
 
-    for (auto tank: game.player_vehicles) {
+
+    for (auto tank: game.player_vehicles) if (tank.get() != nullptr) {
         tank->current_strategy_ = new MediumTankStrategy(tank.get(), &game);
     }
 }
@@ -28,12 +29,12 @@ json Strategy::calculate_actions(int idx, json state) {
 
     game.update(state);
 
-    for (auto tank: game.player_vehicles) {
+    for (auto tank: game.player_vehicles)  if (tank.get() != nullptr) {
         tank->current_strategy_->updateState();
     }
 
     int k = 0;
-    for (auto tank: game.player_vehicles) {
+    for (auto tank: game.player_vehicles)  if (tank.get() != nullptr)  {
 
         std::string action = tank->current_strategy_->calculateAction();
         if (!action.empty()) {
