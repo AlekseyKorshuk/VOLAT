@@ -21,7 +21,9 @@ HexList MediumTank::getAvailableHexesForMove(const Map& map) const {
     for (auto& neighbor : neighbors) {
         for (size_t direction = 0; direction < hex_directions.size(); ++direction) {
             auto next_neighbor = neighbor.getNeighbor(direction);
-            hex_moves.insert(next_neighbor);
+            if (map.belongs(next_neighbor)) {
+                hex_moves.insert(next_neighbor);
+            }
         }
     }
     hex_moves.erase(*position);
