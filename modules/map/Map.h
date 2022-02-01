@@ -28,7 +28,6 @@ public:
 
     void setBase(json map_json);
 
-    void setMap(json state);
 
     void changeOccupied(Hex, bool);
 

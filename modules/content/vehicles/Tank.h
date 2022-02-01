@@ -37,6 +37,7 @@ public:
 
     StateMachine* current_strategy_;
 
+    TankType getTankType();
 
 protected:
     TankType type_;

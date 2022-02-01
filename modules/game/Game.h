@@ -8,8 +8,9 @@ class Player;
 
 class Game {
 public:
+    int idx;
     Game() {};
-    Game(json , json);
+    Game(int, json , json);
     void update(json);
 
     void updateTank(int id, int x, int y, int z, int health, int capture_points);
@@ -22,5 +23,9 @@ public:
     std::vector<std::shared_ptr<Tank>> opponent_vehicles;
 
     std::vector<Player> players;
+private:
+    void addTank(json, int);
+    void addPlayer(json);
+
 };
 
