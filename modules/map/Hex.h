@@ -16,15 +16,15 @@ public:
     int x;
     int y;
     int z;
-    bool is_occupied;
+    bool is_occupied = false;
     std::shared_ptr<Content> content = nullptr;
     std::vector<Hex *> neighbors;
     bool visited = false;
     Hex *prev = nullptr;
 
-    Hex(int x, int y, int z, ContentType content_type = ContentType::EMPTY, json data = json::parse("{}"));
+    Hex(int x, int y, int z, ContentType content_type = ContentType::EMPTY, json data = json::parse("{}"), int id = -1);
 
-    void setHex(ContentType content_type = ContentType::EMPTY, json data = json::parse("{}"));
+    void setHex(ContentType content_type = ContentType::EMPTY, json data = json::parse("{}"), int id = -1);
 
     bool operator<(const Hex& other) const;
 

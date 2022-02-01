@@ -12,8 +12,9 @@ enum class ContentType {
 
 class Content {
 public:
-    bool is_reacheble;
-    ContentType content_type;
+    int id = -1;
+    bool is_reacheble = true;
+    ContentType content_type = ContentType::EMPTY;
 
-    explicit Content(bool is_reacheble, ContentType content_type);
+    explicit Content(bool is_reacheble, ContentType content_type, int id = -1);
 };

@@ -9,8 +9,8 @@ const static std::vector<Hex> hex_directions =
 const static std::vector<Hex> hex_diagonals =
         {Hex(2, -1, -1), Hex(1, -2, 1), Hex(-1, -1, 2), Hex(-2, 1, 1), Hex(-1, 2, -1), Hex(1, 1, -2)};
 
-Hex::Hex(int x, int y, int z, ContentType content_type, json data) : x(x), y(y), z(z) {
-    this->setHex(content_type, data);
+Hex::Hex(int x, int y, int z, ContentType content_type, json data, int id) : x(x), y(y), z(z) {
+    this->setHex(content_type, data, id);
 }
 
 bool Hex::operator<(const Hex& other) const {
@@ -76,28 +76,17 @@ bool Hex::operator==(Hex hex) {
     return this->getJson() == hex.getJson();
 }
 
-void Hex::setHex(ContentType content_type, json data) {
+void Hex::setHex(ContentType content_type, json data, int id) {
     this->is_occupied = true;
     switch (content_type) {
-        case ContentType::VEHICLE: {
-            std::string temp_vehicle_type = data["vehicle_type"].get<std::string>();
-            if (temp_vehicle_type == "medium_tank") {
-                std::shared_ptr<MediumTank> tank =
-                    std::make_shared<MediumTank>(
-                        x, y, z, data["health"].get<std::int32_t>(),
-                        data["capture_points"].get<std::int32_t>()
-                    );
-                tank->setPlayerId(data["player_id"].get<std::int32_t>());
-                this->content = tank;
-            }
-            break;
-        }
         case ContentType::BASE: {
             this->is_occupied = false;
+            this->content = std::make_shared<Content>(true, ContentType::BASE);
             break;
         }
         default: {
             this->is_occupied = false;
+            this->content = std::make_shared<Content>(true, ContentType::EMPTY);
             break;
         }
     }

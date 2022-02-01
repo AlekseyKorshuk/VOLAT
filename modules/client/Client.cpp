@@ -11,9 +11,9 @@ Client::Client() {
         cout << "Socket creation failed with error: " << WSAGetLastError() << endl;
     }
 
-    addr.sin_addr.s_addr = inet_addr(inetAddr); //коннект к серверу
+    addr.sin_addr.s_addr = inet_addr(inetAddr); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(port); //порт
+    addr.sin_port = htons(port); //пїЅпїЅпїЅпїЅ
 
     if (connect(server, (SOCKADDR *) &addr, sizeof(addr)) == SOCKET_ERROR) {
         cout << "Server connection failed with error: " << WSAGetLastError() << endl;

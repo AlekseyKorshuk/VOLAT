@@ -21,7 +21,9 @@ HexList MediumTank::getAvailableHexesForMove(const Map& map) const {
     for (auto& neighbor : neighbors) {
         for (size_t direction = 0; direction < hex_directions.size(); ++direction) {
             auto next_neighbor = neighbor.getNeighbor(direction);
-            hex_moves.insert(next_neighbor);
+            if (map.belongs(next_neighbor)) {
+                hex_moves.insert(next_neighbor);
+            }
         }
     }
     hex_moves.erase(*position);
@@ -43,8 +45,9 @@ std::vector<HexList> MediumTank::getShootingHexesAreas(const Map& map) const {
     return areas;
 }
 
-MediumTank::MediumTank(int x, int y, int z, int health_points, int capture_points)
-    : Tank(x, y, z, health_points, capture_points) {
+MediumTank::MediumTank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z,
+                       int health_points, int capture_points, int id)
+    : Tank(x, y, z, spawn_x, spawn_y, spawn_z, health_points, capture_points, id) {
     this->type_ = TankType::MEDIUM;
     this->speed_points_ = 2;
     this->damage_ = 1;

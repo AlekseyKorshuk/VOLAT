@@ -24,9 +24,12 @@ public:
 
     Map(json map_json, int radius = 10);
 
+    Map() {};
+
     void setBase(json map_json);
 
-    void setMap(json state);
+
+    void changeOccupied(Hex, bool);
 
     void clearPath();
 
