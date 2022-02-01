@@ -51,3 +51,7 @@ std::ostream &operator<<(std::ostream &stream, const Tank &tank) {
            << tank.speed_points_;
     return stream;
 }
+
+TankType Tank::getTankType() {
+    return type_;
+}

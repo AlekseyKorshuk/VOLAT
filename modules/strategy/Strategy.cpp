@@ -17,8 +17,16 @@ Strategy::Strategy(int idx, json map_json, json state_json){
 
 
 
-    for (auto tank: game.player_vehicles) if (tank.get() != nullptr) {
-        tank->current_strategy_ = new MediumTankStrategy(tank.get(), &game);
+    for (auto tank: game.player_vehicles) {
+        if (tank != nullptr) {
+            switch(tank->getTankType()) {
+                case TankType::MEDIUM:
+                    tank->current_strategy_ = new MediumTankStrategy(tank.get(), &game);
+                    break;
+            }
+        } else {
+            tank->current_strategy_ = nullptr;
+        }
     }
 }
 
@@ -29,12 +37,12 @@ json Strategy::calculate_actions(int idx, json state) {
 
     game.update(state);
 
-    for (auto tank: game.player_vehicles)  if (tank.get() != nullptr) {
+    for (auto tank: game.player_vehicles)  if (tank->current_strategy_  != nullptr) {
         tank->current_strategy_->updateState();
     }
 
     int k = 0;
-    for (auto tank: game.player_vehicles)  if (tank.get() != nullptr)  {
+    for (auto tank: game.player_vehicles)  if (tank->current_strategy_  != nullptr)  {
 
         std::string action = tank->current_strategy_->calculateAction();
         if (!action.empty()) {
@@ -47,11 +55,6 @@ json Strategy::calculate_actions(int idx, json state) {
         }
     }
 
-
-    /*
-    std::string actions = "{\"0\":{\"type\":\"MOVE\",\"data\":{\"vehicle_id\":5,\"target\":{\"x\":-1,\"y\":1,\"z\":0}}},"
-                          "\"1\":{\"type\":\"SHOOT\",\"data\":{\"vehicle_id\":5,\"target\":{\"x\":-1,\"y\":1,\"z\":0}}}}";
-     */
     actions = "{" + actions + "}";
 
     return json::parse(actions);
