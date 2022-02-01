@@ -23,7 +23,6 @@ public:
     Tank(json data, int id);
 
     virtual HexList getAvailableHexesForMove(const Map& map) const = 0;
-
     virtual std::vector<HexList> getShootingHexesAreas(const Map& map) const = 0;
 
     void setPlayerId(int player_id);

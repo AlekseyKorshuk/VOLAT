@@ -45,7 +45,8 @@ std::vector<HexList> MediumTank::getShootingHexesAreas(const Map& map) const {
     return areas;
 }
 
-MediumTank::MediumTank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z, int health_points, int capture_points, int id)
+MediumTank::MediumTank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z,
+                       int health_points, int capture_points, int id)
     : Tank(x, y, z, spawn_x, spawn_y, spawn_z, health_points, capture_points, id) {
     this->type_ = TankType::MEDIUM;
     this->speed_points_ = 2;
