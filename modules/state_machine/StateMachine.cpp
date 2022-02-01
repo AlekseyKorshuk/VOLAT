@@ -1,6 +1,6 @@
 #include "StateMachine.h"
 
-StateMachine::StateMachine(Tank* tank, Game* game)  {
+StateMachine::StateMachine(std::shared_ptr<Tank> tank, Game* game)  {
     this->tank = tank;
     this->game = game;
 };

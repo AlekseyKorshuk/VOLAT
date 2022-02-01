@@ -29,6 +29,8 @@ public:
     int getPlayerId();
 
     Hex getPosition() const;
+    int getSpeedPoints();
+
     void update(int x, int y, int z, int health, int capture_points);
     void update(int x, int y, int z);
 

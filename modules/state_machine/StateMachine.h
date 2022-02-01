@@ -13,7 +13,7 @@ class State;
 
 class StateMachine {
 public:
-    StateMachine(Tank*, Game*);
+    StateMachine(std::shared_ptr<Tank>, Game*);
 
     virtual void updateState() = 0;
 
@@ -24,6 +24,6 @@ public:
 protected:
     State* state = nullptr;
     Game* game = nullptr;
-    Tank* tank = nullptr;
+    std::shared_ptr<Tank> tank = nullptr;
 };
 

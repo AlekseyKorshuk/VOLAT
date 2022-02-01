@@ -1,6 +1,6 @@
 #include "StateCapture.h"
 
-StateCapture::StateCapture(Tank* tank, Game* game) : State(tank, game){
+StateCapture::StateCapture(std::shared_ptr<Tank> tank, Game* game) : State(tank, game){
 
 }
 
@@ -14,7 +14,7 @@ std::string StateCapture::calculateAction()
 
     Hex* h = game->map.getHex(tank->getPosition());
 
-    std::vector<Hex*> path = game->map.findPath(h,game->map.base);
+    std::vector<Hex*> path = game->map.findPath(h,game->map.base, tank);
 
     if (path.empty()) return "";
 

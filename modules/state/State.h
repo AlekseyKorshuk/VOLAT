@@ -12,12 +12,12 @@ class Game;
 
 class State {
 public:
-    State(Tank*, Game*);
+    State(std::shared_ptr<Tank>, Game*);
     virtual std::string getType() = 0;
     virtual std::string calculateAction() = 0;
 
 protected:
-    Tank* tank;
+    std::shared_ptr<Tank> tank;
     Game* game;
 
 

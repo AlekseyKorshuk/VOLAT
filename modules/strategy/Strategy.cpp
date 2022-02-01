@@ -21,7 +21,7 @@ Strategy::Strategy(int idx, json map_json, json state_json){
         if (tank != nullptr) {
             switch(tank->getTankType()) {
                 case TankType::MEDIUM:
-                    tank->current_strategy_ = new MediumTankStrategy(tank.get(), &game);
+                    tank->current_strategy_ = new MediumTankStrategy(tank, &game);
                     break;
             }
         } else {

@@ -6,7 +6,7 @@
 
 class StateCapture : public State{
 public:
-    StateCapture(Tank*, Game*);
+    StateCapture(std::shared_ptr<Tank>, Game*);
     virtual std::string getType();
     virtual std::string calculateAction();
 };

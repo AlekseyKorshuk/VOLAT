@@ -1,6 +1,6 @@
 #include "MediumTankStrategy.h"
 
-MediumTankStrategy::MediumTankStrategy(Tank* tank, Game* game) : StateMachine(tank, game) {
+MediumTankStrategy::MediumTankStrategy(std::shared_ptr<Tank> tank, Game* game) : StateMachine(tank, game) {
 
 }
 

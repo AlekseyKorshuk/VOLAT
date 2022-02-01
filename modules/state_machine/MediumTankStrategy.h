@@ -7,7 +7,7 @@
 class MediumTankStrategy : public StateMachine{
 public:
     virtual void updateState();
-    MediumTankStrategy(Tank*, Game*);
+    MediumTankStrategy(std::shared_ptr<Tank>, Game*);
 };
 
 
