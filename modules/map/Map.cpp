@@ -19,47 +19,6 @@ void Map::setBase(json map_json) {
         );
 }
 
-void Map::setMap(json state) {
-    for (auto hex: player_vehicles)
-        hex->clear();
-    player_vehicles.clear();
-    for (auto hex: opponent_vehicles)
-        hex->clear();
-    opponent_vehicles.clear();
-
-    int player_id = state["current_player_idx"].get<std::int32_t>();
-    for (auto it = state["vehicles"].begin(); it != state["vehicles"].end(); ++it) {
-        int vehicle_id = stoi(it.key());
-        json vehicle = it.value();
-        json position = vehicle["position"];
-        Hex *hex = this->getHex(Hex(position["x"], position["y"], position["z"]));
-        hex->setHex(ContentType::VEHICLE, vehicle, vehicle_id);
-//        std::cout << *hex << std::endl;
-        if (player_id == vehicle["player_id"].get<std::int32_t>())
-            player_vehicles.push_back(hex);
-        else
-            opponent_vehicles.push_back(hex);
-        /**
-         {
-          "player_id": 1,
-          "vehicle_type": "medium_tank",
-          "health": 2,
-          "spawn_position": {
-            "x": -7,
-            "y": -3,
-            "z": 10
-          },
-          "position": {
-            "x": -7,
-            "y": -3,
-            "z": 10
-          },
-          "capture_points": 0
-        }
-         */
-    }
-}
-
 void Map::changeOccupied(Hex hex, bool is_occupied) {
     getHex(hex)->is_occupied = is_occupied;
 }

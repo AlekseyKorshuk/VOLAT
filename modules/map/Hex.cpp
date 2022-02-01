@@ -77,24 +77,8 @@ bool Hex::operator==(Hex hex) {
 }
 
 void Hex::setHex(ContentType content_type, json data, int id) {
-    //???
     this->is_occupied = true;
     switch (content_type) {
-        /*
-        case ContentType::VEHICLE: {
-            std::string temp_vehicle_type = data["vehicle_type"].get<std::string>();
-            if (temp_vehicle_type == "medium_tank") {
-                std::shared_ptr<MediumTank> tank =
-                    std::make_shared<MediumTank>(
-                        x, y, z, data["health"].get<std::int32_t>(),
-                        data["capture_points"].get<std::int32_t>(), id
-                    );
-                tank->setPlayerId(data["player_id"].get<std::int32_t>());
-                this->content = tank;
-            }
-            break;
-        }
-        */
         case ContentType::BASE: {
             this->is_occupied = false;
             this->content = std::make_shared<Content>(true, ContentType::BASE);
