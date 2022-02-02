@@ -13,9 +13,7 @@ from modules.client.controller import Client
 
 
 class Map:
-    """
-    Class represents current state of the game map
-    """
+    """Class represents current state of the game map"""
 
     def __init__(self, client: Client, radius: int = 11, plot: bool = True):
         """
@@ -42,7 +40,7 @@ class Map:
         """
         vehicle_to_marker = {}
         for vehicle_type in VEHICLE_TYPES:
-            path, attributes = svg2paths(f'assets/{vehicle_type}.svg')
+            _, attributes = svg2paths(f'assets/{vehicle_type}.svg')
             marker = parse_path(' '.join([attribute['d'] for attribute in attributes]))
             marker.vertices -= marker.vertices.mean(axis=0)
             marker = marker.transformed(mpl.transforms.Affine2D().rotate_deg(180))
@@ -77,7 +75,7 @@ class Map:
                     num_of_hexes_in_edge = r - 1
                 else:
                     num_of_hexes_in_edge = r
-                for i in range(num_of_hexes_in_edge):
+                for _ in range(num_of_hexes_in_edge):
                     x = x + deltas[j][0]
                     y = y + deltas[j][1]
                     z = z + deltas[j][2]
@@ -122,10 +120,9 @@ class Map:
 
         # Add some coloured hexagons
         for x, y, c, l in zip(hcoord, vcoord, colors, labels):
-            hex = RegularPolygon((x, y), numVertices=6, radius=2. / 3.,
-                                 orientation=np.radians(30),
-                                 facecolor=c, alpha=0.2, edgecolor='k', linewidth=1)
-            self.ax.add_patch(hex)
+            self.ax.add_patch(RegularPolygon((x, y), numVertices=6, radius=2. / 3.,
+                                             orientation=np.radians(30),
+                                             facecolor=c, alpha=0.2, edgecolor='k', linewidth=1))
             # Also add a text label
             if 'health' in l:
                 self.ax.text(x - 0.01, y - 0.01, l['health'], ha='center', va='center', size=8)
@@ -181,5 +178,5 @@ class Map:
             if replace:
                 text_field = text_field.replace(' ', '  ')
             return text_field
-        except:
+        except KeyError:
             return None

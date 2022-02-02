@@ -16,9 +16,7 @@ import numpy as np
 
 
 class ImageLabel(Label):
-    """
-    A label that displays images, and plays them if they are gifs
-    """
+    """A label that displays images, and plays them if they are gifs"""
 
     delay = None
     frames = None
@@ -73,9 +71,7 @@ class ImageLabel(Label):
 
 
 class Core:
-    """
-    Core class of Visualizer
-    """
+    """Core class of Visualizer"""
 
     def __init__(self,
                  game_name: str = permanent.DEFAULT_GAME_NAME,
@@ -242,7 +238,7 @@ class Core:
         # Initialize a Label to display the User Input
         label = Label(self.window, text="Game state", font=("Courier 10 bold"))
         label.pack()
-        
+
         # Initialize a Label to display the User Input
         self.status = Label(self.window, text="Pending...", font=("Courier 10"))
         self.status.pack()

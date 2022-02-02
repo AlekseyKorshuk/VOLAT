@@ -2,9 +2,7 @@ import json
 
 
 class BytesConverter:
-    """
-    Converts bytes to string and vice-versa
-    """
+    """Converts bytes to string and vice-versa"""
 
     def del_none(self, dictionary: dict) -> dict:
         """
@@ -38,7 +36,7 @@ class BytesConverter:
         @param message: Dictionary
         @return: Bytes
         """
-        if message is not '':
+        if message != '':
             message = self.del_none(message.copy())
             message = json.dumps(message, separators=(',', ':'))
             message_length = len(str(message))
