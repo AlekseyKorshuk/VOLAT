@@ -16,6 +16,13 @@ public:
     void updateTank(int id, int x, int y, int z, int health, int capture_points);
     void updateTank(int id, int x, int y, int z);
 
+
+
+    //returns tanks that are under shoot from this tank
+    std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(std::shared_ptr<Tank>);
+
+
+
     Map map = Map();
 
     std::vector<std::shared_ptr<Tank>> all_vehicles;
@@ -26,6 +33,8 @@ public:
 private:
     void addTank(json, int);
     void addPlayer(json);
+
+
 
 };
 

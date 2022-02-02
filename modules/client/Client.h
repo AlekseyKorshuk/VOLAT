@@ -58,6 +58,6 @@ private:
     char inetAddr[100] = {"92.223.34.102"};
     int port = 443;
 
-    bool debugging = true;
+    bool debugging = false;
 };
 

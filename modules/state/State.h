@@ -22,7 +22,7 @@ protected:
 
 
     std::string moveToString(Hex*);
-    std::string shootToString(Hex*);
+    std::string shootToString(std::vector<std::shared_ptr<Tank>>);
 };
 
 

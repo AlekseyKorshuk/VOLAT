@@ -26,6 +26,10 @@ void Tank::update(int x, int y, int z) {
     z_=z;
 }
 
+void Tank::update(int health) {
+    health_points_ = health;
+}
+
 Tank::Tank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z, int health_points, int capture_points, int id)
     : Content(is_reacheble = false
     , content_type = ContentType::VEHICLE
@@ -58,4 +62,7 @@ TankType Tank::getTankType() {
 
 int Tank::getSpeedPoints() {
     return speed_points_;
+}
+int Tank::getHealthPoints() {
+    return health_points_;
 }
