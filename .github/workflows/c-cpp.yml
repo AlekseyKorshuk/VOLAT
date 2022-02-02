@@ -43,7 +43,7 @@ jobs:
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: client/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Print env
         run: |
@@ -133,14 +133,14 @@ jobs:
           ls -laR
           ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
       - name: Upload
-        uses: client/upload-artifact@v1
+        uses: actions/upload-artifact@v1
         with:
           path: ./${{ matrix.config.artifact }}
           name: ${{ matrix.config.artifact }}
 
       - name: Upload release asset
         if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
-        uses: client/upload-release-asset@v1
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
