@@ -1,18 +1,14 @@
-import tkinter
+from tkinter import Label
+from tkinter import ttk, Tk, Entry, END, Toplevel
+from PIL import Image, ImageTk
+from itertools import count
+from threading import Thread
+import numpy as np
 
 from modules.client.controller import Client
 from modules.map.classes import Map
-from tkinter import Label
-from tkinter import ttk, Tk, Entry, END
-
 from modules.core import permanent
 
-from PIL import Image, ImageTk
-from itertools import count
-
-from threading import Thread
-
-import numpy as np
 
 
 class ImageLabel(Label):
@@ -42,7 +38,7 @@ class ImageLabel(Label):
 
         try:
             self.delay = im.info['duration']
-        except:
+        except KeyError:
             self.delay = 100
 
         if len(self.frames) == 1:
@@ -163,7 +159,7 @@ class Core:
                             append_images=images_list[1:], optimize=False,
                             duration=1000, loop=0)
 
-        gif_window = tkinter.Toplevel(self.window)
+        gif_window = Toplevel(self.window)
         lbl = ImageLabel(gif_window)
         lbl.pack(expand=True)
         lbl.load(gif_name)
