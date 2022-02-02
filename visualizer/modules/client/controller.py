@@ -6,14 +6,10 @@ from modules.core.permanent import HOST, PORT
 
 
 class Client:
-    """
-    Client-side message performer
-    """
+    """Client-side message performer"""
 
     def __init__(self):
-        """
-        Default constructor of the class. Connects to the Game Server.
-        """
+        """Default constructor of the class. Connects to the Game Server."""
         self.bytes_converter = BytesConverter()
         self.client = socket.socket(
             socket.AF_INET,
@@ -42,7 +38,7 @@ class Client:
         :param message: bytes message to send
         :return: dict response message
         """
-        resp = self.client.sendall(message)
+        self.client.sendall(message)
 
         result_code = int.from_bytes(self.client.recv(4, socket.MSG_WAITALL), "little")
         message_length = int.from_bytes(self.client.recv(4, socket.MSG_WAITALL), "little")

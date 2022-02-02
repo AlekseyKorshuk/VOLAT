@@ -1,24 +1,18 @@
-import tkinter
+from tkinter import Label
+from tkinter import ttk, Tk, Entry, END, Toplevel
+from PIL import Image, ImageTk
+from itertools import count
+from threading import Thread
+import numpy as np
 
 from modules.client.controller import Client
 from modules.map.classes import Map
-from tkinter import Label
-from tkinter import ttk, Tk, Entry, END
-
 from modules.core import permanent
 
-from PIL import Image, ImageTk
-from itertools import count
-
-from threading import Thread
-
-import numpy as np
 
 
 class ImageLabel(Label):
-    """
-    A label that displays images, and plays them if they are gifs
-    """
+    """A label that displays images, and plays them if they are gifs"""
 
     delay = None
     frames = None
@@ -44,7 +38,7 @@ class ImageLabel(Label):
 
         try:
             self.delay = im.info['duration']
-        except:
+        except KeyError:
             self.delay = 100
 
         if len(self.frames) == 1:
@@ -73,9 +67,7 @@ class ImageLabel(Label):
 
 
 class Core:
-    """
-    Core class of Visualizer
-    """
+    """Core class of Visualizer"""
 
     def __init__(self,
                  game_name: str = permanent.DEFAULT_GAME_NAME,
@@ -167,7 +159,7 @@ class Core:
                             append_images=images_list[1:], optimize=False,
                             duration=1000, loop=0)
 
-        gif_window = tkinter.Toplevel(self.window)
+        gif_window = Toplevel(self.window)
         lbl = ImageLabel(gif_window)
         lbl.pack(expand=True)
         lbl.load(gif_name)
@@ -242,7 +234,7 @@ class Core:
         # Initialize a Label to display the User Input
         label = Label(self.window, text="Game state", font=("Courier 10 bold"))
         label.pack()
-        
+
         # Initialize a Label to display the User Input
         self.status = Label(self.window, text="Pending...", font=("Courier 10"))
         self.status.pack()
