@@ -1,4 +1,4 @@
-MODULE_NAME = 'actions'
+MODULE_NAME = 'client'
 
 ACTIONS = {
     'LOGIN': 1,
