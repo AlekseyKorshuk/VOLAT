@@ -142,7 +142,7 @@ class Map:
         """
         self.map = copy.deepcopy(self.get_default_map)
         text_field = self.get_state_table(state, False, replace=True)
-        self.ax.text(-0.3, 0.9, text_field, bbox={'facecolor': 'red',
+        self.ax.text(-0.3, 0.9, text_field if text_field != '' else None, bbox={'facecolor': 'red',
                                                   'alpha': 0.5, 'pad': 15},
                      transform=self.ax.transAxes, ha="center")
         players_colors = {}
@@ -158,7 +158,7 @@ class Map:
                     **vehicle
                 }
 
-    def get_state_table(self, state: dict, border: bool = False, replace: bool = False) -> str | None:
+    def get_state_table(self, state: dict, border: bool = False, replace: bool = False) -> str:
         """
         Generates state table
         @param state: Game state
@@ -179,4 +179,4 @@ class Map:
                 text_field = text_field.replace(' ', '  ')
             return text_field
         except KeyError:
-            return None
+            return ''
