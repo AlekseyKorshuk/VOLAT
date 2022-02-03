@@ -50,6 +50,32 @@ Tank::Tank(json data, int id)
 {
 }
 
+HexList Tank::getAvailableHexesForMove(const Map& map) const {
+    auto position = map.getHex(getPosition());
+    auto achievable_hexes = map.achievableHexes(position, speed_points_);
+
+    HexList result;
+    for (const auto& item : achievable_hexes) {
+        result.push_back(*item);
+    }
+
+    return result;
+}
+
+std::vector<HexList> Tank::getShootingHexesAreas(const Map& map) const {
+    const HexList hex_moves = getAvailableHexesForMove(map);
+    std::vector<HexList> areas;
+    Hex position = getPosition();
+
+    for (const auto& hex : hex_moves) {
+        if (position.getDistance(hex) == shot_radius_) {
+            areas.push_back(HexList(1, hex));
+        }
+    }
+
+    return areas;
+}
+
 std::ostream &operator<<(std::ostream &stream, const Tank &tank) {
     stream << tank.getPosition() << " Type: " << static_cast<int>(tank.type_) << ",ID: " << tank.id << ",HP: " << tank.health_points_ << ",CP: " << tank.capture_points_ << ",SP: "
            << tank.speed_points_;

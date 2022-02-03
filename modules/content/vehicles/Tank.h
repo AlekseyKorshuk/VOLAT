@@ -22,8 +22,8 @@ public:
 
     Tank(json data, int id);
 
-    virtual HexList getAvailableHexesForMove(const Map& map) const = 0;
-    virtual std::vector<HexList> getShootingHexesAreas(const Map& map) const = 0;
+        virtual HexList getAvailableHexesForMove(const Map& map) const;
+        virtual std::vector<HexList> getShootingHexesAreas(const Map& map) const;
 
     void setPlayerId(int player_id);
     int getPlayerId();
@@ -56,6 +56,7 @@ protected:
     int capture_points_;
     int speed_points_;
     int damage_;
+    int shot_radius_;
     int destruction_points_;
     int player_id_ = -1;
 };
