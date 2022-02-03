@@ -3,7 +3,6 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
-#include <winsock2.h>
 #include <string>
 #include <nlohmann/json.hpp>
 #include <vector>

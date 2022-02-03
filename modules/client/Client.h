@@ -1,16 +1,18 @@
 #pragma once
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include <iostream>
 #include <cstdio>
 #include <cstring>
-#include <winsock2.h>
+#if _WIN32
+    #define _WINSOCK_DEPRECATED_NO_WARNINGS
+    #include <winsock2.h>
+#else
+    #include "TcpClientSocket.hpp"
+#endif
 #include <string>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
-
-#pragma comment(lib, "WS2_32.lib")
 
 using namespace std;
 
@@ -50,14 +52,20 @@ private:
 
     response answer();
 
-    WSADATA WSAData;
-    SOCKET server;
-    SOCKADDR_IN addr;
+
 
 
     char inetAddr[100] = {"92.223.34.102"};
     int port = 443;
 
     bool debugging = false;
+
+    #if _WIN32
+        WSADATA WSAData;
+        SOCKET server;
+        SOCKADDR_IN addr;
+    #else
+        TcpClientSocket server;
+    #endif
 };
 
