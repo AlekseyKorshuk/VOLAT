@@ -29,14 +29,19 @@ public:
     int getPlayerId();
 
     Hex getPosition() const;
+    int getSpeedPoints();
+    TankType getTankType();
+    int getHealthPoints();
+
     void update(int x, int y, int z, int health, int capture_points);
     void update(int x, int y, int z);
+    void update(int health);
 
     friend std::ostream &operator<<(std::ostream &stream, const Tank &tank);
 
     StateMachine* current_strategy_;
 
-    TankType getTankType();
+
 
 protected:
     TankType type_;

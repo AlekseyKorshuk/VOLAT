@@ -1,5 +1,6 @@
+#!/bin/bash
 cd visualizer
-start python visualizer-guiless.py "VisualizerByVOLAT" "" "testVOLAT" "45" "3"
+python visualizer.py  --game_name "testVOLAT" --password "" --num_turns 45 --num_players 3 --hide_gui &
 cd ..
 
 for file in `find ./cmake-build-debug/*.exe` ; do

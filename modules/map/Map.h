@@ -7,10 +7,13 @@
 #include "Hex.h"
 
 
+
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
+
+class Tank;
 
 class Map {
 public:
@@ -39,13 +42,17 @@ public:
 
     Hex *getHex(const Hex &hex) const;
 
-    std::vector<Hex *> findPath(Hex start, std::vector<Hex> ends);
+    std::vector<Hex *> findPath(Hex start, std::vector<Hex> ends, std::shared_ptr<Tank>);
 
-    std::vector<Hex *> findPath(Hex *start, std::vector<Hex *> ends);
+    std::vector<Hex *> findPath(Hex *start, std::vector<Hex *> ends, std::shared_ptr<Tank>);
 
-    std::vector<Hex *> findPath(Hex start, Hex end);
+    std::vector<Hex *> findPath(Hex start, Hex end, std::shared_ptr<Tank>);
 
-    std::vector<Hex *> findPath(Hex *start, Hex *end);
+    std::vector<Hex *> findPath(Hex *start, Hex *end, std::shared_ptr<Tank>);
 
     std::vector<Hex *> traceRoute(Hex *end);
+
+    std::vector<Hex *> achievableHexes (Hex*, int);
 };
+
+#include "../content/vehicles/Tank.h"

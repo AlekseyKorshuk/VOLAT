@@ -13,4 +13,6 @@ CTestTestfile.cmake
 _deps
 cmake-build-debug
 .idea
+venv
 
+/visualizer/assets/*.png

@@ -24,9 +24,10 @@ void Core::play(string game, int num_turns, int num_players) {
     json state_json = client.game_state().msg;
     Strategy strategy(idx , map_json, state_json);
 
-
     while (true){
         json state = client.game_state().msg;
+
+
 
         if (state["finished"]){
             std::cout << "Game is finished" << std::endl;
@@ -42,6 +43,9 @@ void Core::play(string game, int num_turns, int num_players) {
 
         if (idx == state["current_player_idx"].get<std::int32_t>()){
             cout << "Our turn!" << endl;
+
+            std::cout << state << '\n';
+
             json actions = strategy.calculate_actions(idx, state);
 
             for (json::iterator it = actions.begin(); it != actions.end(); ++it) {
@@ -54,9 +58,11 @@ void Core::play(string game, int num_turns, int num_players) {
                 int z = data["target"]["z"].get<std::int32_t>();
 
                 if (action_type == "MOVE") {
+                    std::cout << "MOVE: " << vehicle_id << " {" << x << " " << y << " " << z << "}\n";
                     cout << client.move(vehicle_id, x, y, z).msg << '\n';
                 }
                 else if (action_type == "SHOOT") {
+                    std::cout << "SHOOT: " << vehicle_id << " {" << x << " " << y << " " << z << "}\n";
                     cout << client.shoot(vehicle_id, x, y, z).msg << '\n';
                 }
             }

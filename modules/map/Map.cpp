@@ -1,6 +1,7 @@
 #include "Map.h"
 
 
+
 Map::Map(json map_json, int radius) : radius_(radius) {
     hexes = generateEmptyMap(radius);
     setBase(map_json);
@@ -87,15 +88,15 @@ Hex *Map::getHex(const Hex &hex) const {
     return this->hexes_map.find(v1)->second;
 }
 
-std::vector<Hex *> Map::findPath(Hex start, std::vector<Hex> ends) {
+std::vector<Hex *> Map::findPath(Hex start, std::vector<Hex> ends, std::shared_ptr<Tank> tank) {
     // If path does not exist, will be returned list only with the "END" Hex
     std::vector<Hex *> ends_vector;
     for (auto hex: ends)
         ends_vector.push_back(this->getHex(hex));
-    return this->findPath(this->getHex(start), ends_vector);
+    return this->findPath(this->getHex(start), ends_vector, tank);
 }
 
-std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends) {
+std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends, std::shared_ptr<Tank> tank) {
     Hex *end = nullptr;
     // If path does not exist, will be returned list only with the "END" Hex
     std::queue<Hex *> Queue;
@@ -105,60 +106,67 @@ std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends) {
     while (!Queue.empty() && !reached_end) {
         Hex *current_node = Queue.front();
         Queue.pop();
-        for (Hex *node: current_node->neighbors) {
-            if (!node->visited && !node->is_occupied) {
-                if (node->content != nullptr){
-                    if (node->content->is_reacheble){
-                        node->visited = true;
-                        Queue.push(node);
-                        node->prev = current_node;
-                        if (std::find(ends.begin(), ends.end(), node) != ends.end()) {
-                            reached_end = true;
-                            end = node;
-                            break;
-                        }
-                    }
-                }
 
-            }
-        }
-    }
-    std::vector<Hex *> route = traceRoute(end);
-    this->clearPath();
-    return route;
-}
+        std::vector<Hex*> achievable_hexes = achievableHexes(current_node, tank->getSpeedPoints());
 
-
-std::vector<Hex *> Map::findPath(Hex start, Hex end) {
-    // If path does not exist, will be returned list only with the "END" Hex
-    return this->findPath(this->getHex(start), this->getHex(end));
-}
-
-std::vector<Hex *> Map::findPath(Hex *start, Hex *end) {
-    // If path does not exist, will be returned list only with the "END" Hex
-    std::queue<Hex *> Queue;
-    bool reached_end = false;
-    start->visited = true;
-    Queue.push(start);
-
-    while (!Queue.empty() && !reached_end) {
-        Hex *current_node = Queue.front();
-        Queue.pop();
-        for (Hex *node: current_node->neighbors) {
-            if (!node->visited && !node->is_occupied) {
+        for (Hex *node: achievable_hexes) {
+            if (!node->is_occupied) {
                 node->visited = true;
                 Queue.push(node);
+
                 node->prev = current_node;
-                if (node == end) {
+                if (std::find(ends.begin(), ends.end(), node) != ends.end()) {
                     reached_end = true;
+                    end = node;
                     break;
                 }
             }
         }
     }
+
     std::vector<Hex *> route = traceRoute(end);
     this->clearPath();
     return route;
+}
+
+std::vector<Hex *> Map::achievableHexes(Hex * start, int max_dist) {
+    std::vector<Hex *> hexes;
+
+    std::queue<std::pair<Hex *, int> > Queue;
+    Queue.push({start, 0});
+
+    while(!Queue.empty()) {
+        Hex *current_node = Queue.front().first;
+        int current_dist = Queue.front().second;
+
+        Queue.pop();
+        if (current_dist != max_dist) {
+            for (Hex *node: current_node->neighbors) {
+                if (!node->visited && node->content != nullptr && node->content->is_reacheble){
+                    node->visited = true;
+                    Queue.push({node, current_dist + 1});
+                    hexes.push_back(node);
+                }
+            }
+        }
+    }
+
+
+
+    return hexes;
+}
+
+
+std::vector<Hex *> Map::findPath(Hex start, Hex end, std::shared_ptr<Tank> tank) {
+    // If path does not exist, will be returned list only with the "END" Hex
+    return this->findPath(this->getHex(start), this->getHex(end), tank);
+}
+
+std::vector<Hex *> Map::findPath(Hex *start, Hex *end, std::shared_ptr<Tank> tank) {
+    // If path does not exist, will be returned list only with the "END" Hex
+
+    std::vector<Hex*> ends = {end};
+    return this->findPath(start, ends, tank);
 }
 
 std::vector<Hex *> Map::traceRoute(Hex *end) {

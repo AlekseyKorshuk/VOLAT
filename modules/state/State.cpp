@@ -1,6 +1,6 @@
 #include "State.h"
 
-State::State(Tank* tank, Game* game): tank(tank), game(game){
+State::State(std::shared_ptr<Tank> tank, Game* game): tank(tank), game(game){
 
 };
 
@@ -12,8 +12,15 @@ std::string State::moveToString(Hex* hex) {
     return "{\"type\":\"MOVE\",\"data\":{\"vehicle_id\":"+ std::to_string(tank->id) +
            ",\"target\":{\"x\":"+std::to_string(hex->x)+",\"y\":"+std::to_string(hex->y)+",\"z\":"+std::to_string(hex->z)+"}}}";
 }
-std::string State::shootToString(Hex* hex) {
+std::string State::shootToString(std::vector<std::shared_ptr<Tank>> tanks) {
+
+    for (auto tank: tanks) {
+        tank->update(tank->getHealthPoints()-1);
+    }
+
+    Hex hex = tanks[0]->getPosition();
+
     return "{\"type\":\"SHOOT\",\"data\":{\"vehicle_id\":"+ std::to_string(tank->id) +
-           ",\"target\":{\"x\":"+std::to_string(hex->x)+",\"y\":"+std::to_string(hex->y)+",\"z\":"+std::to_string(hex->z)+"}}}";
+           ",\"target\":{\"x\":"+std::to_string(hex.x)+",\"y\":"+std::to_string(hex.y)+",\"z\":"+std::to_string(hex.z)+"}}}";
 }
 
