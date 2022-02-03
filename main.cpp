@@ -28,7 +28,6 @@ int main(int argc, char **argv) {
     /*
     Client client2 = Client();
     client2.login("VOLAT2", "", game);
-
     Client client3 = Client();
     client3.login("VOLAT3", "", game);
     */

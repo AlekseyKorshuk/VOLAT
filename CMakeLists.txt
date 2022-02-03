@@ -1,13 +1,18 @@
 cmake_minimum_required(VERSION 3.17)
 project(WGForgeProject)
 
+
+
 set(CMAKE_CXX_STANDARD 17)
 
+set(SOCKET SocketCompact)
 set(JSON_VERSION "json-3.10.5")
-include_directories(third-party/${JSON_VERSION}/include)
+
+include_directories(third-party/${JSON_VERSION}/include third-party/${SOCKET})
 
 
-link_libraries(ws2_32)
+
+#link_libraries(ws2_32)
 
 
 # Set all modules here

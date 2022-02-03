@@ -1,5 +1,5 @@
 #pragma once
-#include "..\map\Map.h"
+#include "../map/Map.h"
 #include "../content/vehicles/Tank.h"
 #include "../player/Player.h"
 #include <vector>
