@@ -6,6 +6,7 @@
 #include <cstring>
 #if _WIN32
     #include <winsock2.h>
+    #pragma comment(lib, "WS2_32.lib")
 #else
     #include "TcpClientSocket.hpp"
 #endif
