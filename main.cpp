@@ -9,11 +9,11 @@ int main(int argc, char **argv) {
     string game, name, password;
     int num_turns, num_players;
     if(argc==1){
-        name = "VOLAT12";
+        name = "VOLAT1";
         password = "";
         game = "testVOLAT";
-        num_turns = 30;
-        num_players = 2;
+        num_turns = 15;
+        num_players = 1;
     }
     else{
         name = argv[1];

@@ -11,8 +11,13 @@ set(JSON_VERSION "json-3.10.5")
 include_directories(third-party/${JSON_VERSION}/include third-party/${SOCKET})
 
 
+IF (WIN32)
+    # set stuff for windows
+    link_libraries(ws2_32)
+ELSE()
+    # set stuff for other systems
+ENDIF()
 
-#link_libraries(ws2_32)
 
 
 # Set all modules here
