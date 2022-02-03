@@ -137,7 +137,7 @@ response Client::answer() {
     int result =
             ((buffer[3] & 0xff) << 24) | ((buffer[2] & 0xff) << 16) | ((buffer[1] & 0xff) << 8) | (buffer[0] & 0xff);
     #if _WIN32
-        server.receiveData(buffer, 4);
+        recv(server, buffer, 4, MSG_WAITALL);
     #else
         server.receiveData(buffer, 4);
     #endif
