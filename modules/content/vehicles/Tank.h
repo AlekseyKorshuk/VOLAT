@@ -11,7 +11,8 @@ class StateMachine;
 
 
 enum class TankType { // new ones will be added next time
-    MEDIUM
+    MEDIUM,
+    LIGHT
 };
 
 using HexList = std::vector<Hex>;
@@ -22,8 +23,8 @@ public:
 
     Tank(json data, int id);
 
-        virtual HexList getAvailableHexesForMove(const Map& map) const;
-        virtual std::vector<HexList> getShootingHexesAreas(const Map& map) const;
+    virtual std::vector<Hex*> getAchievableHexes(Map& map) const;
+    virtual std::vector<HexList> getShootingHexesAreas(Map& map) const;
 
     void setPlayerId(int player_id);
     int getPlayerId();

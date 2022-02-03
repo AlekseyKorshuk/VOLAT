@@ -50,28 +50,43 @@ Tank::Tank(json data, int id)
 {
 }
 
-HexList Tank::getAvailableHexesForMove(const Map& map) const {
+std::vector<Hex*> Tank::getAchievableHexes(Map& map) const {
     auto position = map.getHex(getPosition());
-    auto achievable_hexes = map.achievableHexes(position, speed_points_);
+    std::vector<Hex *> hexes;
 
-    HexList result;
-    for (const auto& item : achievable_hexes) {
-        result.push_back(*item);
+    std::queue<std::pair<Hex *, int> > Queue;
+    Queue.push({position, 0});
+
+    while(!Queue.empty()) {
+        Hex *current_node = Queue.front().first;
+        int current_dist = Queue.front().second;
+
+        Queue.pop();
+        if (current_dist != speed_points_) {
+            for (Hex *node: current_node->neighbors) {
+                if (!node->visited && node->content != nullptr && node->content->is_reacheble){
+                    node->visited = true;
+                    Queue.push({node, current_dist + 1});
+                    hexes.push_back(node);
+                }
+            }
+        }
     }
 
-    return result;
+    return hexes;
 }
 
-std::vector<HexList> Tank::getShootingHexesAreas(const Map& map) const {
-    const HexList hex_moves = getAvailableHexesForMove(map);
+std::vector<HexList> Tank::getShootingHexesAreas(Map& map) const {
+    auto achievable_moves = getAchievableHexes(map);
     std::vector<HexList> areas;
     Hex position = getPosition();
 
-    for (const auto& hex : hex_moves) {
-        if (position.getDistance(hex) == shot_radius_) {
-            areas.push_back(HexList(1, hex));
+    for (const auto& hex : achievable_moves) {
+        if (position.getDistance(*hex) == shot_radius_) {
+            areas.push_back(HexList(1, *hex));
         }
     }
+    map.clearPath();
 
     return areas;
 }
