@@ -8,14 +8,13 @@ int main(int argc, char **argv) {
 
     string game, name, password;
     int num_turns, num_players;
-    if(argc==1){
+    if (argc == 1) {
         name = "VOLAT1";
         password = "";
         game = "testVOLAT";
         num_turns = 15;
         num_players = 1;
-    }
-    else{
+    } else {
         name = argv[1];
         password = argv[2];
         game = argv[3];
@@ -32,7 +31,7 @@ int main(int argc, char **argv) {
     client3.login("VOLAT3", "", game);
     */
 
-    core.play(game,num_turns,num_players);
+    core.play(game, num_turns, num_players);
 
     return 0;
 }
