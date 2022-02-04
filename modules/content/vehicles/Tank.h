@@ -46,6 +46,8 @@ public:
 
 
 protected:
+    HexPtrList getHexesInShotRadius(Map& map) const;
+
     TankType type_;
     ContentType content_type;
     int x_;
