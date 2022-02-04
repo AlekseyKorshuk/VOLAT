@@ -114,7 +114,7 @@ std::string StateCapture::calculateAction() {
         std::cout << "Already on base! " << *position << '\n';
         std::vector<std::pair<Hex *, int>> possible_moves = calculateShootingVector(game, tank);
 
-        possible_moves.erase(std::remove_if(possible_moves.begin(), possible_moves.end(), [&position](std::pair<Hex *, int> p){ return p.first->getJson() == position->getJson();}), possible_moves.end());
+//        possible_moves.erase(std::remove_if(possible_moves.begin(), possible_moves.end(), [&position](std::pair<Hex *, int> p){ return p.first->getJson() == position->getJson();}), possible_moves.end());
 
         if (!possible_moves.empty())
             return moveToString(possible_moves[0].first);
