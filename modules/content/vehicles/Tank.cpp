@@ -77,6 +77,7 @@ HexPtrList Tank::getAchievableHexes(Map& map) const {
                                  [&node](Hex *hex) { return hex->getJson() == node->getJson(); }) ==
                         visited.end()) {
                     if (node->content != nullptr && node->content->is_reacheble) {
+                        visited.push_back(node);
                         Queue.push({node, current_dist + 1});
                         hexes.push_back(node);
                     }
@@ -91,6 +92,7 @@ HexPtrList Tank::getAchievableHexes(Map& map) const {
 HexPtrList Tank::getHexesInShotRadius(Map& map) const {
     auto position = map.getHex(getPosition());
     std::vector<Hex *> hexes;
+    std::vector<Hex *> visited;
 
     std::queue<std::pair<Hex *, int> > Queue;
     Queue.push({position, 0});
@@ -102,10 +104,14 @@ HexPtrList Tank::getHexesInShotRadius(Map& map) const {
         Queue.pop();
         if (current_dist != speed_points_) {
             for (Hex *node: current_node->neighbors) {
-                if (!node->visited && node->content != nullptr && node->content->is_reacheble) {
-                    node->visited = true;
-                    Queue.push({node, current_dist + 1});
-                    hexes.push_back(node);
+                if (std::find_if(visited.begin(), visited.end(),
+                                 [&node](Hex *hex) { return hex->getJson() == node->getJson(); }) ==
+                    visited.end()) {
+                    if (node->content != nullptr && node->content->is_reacheble) {
+                        visited.push_back(node);
+                        Queue.push({node, current_dist + 1});
+                        hexes.push_back(node);
+                    }
                 }
             }
         }
