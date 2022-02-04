@@ -55,6 +55,8 @@ set(VEHICLES
         modules/content/vehicles/MediumTank.cpp
         modules/content/vehicles/LightTank.h
         modules/content/vehicles/LightTank.cpp
+        modules/content/vehicles/HeavyTank.h
+        modules/content/vehicles/HeavyTank.cpp
         modules/content/vehicles/Spg.h
         modules/content/vehicles/Spg.cpp
         )
