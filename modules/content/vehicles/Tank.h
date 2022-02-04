@@ -11,10 +11,12 @@ class StateMachine;
 
 
 enum class TankType { // new ones will be added next time
-    MEDIUM
+    LIGHT,
+    MEDIUM,
+    HEAVY
 };
 
-using HexList = std::vector<Hex>;
+using HexPtrList = std::vector<Hex*>;
 
 class Tank : public Content {
 public:
@@ -22,8 +24,8 @@ public:
 
     Tank(json data, int id);
 
-    virtual HexList getAvailableHexesForMove(const Map& map) const = 0;
-    virtual std::vector<HexList> getShootingHexesAreas(const Map& map) const = 0;
+    virtual HexPtrList getAchievableHexes(Map& map) const;
+    virtual std::vector<HexPtrList> getShootingHexesAreas(Map& map) const;
 
     void setPlayerId(int player_id);
     int getPlayerId();
@@ -56,6 +58,7 @@ protected:
     int capture_points_;
     int speed_points_;
     int damage_;
+    int shot_radius_;
     int destruction_points_;
     int player_id_ = -1;
 };

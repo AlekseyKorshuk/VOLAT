@@ -50,6 +50,47 @@ Tank::Tank(json data, int id)
 {
 }
 
+HexPtrList Tank::getAchievableHexes(Map& map) const {
+    auto position = map.getHex(getPosition());
+    std::vector<Hex *> hexes;
+
+    std::queue<std::pair<Hex *, int> > Queue;
+    Queue.push({position, 0});
+
+    while(!Queue.empty()) {
+        Hex *current_node = Queue.front().first;
+        int current_dist = Queue.front().second;
+
+        Queue.pop();
+        if (current_dist != speed_points_) {
+            for (Hex *node: current_node->neighbors) {
+                if (!node->visited && node->content != nullptr && node->content->is_reacheble){
+                    node->visited = true;
+                    Queue.push({node, current_dist + 1});
+                    hexes.push_back(node);
+                }
+            }
+        }
+    }
+
+    return hexes;
+}
+
+std::vector<HexPtrList> Tank::getShootingHexesAreas(Map& map) const {
+    auto achievable_moves = getAchievableHexes(map);
+    std::vector<HexPtrList> areas;
+    Hex position = getPosition();
+
+    for (const auto& hex : achievable_moves) {
+        if (position.getDistance(*hex) == shot_radius_) {
+            areas.push_back(HexPtrList(1, hex));
+        }
+    }
+    map.clearPath();
+
+    return areas;
+}
+
 std::ostream &operator<<(std::ostream &stream, const Tank &tank) {
     stream << tank.getPosition() << " Type: " << static_cast<int>(tank.type_) << ",ID: " << tank.id << ",HP: " << tank.health_points_ << ",CP: " << tank.capture_points_ << ",SP: "
            << tank.speed_points_;

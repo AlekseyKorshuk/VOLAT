@@ -143,13 +143,13 @@ void Game::updateTank(int id, int x, int y, int z, int health, int capture_point
 std::vector<std::vector<std::shared_ptr<Tank> > > Game::tanksUnderShoot(std::shared_ptr <Tank> tank) {
     std::vector<std::vector<std::shared_ptr<Tank> > > tanks;
 
-    std::vector<std::vector<Hex> >  shootingHexesAreas = tank->getShootingHexesAreas(map);
+    auto shootingHexesAreas = tank->getShootingHexesAreas(map);
 
-    for (auto hexList: shootingHexesAreas) {
-        for (auto hex: hexList) {
+    for (auto hexPtrList: shootingHexesAreas) {
+        for (auto hex: hexPtrList) {
             std::vector<std::shared_ptr<Tank> > tankList;
             for (auto tank: opponent_vehicles){
-                if (hex == tank->getPosition() && tank->getHealthPoints() != 0) {
+                if (*hex == tank->getPosition() && tank->getHealthPoints() != 0) {
                     tankList.push_back(tank);
                 }
             }

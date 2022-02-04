@@ -53,6 +53,8 @@ set(VEHICLES
         modules/content/vehicles/Tank.h
         modules/content/vehicles/MediumTank.h
         modules/content/vehicles/MediumTank.cpp
+        modules/content/vehicles/LightTank.h
+        modules/content/vehicles/LightTank.cpp
         )
 
 SET(STATE

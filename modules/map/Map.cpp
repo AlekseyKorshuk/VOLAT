@@ -129,7 +129,7 @@ std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends, std::share
     return route;
 }
 
-std::vector<Hex *> Map::achievableHexes(Hex * start, int max_dist) {
+std::vector<Hex *> Map::achievableHexes(Hex * start, int max_dist) const {
     std::vector<Hex *> hexes;
 
     std::queue<std::pair<Hex *, int> > Queue;
