@@ -1,4 +1,4 @@
-#include "MediumTank.h"
+#include "HeavyTank.h"
 
 HeavyTank::HeavyTank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z,
                      int health_points, int capture_points, int id)
@@ -10,7 +10,7 @@ HeavyTank::HeavyTank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z,
     this->destruction_points_ = 3;
 }
 
-std::vector<HexList> HeavyTank::getShootingHexesAreas(Map& map) const {
+std::vector<HexPtrList> HeavyTank::getShootingHexesAreas(Map& map) const {
     auto hexes_in_shot_radius = getHexesInShotRadius(map);
     std::vector<HexPtrList> areas;
 
