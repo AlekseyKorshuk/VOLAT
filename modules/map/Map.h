@@ -52,7 +52,6 @@ public:
 
     std::vector<Hex *> traceRoute(Hex *end);
 
-    std::vector<Hex *> achievableHexes (Hex*, int) const;
 };
 
 #include "../content/vehicles/Tank.h"

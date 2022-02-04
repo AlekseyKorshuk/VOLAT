@@ -13,7 +13,8 @@ class StateMachine;
 enum class TankType { // new ones will be added next time
     LIGHT,
     MEDIUM,
-    HEAVY
+    HEAVY,
+    SPG
 };
 
 using HexPtrList = std::vector<Hex*>;
@@ -46,6 +47,8 @@ public:
 
 
 protected:
+    HexPtrList getHexesInShotRadius(Map& map) const;
+
     TankType type_;
     ContentType content_type;
     int x_;
