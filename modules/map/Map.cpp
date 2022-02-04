@@ -107,7 +107,7 @@ std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends, std::share
         Hex *current_node = Queue.front();
         Queue.pop();
 
-        std::vector<Hex*> achievable_hexes = achievableHexes(current_node, tank->getSpeedPoints());
+        std::vector<Hex*> achievable_hexes = tank->getAchievableHexes(*this);
 
         for (Hex *node: achievable_hexes) {
             if (!node->is_occupied) {
@@ -128,34 +128,6 @@ std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends, std::share
     this->clearPath();
     return route;
 }
-
-std::vector<Hex *> Map::achievableHexes(Hex * start, int max_dist) const {
-    std::vector<Hex *> hexes;
-
-    std::queue<std::pair<Hex *, int> > Queue;
-    Queue.push({start, 0});
-
-    while(!Queue.empty()) {
-        Hex *current_node = Queue.front().first;
-        int current_dist = Queue.front().second;
-
-        Queue.pop();
-        if (current_dist != max_dist) {
-            for (Hex *node: current_node->neighbors) {
-                if (!node->visited && node->content != nullptr && node->content->is_reacheble){
-                    node->visited = true;
-                    Queue.push({node, current_dist + 1});
-                    hexes.push_back(node);
-                }
-            }
-        }
-    }
-
-
-
-    return hexes;
-}
-
 
 std::vector<Hex *> Map::findPath(Hex start, Hex end, std::shared_ptr<Tank> tank) {
     // If path does not exist, will be returned list only with the "END" Hex
