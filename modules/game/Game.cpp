@@ -1,5 +1,9 @@
 #include "Game.h"
 #include "../content/vehicles/MediumTank.h"
+#include "../content/vehicles/AtSpg.h"
+#include "../content/vehicles/HeavyTank.h"
+#include "../content/vehicles/LightTank.h"
+#include "../content/vehicles/Spg.h"
 
 Game::Game(int idx, json map_json, json state_json) : idx(idx)
 {
@@ -76,10 +80,45 @@ void Game::addTank(json vehicle, int vehicle_id) {
 
     std::string temp_vehicle_type = vehicle["vehicle_type"].get<std::string>();
 
-
     std::shared_ptr<Tank> tank = nullptr;
+    if (temp_vehicle_type == "at_spg") {
+        tank = std::make_shared<AtSpg>(
+                x, y, z,
+                spawn_x, spawn_y, spawn_z,
+                vehicle["health"].get<std::int32_t>(),
+                vehicle["capture_points"].get<std::int32_t>(), vehicle_id
+        );
+        tank->setPlayerId(vehicle["player_id"].get<std::int32_t>());
+    }
+    if (temp_vehicle_type == "heavy_tank") {
+        tank = std::make_shared<HeavyTank>(
+                x, y, z,
+                spawn_x, spawn_y, spawn_z,
+                vehicle["health"].get<std::int32_t>(),
+                vehicle["capture_points"].get<std::int32_t>(), vehicle_id
+        );
+        tank->setPlayerId(vehicle["player_id"].get<std::int32_t>());
+    }
+    if (temp_vehicle_type == "light_tank") {
+        tank = std::make_shared<LightTank>(
+                x, y, z,
+                spawn_x, spawn_y, spawn_z,
+                vehicle["health"].get<std::int32_t>(),
+                vehicle["capture_points"].get<std::int32_t>(), vehicle_id
+        );
+        tank->setPlayerId(vehicle["player_id"].get<std::int32_t>());
+    }
     if (temp_vehicle_type == "medium_tank") {
         tank = std::make_shared<MediumTank>(
+                x, y, z,
+                spawn_x, spawn_y, spawn_z,
+                vehicle["health"].get<std::int32_t>(),
+                vehicle["capture_points"].get<std::int32_t>(), vehicle_id
+        );
+        tank->setPlayerId(vehicle["player_id"].get<std::int32_t>());
+    }
+    if (temp_vehicle_type == "spg") {
+        tank = std::make_shared<Spg>(
                 x, y, z,
                 spawn_x, spawn_y, spawn_z,
                 vehicle["health"].get<std::int32_t>(),

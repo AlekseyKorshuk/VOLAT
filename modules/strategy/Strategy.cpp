@@ -1,6 +1,10 @@
 #include "Strategy.h"
 #include "../content/vehicles/Tank.h"
 #include "../state_machine/MediumTankStrategy.h"
+#include "../state_machine/SpgStrategy.h"
+#include "../state_machine/LightTankStrategy.h"
+#include "../state_machine/HeavyTankStrategy.h"
+#include "../state_machine/AtSpgStrategy.h"
 #include <iostream>
 #include <cstdio>
 #include <cstring>
@@ -14,14 +18,28 @@ using json = nlohmann::json;
 Strategy::Strategy(int idx, json map_json, json state_json){
     game = Game(idx, map_json, state_json);
 
-
-
+    std::sort(game.player_vehicles.begin(), game.player_vehicles.end(),
+    [](std::shared_ptr<Tank> a, std::shared_ptr<Tank> b)
+    {return int(a->getTankType()) < int(b->getTankType());}
+    );
 
     for (auto tank: game.player_vehicles) {
         if (tank != nullptr) {
             switch(tank->getTankType()) {
+                case TankType::SPG:
+                    tank->current_strategy_ = new SpgStrategy(tank, &game);
+                    break;
+                case TankType::LIGHT:
+                    tank->current_strategy_ = new LightTankStrategy(tank, &game);
+                    break;
+                case TankType::HEAVY:
+                    tank->current_strategy_ = new HeavyTankStrategy(tank, &game);
+                    break;
                 case TankType::MEDIUM:
                     tank->current_strategy_ = new MediumTankStrategy(tank, &game);
+                    break;
+                case TankType::AT_SPG:
+                    tank->current_strategy_ = new AtSpgStrategy(tank, &game);
                     break;
             }
         } else {

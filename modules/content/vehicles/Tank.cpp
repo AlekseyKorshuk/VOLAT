@@ -130,7 +130,7 @@ std::vector<HexPtrList> Tank::getShootingHexesAreas(Map& map) const {
 }
 
 std::ostream &operator<<(std::ostream &stream, const Tank &tank) {
-    stream << tank.getPosition() << " Type: " << static_cast<int>(tank.type_) << ",ID: " << tank.id << ",HP: " << tank.health_points_ << ",CP: " << tank.capture_points_ << ",SP: "
+    stream << tank.getPosition() << " Type: " << int(tank.type_) << ",ID: " << tank.id << ",HP: " << tank.health_points_ << ",CP: " << tank.capture_points_ << ",SP: "
            << tank.speed_points_;
     return stream;
 }

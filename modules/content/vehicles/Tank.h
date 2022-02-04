@@ -9,13 +9,12 @@
 
 class StateMachine;
 
-
-enum class TankType { // new ones will be added next time
-    LIGHT,
-    MEDIUM,
-    HEAVY,
-    SPG,
-    AT_SPG
+enum TankType: int{
+    SPG = 0,
+    LIGHT = 1,
+    HEAVY = 2,
+    MEDIUM = 3,
+    AT_SPG = 4
 };
 
 using HexPtrList = std::vector<Hex*>;

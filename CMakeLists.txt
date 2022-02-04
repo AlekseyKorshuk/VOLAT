@@ -84,7 +84,7 @@ SET(GAME
 SET(PLAYER
         modules/player/Player.cpp
         modules/player/Player.h
-        )
+        modules/state_machine/AtSpgStrategy.cpp modules/state_machine/AtSpgStrategy.h modules/state_machine/HeavyTankStrategy.cpp modules/state_machine/HeavyTankStrategy.h modules/state_machine/LightTankStrategy.cpp modules/state_machine/LightTankStrategy.h modules/state_machine/SpgStrategy.cpp modules/state_machine/SpgStrategy.h)
 
 add_executable(
         WGForgeProject

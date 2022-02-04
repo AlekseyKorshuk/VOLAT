@@ -9,9 +9,9 @@ int main(int argc, char **argv) {
     string game, name, password;
     int num_turns, num_players;
     if (argc == 1) {
-        name = "VOLAT1";
+        name = "VOLAT123";
         password = "";
-        game = "testVOLAT";
+        game = "testVOLAT123";
         num_turns = 15;
         num_players = 1;
     } else {

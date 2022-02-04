@@ -1,7 +1,4 @@
 #pragma once
-
-
-
 #include "../map/Map.h"
 #include "../content/vehicles/Tank.h"
 #include "../state/State.h"

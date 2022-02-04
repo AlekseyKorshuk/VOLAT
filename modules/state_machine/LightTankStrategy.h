@@ -2,10 +2,8 @@
 #include "../state/StateCapture.h"
 #include "StateMachine.h"
 
-class MediumTankStrategy : public StateMachine{
+class LightTankStrategy : public StateMachine{
 public:
     virtual void updateState();
-    MediumTankStrategy(std::shared_ptr<Tank>, Game*);
+    LightTankStrategy(std::shared_ptr<Tank>, Game*);
 };
-
-
