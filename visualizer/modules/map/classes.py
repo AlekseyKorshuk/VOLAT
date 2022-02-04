@@ -3,6 +3,7 @@ from matplotlib.patches import RegularPolygon
 import numpy as np
 
 import matplotlib as mpl
+mpl.use('agg')
 from svgpathtools import svg2paths
 from svgpath2mpl import parse_path
 from modules.core.permanent import VEHICLE_TYPES

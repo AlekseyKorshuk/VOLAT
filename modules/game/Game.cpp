@@ -46,8 +46,6 @@ void Game::update(json state_json) {
         if (all_vehicles[vehicle_id - 1] == nullptr) {
             addTank(vehicle, vehicle_id);
         } else {
-
-
             json position = vehicle["position"];
 
             int x = vehicle["position"]["x"].get<std::int32_t>();
