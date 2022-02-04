@@ -102,15 +102,22 @@ std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends, std::share
     std::queue<Hex *> Queue;
     bool reached_end = false;
     start->visited = true;
+
+    Hex pos_tank = tank->getPosition();
+
     Queue.push(start);
     while (!Queue.empty() && !reached_end) {
         Hex *current_node = Queue.front();
         Queue.pop();
 
+
+        tank->update(current_node);
         std::vector<Hex*> achievable_hexes = tank->getAchievableHexes(*this);
 
+
+
         for (Hex *node: achievable_hexes) {
-            if (!node->is_occupied) {
+            if (!node->is_occupied && !node->visited) {
                 node->visited = true;
                 Queue.push(node);
 
@@ -123,6 +130,8 @@ std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends, std::share
             }
         }
     }
+
+    tank->update(pos_tank);
 
     std::vector<Hex *> route = traceRoute(end);
     this->clearPath();

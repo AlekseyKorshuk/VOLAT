@@ -30,6 +30,14 @@ void Tank::update(int health) {
     health_points_ = health;
 }
 
+void Tank::update(Hex hex) {
+    this->update(hex.x, hex.y, hex.z);
+}
+
+void Tank::update(Hex* hex) {
+    this->update(*hex);
+}
+
 Tank::Tank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z, int health_points, int capture_points, int id)
     : Content(is_reacheble = false
     , content_type = ContentType::VEHICLE
