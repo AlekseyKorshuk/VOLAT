@@ -59,6 +59,8 @@ set(VEHICLES
         modules/content/vehicles/HeavyTank.cpp
         modules/content/vehicles/Spg.h
         modules/content/vehicles/Spg.cpp
+        modules/content/vehicles/AtSpg.h
+        modules/content/vehicles/AtSpg.cpp
         )
 
 SET(STATE

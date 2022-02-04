@@ -104,17 +104,17 @@ HexPtrList Tank::getHexesInShotRadius(Map& map) const {
 
 std::vector<HexPtrList> Tank::getShootingHexesAreas(Map& map) const {
     auto hexes_in_shot_radius = getHexesInShotRadius(map);
-    std::vector<HexPtrList> areas;
+    std::vector<HexPtrList> shot_areas;
     Hex position = getPosition();
 
     for (const auto& hex : hexes_in_shot_radius) {
         if (position.getDistance(*hex) == shot_radius_) {
-            areas.push_back(HexPtrList(1, hex));
+            shot_areas.push_back(HexPtrList(1, hex));
         }
     }
     map.clearPath();
 
-    return areas;
+    return shot_areas;
 }
 
 std::ostream &operator<<(std::ostream &stream, const Tank &tank) {

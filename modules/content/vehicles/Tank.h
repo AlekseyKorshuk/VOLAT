@@ -14,7 +14,8 @@ enum class TankType { // new ones will be added next time
     LIGHT,
     MEDIUM,
     HEAVY,
-    SPG
+    SPG,
+    AT_SPG
 };
 
 using HexPtrList = std::vector<Hex*>;
