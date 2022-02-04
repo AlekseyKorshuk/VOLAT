@@ -6,7 +6,6 @@ class Tank;
 
 class Player {
 public:
-
     Player() = default;
     Player(json state);
 

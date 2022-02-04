@@ -5,7 +5,6 @@
 using json = nlohmann::json;
 
 int main(int argc, char **argv) {
-
     string game, name, password;
     int num_turns, num_players;
     if (argc == 1) {

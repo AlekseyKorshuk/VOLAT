@@ -90,7 +90,6 @@ void Hex::setHex(ContentType content_type, json data, int id) {
             break;
         }
     }
-
 }
 
 void Hex::clear() {

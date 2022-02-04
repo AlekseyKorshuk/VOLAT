@@ -15,7 +15,6 @@ Core::Core(string name, string password) {
 }
 
 void Core::play(string game, int num_turns, int num_players) {
-
     Client client = Client();
     response resp = client.login(this->name, this->password, game, num_turns, num_players);
     int idx = resp.msg["idx"].get<std::int32_t>();

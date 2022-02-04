@@ -17,7 +17,6 @@ class Tank;
 
 class Map {
 public:
-
     int radius_;
     std::vector<Hex *> hexes;
     std::map<std::vector<int>, Hex *> hexes_map;
@@ -51,7 +50,6 @@ public:
     std::vector<Hex *> findPath(Hex *start, Hex *end, std::shared_ptr<Tank>);
 
     std::vector<Hex *> traceRoute(Hex *end);
-
 };
 
 #include "../content/vehicles/Tank.h"

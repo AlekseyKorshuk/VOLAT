@@ -23,7 +23,6 @@ struct response {
 
 class Client {
 public:
-
     Client();
 
     response login(string name, string password="", string game="", int num_turns=45, int num_players=3);
@@ -47,7 +46,6 @@ public:
     response shoot(int vehicle_id, int x, int y, int z);
 
 private:
-
     void request(int action, string msg);
 
     response answer();

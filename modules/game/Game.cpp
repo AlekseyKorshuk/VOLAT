@@ -24,11 +24,9 @@ Game::Game(int idx, json map_json, json state_json) : idx(idx)
         json vehicle = it.value();
         addTank(vehicle, vehicle_id);
     }
-
 }
 
 void Game::update(json state_json) {
-
     json players_json = state_json["players"];
     int k = 0;
     for (json::iterator it = players_json.begin(); it != players_json.end(); ++it) {
@@ -66,7 +64,6 @@ void Game::update(json state_json) {
 
 
 void Game::addTank(json vehicle, int vehicle_id) {
-
     json position = vehicle["position"];
     json spawn_position = vehicle["spawn_position"];
 
@@ -145,7 +142,6 @@ void Game::addTank(json vehicle, int vehicle_id) {
             }
         }
     }
-
 }
 
 void Game::addPlayer(json player_json) {
@@ -168,8 +164,6 @@ void Game::updateTank(int id, int x, int y, int z, int health, int capture_point
     std::shared_ptr<Tank> tank = all_vehicles[id - 1];
 
     if (tank != nullptr) {
-
-
         map.changeOccupied(tank->getPosition(),false);
         tank->update(x, y, z, health, capture_points);
         map.changeOccupied(tank->getPosition(),true);

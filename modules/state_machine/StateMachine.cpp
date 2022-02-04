@@ -9,7 +9,6 @@ void StateMachine::changeState(State* new_state) {
     if (state == nullptr || new_state->getType() != state->getType()) {
         state = new_state;
     }
-
 }
 
 std::string StateMachine::calculateAction()

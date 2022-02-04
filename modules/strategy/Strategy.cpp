@@ -61,7 +61,6 @@ json Strategy::calculate_actions(int idx, json state) {
 
     int k = 0;
     for (auto tank: game.player_vehicles)  if (tank->current_strategy_  != nullptr)  {
-
         std::string action = tank->current_strategy_->calculateAction();
         if (!action.empty()) {
             if (!actions.empty()) {

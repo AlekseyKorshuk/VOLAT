@@ -1,7 +1,6 @@
 #include "StateCapture.h"
 
 StateCapture::StateCapture(std::shared_ptr<Tank> tank, Game *game) : State(tank, game) {
-
 }
 
 
@@ -95,7 +94,6 @@ std::vector<std::pair<Hex *, int>> calculateShootingVector(Game *game, std::shar
     std::cout << std::endl;
 
     return sorted_hexes;
-
 }
 
 Hex *getPossibleMove(std::vector<Hex> tank_moves, std::vector<Hex *> possible_moves) {
@@ -119,7 +117,6 @@ std::string StateCapture::calculateAction() {
         if (!possible_moves.empty())
             return moveToString(possible_moves[0].first);
         return "";
-
     }
 
     std::vector<Hex *> path = game->map.findPath(position, game->map.base, tank);
@@ -128,6 +125,4 @@ std::string StateCapture::calculateAction() {
         return moveToString(path[1]);
 
     return "";
-
-
 }
