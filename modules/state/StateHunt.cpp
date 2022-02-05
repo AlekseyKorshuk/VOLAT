@@ -4,7 +4,7 @@
 #include <string> //std::string
 #include <vector> //std::vector
 
-StateHunt::StateHunt(std::shared_ptr<Tank> tank, Game *game, Param *param) : State(tank, game, param) {
+StateHunt::StateHunt(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game, std::shared_ptr<Param> param) : State(tank, game, param) {
 }
 
 
@@ -16,36 +16,31 @@ std::string StateHunt::getType() {
 
 std::string StateHunt::calculateAction() {
 
-    if (!game->GuaranteedKill(tank).empty()) {
-        return shootToString(game->GuaranteedKill(tank));
-    }
+    //if (!game->GuaranteedKill(tank).empty()) {
+    //    return shootToString(game->GuaranteedKill(tank));
+    //}
 
-    std::vector<Hex *> positions_to_shoot = game->findSafePositionsToShoot(tank, param->tank);
+    std::vector<std::shared_ptr<Hex>> positions_to_shoot = game->findSafePositionsToShoot(tank, param->tank);
 
-    Hex* start = game->map.getHex(tank->getPosition());
-    Hex* pos_opponent = game->map.getHex(param->tank->getPosition());
+    std::shared_ptr<Hex> start = game->map.getHex(tank->getPosition());
+    std::shared_ptr<Hex> pos_opponent = game->map.getHex(param->tank->getPosition());
     if (!positions_to_shoot.empty()) {
-        if (std::find(positions_to_shoot.begin(), positions_to_shoot.end(), start)
-                != positions_to_shoot.end()) {
-            for (auto tankList: game->tanksUnderShoot(tank)) {
-                for (auto tanks_under_shoot: tankList) {
-                    if (tanks_under_shoot->getPosition() == param->tank->getPosition()) {
-                        return shootToString(tankList);
-                    }
+        for (auto tankList: game->tanksUnderShoot(tank)) {
+            for (auto tanks_under_shoot: tankList) {
+                if (tanks_under_shoot->getPosition() == param->tank->getPosition()) {
+                    return shootToString(tankList);
                 }
             }
-            return "";
+        }
+        std::vector<std::shared_ptr<Hex>> path = game->map.findPath(start, positions_to_shoot, tank);
+        if (path.size() != 0) {
+            return moveToString(path[1]);
         } else {
-            std::vector<Hex *> path = game->map.findPath(start, positions_to_shoot, tank);
-            if (path.size() != 0) {
-                return moveToString(path[1]);
-            } else {
-                return "";
-            }
+            return "";
         }
     } else {
-        std::vector<Hex *> positions_to_move = game->findNearestSafePositions(pos_opponent);
-        std::vector<Hex *> path = game->map.findPath(start, positions_to_shoot, tank);
+        std::vector<std::shared_ptr<Hex>> positions_to_move = game->findNearestSafePositions(pos_opponent);
+        std::vector<std::shared_ptr<Hex>> path = game->map.findPath(start, positions_to_shoot, tank);
 
         if (path.size() != 0) {
             return moveToString(path[1]);
