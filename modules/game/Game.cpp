@@ -35,7 +35,6 @@ void Game::update(json state_json) {
             addPlayer(player_json);
         }
     }
-
     for (auto player: players) {
         player.second.update(state_json);
     }
@@ -72,6 +71,8 @@ void Game::update(json state_json) {
             updateTank(vehicle_id, x, y, z, health, capture_points);
         }
     }
+
+    updateDanger();
 }
 
 
@@ -201,4 +202,83 @@ std::vector<std::vector<std::shared_ptr<Tank> > > Game::tanksUnderShoot(std::sha
     }
 
     return tanks;
+}
+
+void Game::updateDanger() {
+    map_danger.clear();
+    for (auto hex: map.hexes_map) {
+        map_danger.insert({hex.first,0});
+    }
+
+
+    for (auto tank: opponent_vehicles) {
+        std::vector<HexPtrList> shooting_hexes_areas = tank->getShootingHexesAreas(map);
+        for (auto hexList: shooting_hexes_areas) {
+            for (auto hex: hexList) {
+                std::vector<int> pos = {hex->x, hex->y, hex->z};
+                if (map_danger.find(pos) != map_danger.end()) {
+                    map_danger[pos] += tank->getDamage();
+                }
+            }
+        }
+    }
+}
+
+
+
+std::vector<Hex *> Game::findSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::shared_ptr<Tank> opponent_tank) {
+    std::vector<Hex *> hexes;
+
+    Hex hex_player_tank = player_tank->getPosition();
+    Hex hex_opponent_tank = opponent_tank->getPosition();
+
+    player_tank->update(hex_opponent_tank);
+
+    for (auto hexList: player_tank->getShootingHexesAreas(map)) {
+        for (auto hex: hexList) {
+            std::vector<int> pos = {hex->x, hex->y, hex->z };
+            if (!hex->is_occupied && hex->content->is_reacheble && map_danger[pos] == 0) {
+                hexes.push_back(hex);
+            }
+        }
+    }
+
+    player_tank->update(hex_player_tank);
+    return hexes;
+}
+
+
+std::vector<Hex *> Game::findNearestSafePositions(Hex * start)
+{
+
+    std::vector<Hex *> hexes;
+
+    std::queue<Hex *> Queue;
+    Queue.push(start);
+
+
+    bool reached_end = false;
+
+    while(!Queue.empty()) {
+        Hex *current_node = Queue.front();
+
+        std::vector<int> pos = {current_node->x, current_node->y, current_node->z};
+        if (map_danger[pos] == 0) {
+            reached_end = true;
+            hexes.push_back(current_node);
+        }
+        Queue.pop();
+
+        if (!reached_end) {
+            for (Hex *node: current_node->neighbors) if (!node->visited){
+                    if (node->content != nullptr && node->content->is_reacheble) {
+                        node->visited = true;
+                        Queue.push(node);
+                    }
+                }
+        }
+    }
+
+    map.clearPath();
+    return hexes;
 }

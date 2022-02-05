@@ -7,6 +7,7 @@ enum class ContentType {
     HARD_REPAIR,
     LIGHT_RAPAIR,
     OBSTACLE,
+    SPAWN_POINT,
     EMPTY
 };
 

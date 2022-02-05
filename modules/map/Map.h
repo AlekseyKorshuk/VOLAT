@@ -29,7 +29,7 @@ public:
     Map() {};
 
     void setBase(json map_json);
-
+    void setSpawnPoints(json map_json);
 
     void changeOccupied(Hex, bool);
 

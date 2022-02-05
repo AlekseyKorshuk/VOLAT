@@ -5,6 +5,7 @@
 Map::Map(json map_json, int radius) : radius_(radius) {
     hexes = generateEmptyMap(radius);
     setBase(map_json);
+    setSpawnPoints(map_json);
 }
 
 void Map::setBase(json map_json) {
@@ -18,7 +19,28 @@ void Map::setBase(json map_json) {
                         )
                 )
         );
+
+    for (auto hex: base) {
+        hex->setHex(ContentType::BASE);
+    }
 }
+
+void Map::setSpawnPoints(json map_json) {
+    json spawn_points = map_json["spawn_points"];
+    for (auto it = spawn_points.begin(); it != spawn_points.end(); ++it) {
+        json player = it.value();
+        for (auto it = player.begin(); it != player.end(); ++it) {
+            json vehicle = it.value();
+            for (auto pos: vehicle) {
+                Hex hex = Hex(pos["x"].get<std::int32_t>(),
+                              pos["y"].get<std::int32_t>(),
+                              pos["z"].get<std::int32_t>());
+                getHex(hex)->setHex(ContentType::SPAWN_POINT);
+            }
+        }
+    }
+}
+
 
 void Map::changeOccupied(Hex hex, bool is_occupied) {
     getHex(hex)->is_occupied = is_occupied;
@@ -85,7 +107,11 @@ bool Map::belongs(const Hex& h) const {
 
 Hex *Map::getHex(const Hex &hex) const {
     std::vector<int> v1 = {hex.x, hex.y, hex.z};
-    return this->hexes_map.find(v1)->second;
+    if (this->hexes_map.find(v1) == this->hexes_map.end()) {
+        return nullptr;
+    } else {
+        return this->hexes_map.find(v1)->second;
+    }
 }
 
 std::vector<Hex *> Map::findPath(Hex start, std::vector<Hex> ends, std::shared_ptr<Tank> tank) {

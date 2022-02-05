@@ -20,13 +20,14 @@ std::vector<HexPtrList> AtSpg::getShootingHexesAreas(Map& map) const {
 
     for (const Hex hex_direction : hex_directions) {
         HexPtrList direction_hexes;
+        Hex potential_shot_aim = *position;
         for (int radius = 1; radius <= 3; ++radius) {
-            Hex potential_shot_aim = *position;
+            potential_shot_aim += hex_direction;
 
-            for (int step = 1; step <= radius; ++step) {
-                potential_shot_aim += hex_direction;
+            Hex* potential_shot_aim_ =map.getHex(potential_shot_aim);
+            if (potential_shot_aim_ != nullptr) {
+                direction_hexes.push_back(potential_shot_aim_);
             }
-            direction_hexes.push_back(map.getHex(potential_shot_aim));
         }
 
         if (!direction_hexes.empty()) {

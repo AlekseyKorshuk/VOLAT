@@ -151,3 +151,7 @@ int Tank::getSpeedPoints() {
 int Tank::getHealthPoints() {
     return health_points_;
 }
+
+int Tank::getDamage() {
+    return damage_;
+}

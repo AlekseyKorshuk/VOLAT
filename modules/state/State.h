@@ -13,6 +13,7 @@ union Param {
     Param() {
         idp = -1;
     }
+    Param(std::shared_ptr<Tank> tank) :tank(tank) {}
     ~Param() {}
 
     std::shared_ptr<Tank> tank;

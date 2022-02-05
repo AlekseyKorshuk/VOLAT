@@ -22,7 +22,11 @@ public:
     //returns tanks that are under shoot from this tank
     std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(std::shared_ptr<Tank>);
 
+    //Finds a position from which tank_1 can safely shoot tank_2
+    std::vector<Hex *> findSafePositionsToShoot(std::shared_ptr<Tank>, std::shared_ptr<Tank>);
 
+    //Finds safe positions with the minimum distance from the specified position
+    std::vector<Hex *> findNearestSafePositions(Hex *);
 
     Map map = Map();
 
@@ -34,5 +38,9 @@ public:
 private:
     void addTank(json, int);
     void addPlayer(json);
+
+
+    void updateDanger();
+    std::map<std::vector<int>, int> map_danger;
 };
 
