@@ -36,12 +36,10 @@ void Game::update(json state_json) {
         }
     }
 
-    std::cout << "!" << '\n';
     for (auto player: players) {
         player.second.update(state_json);
     }
 
-    std::cout << "!" << '\n';
     for (auto player: players) if (player.first != idx){
             player.second.is_neutral = false;
             if (!players[idx].whoAttacked[player.first]) {

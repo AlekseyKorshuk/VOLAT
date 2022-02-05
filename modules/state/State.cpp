@@ -1,6 +1,6 @@
 #include "State.h"
 
-State::State(std::shared_ptr<Tank> tank, Game* game): tank(tank), game(game){
+State::State(std::shared_ptr<Tank> tank, Game *game, Param *param): tank(tank), game(game), param(param){
 };
 
 std::string State::moveToString(Hex* hex) {

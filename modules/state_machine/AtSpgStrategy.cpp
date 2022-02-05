@@ -4,5 +4,5 @@ AtSpgStrategy::AtSpgStrategy(std::shared_ptr<Tank> tank, Game* game) : StateMach
 }
 
 void AtSpgStrategy::updateState() {
-    changeState(new StateCapture(tank, game));
+    changeState(new StateCapture(tank, game, new Param));
 }

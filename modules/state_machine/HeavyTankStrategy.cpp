@@ -4,5 +4,5 @@ HeavyTankStrategy::HeavyTankStrategy(std::shared_ptr<Tank> tank, Game* game) : S
 }
 
 void HeavyTankStrategy::updateState() {
-    changeState(new StateCapture(tank, game));
+    changeState(new StateCapture(tank, game, new Param));
 }

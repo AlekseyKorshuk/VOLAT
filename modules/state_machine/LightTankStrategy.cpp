@@ -4,5 +4,5 @@ LightTankStrategy::LightTankStrategy(std::shared_ptr<Tank> tank, Game* game) : S
 }
 
 void LightTankStrategy::updateState() {
-    changeState(new StateCapture(tank, game));
+    changeState(new StateCapture(tank, game, new Param));
 }

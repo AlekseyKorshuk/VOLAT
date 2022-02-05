@@ -1,4 +1,3 @@
-
 #pragma once
 
 
@@ -10,12 +9,24 @@
 class Tank;
 class Game;
 
+union Param {
+    Param() {
+        idp = -1;
+    }
+    ~Param() {}
+
+    std::shared_ptr<Tank> tank;
+    int idp;
+};
+
+
 class State {
 public:
-    State(std::shared_ptr<Tank>, Game*);
+    State(std::shared_ptr<Tank>, Game*, Param* = new Param);
     virtual std::string getType() = 0;
     virtual std::string calculateAction() = 0;
 
+    Param* param;
 protected:
     std::shared_ptr<Tank> tank;
     Game* game;

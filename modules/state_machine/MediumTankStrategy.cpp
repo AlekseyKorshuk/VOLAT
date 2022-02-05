@@ -4,5 +4,5 @@ MediumTankStrategy::MediumTankStrategy(std::shared_ptr<Tank> tank, Game* game) :
 }
 
 void MediumTankStrategy::updateState() {
-    changeState(new StateCapture(tank, game));
+    changeState(new StateCapture(tank, game, new Param()));
 }

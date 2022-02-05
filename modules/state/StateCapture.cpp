@@ -1,6 +1,6 @@
 #include "StateCapture.h"
 
-StateCapture::StateCapture(std::shared_ptr<Tank> tank, Game *game) : State(tank, game) {
+StateCapture::StateCapture(std::shared_ptr<Tank> tank, Game *game, Param *param) : State(tank, game, param) {
 }
 
 
