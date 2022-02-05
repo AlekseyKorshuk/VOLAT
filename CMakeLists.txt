@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.17)
 project(WGForgeProject)
 
 
-
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOCKET SocketCompact)
@@ -14,10 +13,9 @@ include_directories(third-party/${JSON_VERSION}/include third-party/${SOCKET})
 IF (WIN32)
     # set stuff for windows
     link_libraries(ws2_32)
-ELSE()
+ELSE ()
     # set stuff for other systems
-ENDIF()
-
+ENDIF ()
 
 
 # Set all modules here
@@ -29,11 +27,6 @@ set(CLIENT
 set(CORE
         modules/core/Core.cpp
         modules/core/Core.h
-        )
-
-set(STRATEGY
-        modules/strategy/Strategy.cpp
-        modules/strategy/Strategy.h
         )
 
 set(MAP
@@ -68,13 +61,16 @@ SET(STATE
         modules/state/State.h
         modules/state/StateCapture.cpp
         modules/state/StateCapture.h
+        modules/state/StateHunt.cpp
+        modules/state/StateHunt.h
+        modules/state/StateDefence.cpp
+        modules/state/StateDefence.h
         )
 
 SET(STATE_MACHINE
         modules/state_machine/StateMachine.cpp
         modules/state_machine/StateMachine.h
-        modules/state_machine/MediumTankStrategy.cpp
-        modules/state_machine/MediumTankStrategy.h
+
         )
 SET(GAME
         modules/game/Game.cpp
@@ -84,7 +80,24 @@ SET(GAME
 SET(PLAYER
         modules/player/Player.cpp
         modules/player/Player.h
-        modules/state_machine/AtSpgStrategy.cpp modules/state_machine/AtSpgStrategy.h modules/state_machine/HeavyTankStrategy.cpp modules/state_machine/HeavyTankStrategy.h modules/state_machine/LightTankStrategy.cpp modules/state_machine/LightTankStrategy.h modules/state_machine/SpgStrategy.cpp modules/state_machine/SpgStrategy.h modules/state/StateHunt.cpp modules/state/StateHunt.h)
+        )
+
+set(STRATEGY
+        modules/strategy/Strategy.cpp
+        modules/strategy/Strategy.h
+        modules/state_machine/MediumTankStrategy.cpp
+        modules/state_machine/MediumTankStrategy.h
+        modules/state_machine/AtSpgStrategy.cpp
+        modules/state_machine/AtSpgStrategy.h
+        modules/state_machine/HeavyTankStrategy.cpp
+        modules/state_machine/HeavyTankStrategy.h
+        modules/state_machine/LightTankStrategy.cpp
+        modules/state_machine/LightTankStrategy.h
+        modules/state_machine/SpgStrategy.cpp
+        modules/state_machine/SpgStrategy.h
+
+        )
+
 
 add_executable(
         WGForgeProject
