@@ -39,14 +39,14 @@ public:
     std::vector<std::shared_ptr<Tank>> all_vehicles;
     std::vector<std::shared_ptr<Tank>> player_vehicles;
     std::vector<std::shared_ptr<Tank>> opponent_vehicles;
+    std::vector<std::shared_ptr<Player>> players;
 
-    std::map<int, Player> players;
+    std::shared_ptr<Player> getPlayer(int);
 private:
     void addTank(json, int);
-
     void addPlayer(json);
 
-
+    void updatePlayers(json);
     void updateDanger();
 
     std::map<std::vector<int>, int> map_danger;
