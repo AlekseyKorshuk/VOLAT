@@ -16,7 +16,6 @@ std::string StateHunt::getType() {
 std::string StateHunt::calculateAction() {
     std::vector<std::shared_ptr<Hex>> positions_to_shoot = game->findSafePositionsToShoot(tank, param->tank);
     std::shared_ptr<Hex> start = game->map.getHex(tank->getPosition());
-    std::shared_ptr<Hex> pos_opponent = game->map.getHex(param->tank->getPosition());
     if (!positions_to_shoot.empty())
         for (auto tankList: game->tanksUnderShoot(tank))
             for (auto tanks_under_shoot: tankList)
