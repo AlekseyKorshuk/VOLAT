@@ -12,6 +12,10 @@ public:
     virtual std::string getType();
 
     virtual std::string calculateAction();
+
+private:
+    virtual std::string shootAction();
+
 };
 
 

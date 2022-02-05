@@ -286,7 +286,7 @@ std::vector<std::shared_ptr<Tank>> Game::GuaranteedKill(std::shared_ptr<Tank> ta
     int max_kill_points = 0;
     int q = -1;
     for (int i = 0; i < tanks_under_shoot.size(); i++) {
-        int  current_kill_points = 0;
+        int current_kill_points = 0;
 
         for (auto tank_opponent: tanks_under_shoot[i]) {
             if (tank_opponent->getHealthPoints() == tank->getDamage()) {
@@ -299,9 +299,8 @@ std::vector<std::shared_ptr<Tank>> Game::GuaranteedKill(std::shared_ptr<Tank> ta
             q = i;
         }
     }
-    if (q != -1) {
+    if (q != -1)
         return tanks_under_shoot[q];
-    } else {
-        return std::vector<std::shared_ptr<Tank>>();
-    }
+
+    return std::vector<std::shared_ptr<Tank>>();
 }
