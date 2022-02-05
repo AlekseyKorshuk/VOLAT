@@ -41,13 +41,14 @@ void Tank::update(std::shared_ptr<Hex> hex) {
 Tank::Tank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z, int health_points, int capture_points, int id)
         : Content(is_reacheble = false, content_type = ContentType::VEHICLE, id = id), x_(x), y_(y), z_(z),
           spawn_x_(spawn_x), spawn_y_(spawn_y), spawn_z_(spawn_z), health_points_(health_points),
-          capture_points_(capture_points) {
+          capture_points_(capture_points), current_strategy_(nullptr) {
 }
 
 Tank::Tank(json data, int id)
         : Content(is_reacheble = false, content_type = ContentType::VEHICLE, id = id),
           x_(data["position"]["x"].get<std::int32_t>()), y_(data["position"]["y"].get<std::int32_t>()),
-          z_(data["position"]["z"].get<std::int32_t>()), health_points_(data["health"].get<std::int32_t>()) {
+          z_(data["position"]["z"].get<std::int32_t>()), health_points_(data["health"].get<std::int32_t>()),
+          current_strategy_(nullptr) {
 }
 
 HexPtrList Tank::getAchievableHexes(Map &map) const {

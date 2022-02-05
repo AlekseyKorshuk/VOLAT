@@ -41,7 +41,7 @@ void Map::setSpawnPoints(json map_json) {
 }
 
 
-void Map::changeOccupied(Hex hex, bool is_occupied) {
+void Map::changeOccupied(const Hex& hex, bool is_occupied) {
     getHex(hex)->is_occupied = is_occupied;
 }
 

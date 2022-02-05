@@ -43,7 +43,7 @@ public:
 
     int getLength() const;
 
-    int getDistance(Hex hex);
+    int getDistance(const Hex &hex);
 
     void addNeighbour(std::shared_ptr<Hex> hex);
 

@@ -43,7 +43,7 @@ public:
 
     response turn();
 
-    response chat(string msg);
+    response chat(const string &msg);
 
     response move(int vehicle_id, int x, int y, int z);
 

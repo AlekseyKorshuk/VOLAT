@@ -56,7 +56,7 @@ int Hex::getLength() const {
     return int((abs(this->x) + abs(this->y) + abs(this->z)) / 2);
 }
 
-int Hex::getDistance(Hex hex) {
+int Hex::getDistance(const Hex &hex) {
     return (*this - hex).getLength();
 }
 

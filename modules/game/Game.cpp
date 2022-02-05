@@ -52,8 +52,6 @@ void Game::update(json state_json) {
 
 
 void Game::addTank(json vehicle, int vehicle_id) {
-    json position = vehicle["position"];
-    json spawn_position = vehicle["spawn_position"];
 
     int x = vehicle["position"]["x"].get<std::int32_t>();
     int y = vehicle["position"]["y"].get<std::int32_t>();

@@ -29,7 +29,7 @@ public:
 
     void setSpawnPoints(json map_json);
 
-    void changeOccupied(Hex, bool);
+    void changeOccupied(const Hex&, bool);
 
     void clearPath();
 

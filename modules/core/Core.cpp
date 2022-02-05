@@ -19,7 +19,7 @@ auto since(std::chrono::time_point<clock_t, duration_t> const &start) {
     return std::chrono::duration_cast<result_t>(clock_t::now() - start);
 }
 
-Core::Core(string name, string password) {
+Core::Core(const string &name, const string &password) {
     this->name = name;
     this->password = password;
 }

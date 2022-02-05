@@ -64,7 +64,7 @@ response Client::turn() {
     return answer();
 }
 
-response Client::chat(string msg) {
+response Client::chat(const string &msg) {
     request(100, "{\"message\":\"" + msg + "\"}");
     return answer();
 }
