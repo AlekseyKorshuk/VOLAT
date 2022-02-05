@@ -50,6 +50,8 @@ public:
     std::vector<Hex *> findPath(Hex *start, Hex *end, std::shared_ptr<Tank>);
 
     std::vector<Hex *> traceRoute(Hex *end);
+
+    std::map<Hex *, int> getShootingMap( std::vector<std::shared_ptr<Tank>> opponent_vehicles);
 };
 
 #include "../content/vehicles/Tank.h"

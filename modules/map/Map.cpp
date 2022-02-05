@@ -160,3 +160,20 @@ std::vector<Hex *> Map::traceRoute(Hex *end) {
     std::vector<Hex *> v{std::begin(route), std::end(route)};
     return v;
 }
+
+std::map<Hex *, int> Map::getShootingMap(std::vector<std::shared_ptr<Tank>>opponent_vehicles){
+    std::map<Hex *, int> shooting_map;
+    for (const auto &opponent_vehicle: opponent_vehicles) {
+        for (auto list: opponent_vehicle->getShootingHexesAreas(*this)) {
+            for (auto hex: list) {
+                auto value = shooting_map.find(hex);
+                if (value == shooting_map.end()) {
+                    shooting_map.insert(std::pair<Hex *, int>(hex, 1));
+                } else {
+                    value->second++;
+                }
+            }
+        }
+    }
+    return shooting_map;
+}

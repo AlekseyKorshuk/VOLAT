@@ -50,19 +50,7 @@ bool sortbysec(const std::pair<Hex *, int> &a,
 }
 
 std::vector<std::pair<Hex *, int>> calculateShootingVector(Game *game, std::shared_ptr<Tank> tank) {
-    std::map<Hex *, int> shooting_map;
-    for (const auto &opponent_vehicle: game->opponent_vehicles) {
-        for (auto list: opponent_vehicle->getShootingHexesAreas(game->map)) {
-            for (auto hex: list) {
-                auto value = shooting_map.find(hex);
-                if (value == shooting_map.end()) {
-                    shooting_map.insert(std::pair<Hex *, int>(hex, 1));
-                } else {
-                    value->second++;
-                }
-            }
-        }
-    }
+    std::map<Hex *, int> shooting_map = game->map.getShootingMap(game->opponent_vehicles);
 
 
     std::vector<Hex *> possible_moves;
