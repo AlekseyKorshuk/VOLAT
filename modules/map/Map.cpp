@@ -1,7 +1,6 @@
 #include "Map.h"
 
 
-
 Map::Map(json map_json, int radius) : radius_(radius) {
     hexes = generateEmptyMap(radius);
     setBase(map_json);
@@ -53,7 +52,7 @@ void Map::clearPath() {
     }
 }
 
-std::vector<Hex *> Map::generateEmptyMap(int radius) {
+std::vector<std::shared_ptr<Hex>> Map::generateEmptyMap(int radius) {
     std::vector<Hex> deltas = {Hex(1, 0, -1), Hex(0, 1, -1), Hex(-1, 1, 0), Hex(-1, 0, 1), Hex(0, -1, 1),
                                Hex(1, -1, 0)};
     hexes_map.clear();
@@ -64,8 +63,8 @@ std::vector<Hex *> Map::generateEmptyMap(int radius) {
         int y = -1 * r;
         int z = r;
         v = {x, y, z};
-        Hex *hex = new Hex(x, y, z);
-        hexes_map.insert(std::pair<std::vector<int>, Hex *>(v, hex));
+        std::shared_ptr<Hex> hex = std::make_shared<Hex>(x, y, z);
+        hexes_map.insert(std::pair<std::vector<int>, std::shared_ptr<Hex>>(v, hex));
         hexes.push_back(hex);
 
         for (int j = 0; j < 6; j++) {
@@ -80,19 +79,19 @@ std::vector<Hex *> Map::generateEmptyMap(int radius) {
                 y = y + deltas[j].y;
                 z = z + deltas[j].z;
                 v = {x, y, z};
-                hex = new Hex(x, y, z);
-                hexes_map.insert(std::pair<std::vector<int>, Hex *>(v, hex));
+                hex = std::make_shared<Hex>(x, y, z);
+                hexes_map.insert(std::pair<std::vector<int>, std::shared_ptr<Hex>>(v, hex));
                 hexes.push_back(hex);
             }
         }
     }
     for (auto itr = hexes_map.begin(); itr != hexes_map.end(); ++itr) {
-        Hex *hex = itr->second;
+        std::shared_ptr<Hex> hex = itr->second;
         for (int i = 0; i < 6; i++) {
             Hex neighbor_temp = hex->getNeighbor(i);
             if (neighbor_temp.getLength() <= 10) {
                 v = {neighbor_temp.x, neighbor_temp.y, neighbor_temp.z};
-                Hex *neighbor = hexes_map.find(v)->second;
+                std::shared_ptr<Hex> neighbor = hexes_map.find(v)->second;
                 hex->addNeighbour(neighbor);
             }
         }
@@ -101,11 +100,11 @@ std::vector<Hex *> Map::generateEmptyMap(int radius) {
     return hexes;
 }
 
-bool Map::belongs(const Hex& h) const {
+bool Map::belongs(const Hex &h) const {
     return h.getLength() <= radius_;
 }
 
-Hex *Map::getHex(const Hex &hex) const {
+std::shared_ptr<Hex> Map::getHex(const Hex &hex) const {
     std::vector<int> v1 = {hex.x, hex.y, hex.z};
     if (this->hexes_map.find(v1) == this->hexes_map.end()) {
         return nullptr;
@@ -114,18 +113,19 @@ Hex *Map::getHex(const Hex &hex) const {
     }
 }
 
-std::vector<Hex *> Map::findPath(Hex start, std::vector<Hex> ends, std::shared_ptr<Tank> tank) {
+std::vector<std::shared_ptr<Hex>> Map::findPath(Hex start, std::vector<Hex> ends, std::shared_ptr<Tank> tank) {
     // If path does not exist, will be returned list only with the "END" Hex
-    std::vector<Hex *> ends_vector;
+    std::vector<std::shared_ptr<Hex>> ends_vector;
     for (auto hex: ends)
         ends_vector.push_back(this->getHex(hex));
     return this->findPath(this->getHex(start), ends_vector, tank);
 }
 
-std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends, std::shared_ptr<Tank> tank) {
-    Hex *end = nullptr;
+std::vector<std::shared_ptr<Hex>>
+Map::findPath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends, std::shared_ptr<Tank> tank) {
+    std::shared_ptr<Hex> end = nullptr;
     // If path does not exist, will be returned list only with the "END" Hex
-    std::queue<Hex *> Queue;
+    std::queue<std::shared_ptr<Hex>> Queue;
     bool reached_end = false;
     start->visited = true;
 
@@ -133,16 +133,15 @@ std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends, std::share
 
     Queue.push(start);
     while (!Queue.empty() && !reached_end) {
-        Hex *current_node = Queue.front();
+        std::shared_ptr<Hex> current_node = Queue.front();
         Queue.pop();
 
 
         tank->update(current_node);
-        std::vector<Hex*> achievable_hexes = tank->getAchievableHexes(*this);
+        std::vector<std::shared_ptr<Hex>> achievable_hexes = tank->getAchievableHexes(*this);
 
 
-
-        for (Hex *node: achievable_hexes) {
+        for (std::shared_ptr<Hex> node: achievable_hexes) {
             if (!node->is_occupied && !node->visited) {
                 node->visited = true;
                 Queue.push(node);
@@ -159,42 +158,43 @@ std::vector<Hex *> Map::findPath(Hex *start, std::vector<Hex *> ends, std::share
 
     tank->update(pos_tank);
 
-    std::vector<Hex *> route = traceRoute(end);
+    std::vector<std::shared_ptr<Hex>> route = traceRoute(end);
     this->clearPath();
     return route;
 }
 
-std::vector<Hex *> Map::findPath(Hex start, Hex end, std::shared_ptr<Tank> tank) {
+std::vector<std::shared_ptr<Hex>> Map::findPath(Hex start, Hex end, std::shared_ptr<Tank> tank) {
     // If path does not exist, will be returned list only with the "END" Hex
     return this->findPath(this->getHex(start), this->getHex(end), tank);
 }
 
-std::vector<Hex *> Map::findPath(Hex *start, Hex *end, std::shared_ptr<Tank> tank) {
+std::vector<std::shared_ptr<Hex>>
+Map::findPath(std::shared_ptr<Hex> start, std::shared_ptr<Hex> end, std::shared_ptr<Tank> tank) {
     // If path does not exist, will be returned list only with the "END" Hex
 
-    std::vector<Hex*> ends = {end};
+    std::vector<std::shared_ptr<Hex>> ends = {end};
     return this->findPath(start, ends, tank);
 }
 
-std::vector<Hex *> Map::traceRoute(Hex *end) {
-    std::list<Hex *> route;
-    Hex *node = end;
+std::vector<std::shared_ptr<Hex>> Map::traceRoute(std::shared_ptr<Hex> end) {
+    std::list<std::shared_ptr<Hex>> route;
+    std::shared_ptr<Hex> node = end;
     while (node != nullptr) {
         route.push_front(node);
         node = node->prev;
     }
-    std::vector<Hex *> v{std::begin(route), std::end(route)};
+    std::vector<std::shared_ptr<Hex>> v{std::begin(route), std::end(route)};
     return v;
 }
 
-std::map<Hex *, int> Map::getShootingMap(std::vector<std::shared_ptr<Tank>>opponent_vehicles){
-    std::map<Hex *, int> shooting_map;
+std::map<std::shared_ptr<Hex>, int> Map::getShootingMap(std::vector<std::shared_ptr<Tank>> opponent_vehicles) {
+    std::map<std::shared_ptr<Hex>, int> shooting_map;
     for (const auto &opponent_vehicle: opponent_vehicles) {
         for (auto list: opponent_vehicle->getShootingHexesAreas(*this)) {
             for (auto hex: list) {
                 auto value = shooting_map.find(hex);
                 if (value == shooting_map.end()) {
-                    shooting_map.insert(std::pair<Hex *, int>(hex, 1));
+                    shooting_map.insert(std::pair<std::shared_ptr<Hex>, int>(hex, 1));
                 } else {
                     value->second++;
                 }

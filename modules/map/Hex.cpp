@@ -4,7 +4,7 @@
 #include <tuple>
 
 const static std::vector<Hex> hex_directions =
-        {Hex(1, 0, -1), Hex(1, -1, 0), Hex(0, -1, 1), Hex(-1, 0, 1), Hex(-1, 1, 0),Hex(0, 1, -1)};
+        {Hex(1, 0, -1), Hex(1, -1, 0), Hex(0, -1, 1), Hex(-1, 0, 1), Hex(-1, 1, 0), Hex(0, 1, -1)};
 
 const static std::vector<Hex> hex_diagonals =
         {Hex(2, -1, -1), Hex(1, -2, 1), Hex(-1, -1, 2), Hex(-2, 1, 1), Hex(-1, 2, -1), Hex(1, 1, -2)};
@@ -13,7 +13,7 @@ Hex::Hex(int x, int y, int z, ContentType content_type, json data, int id) : x(x
     this->setHex(content_type, data, id);
 }
 
-bool Hex::operator<(const Hex& other) const {
+bool Hex::operator<(const Hex &other) const {
     return std::tie(x, y, z) < std::tie(other.x, other.y, other.z);
 }
 
@@ -60,7 +60,7 @@ int Hex::getDistance(Hex hex) {
     return (*this - hex).getLength();
 }
 
-void Hex::addNeighbour(Hex *hex) {
+void Hex::addNeighbour(std::shared_ptr<Hex> hex) {
     this->neighbors.push_back(hex);
 }
 
@@ -102,6 +102,7 @@ void Hex::clear() {
     content.reset();
     content = nullptr;
     visited = false;
-    delete prev;
+//    delete prev;
+    prev.reset();
     prev = nullptr;
 }

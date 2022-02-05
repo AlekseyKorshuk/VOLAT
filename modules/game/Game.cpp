@@ -5,8 +5,7 @@
 #include "../content/vehicles/LightTank.h"
 #include "../content/vehicles/Spg.h"
 
-Game::Game(int idx, json map_json, json state_json) : idx(idx)
-{
+Game::Game(int idx, json map_json, json state_json) : idx(idx) {
     map = Map(map_json);
 
     for (int i = 0; i < 15; i++) all_vehicles.push_back(nullptr);
@@ -16,7 +15,6 @@ Game::Game(int idx, json map_json, json state_json) : idx(idx)
         json player_json = it.value();
         addPlayer(player_json);
     }
-
 
 
     for (auto it = state_json["vehicles"].begin(); it != state_json["vehicles"].end(); ++it) {
@@ -31,7 +29,7 @@ void Game::update(json state_json) {
     int k = 0;
     for (json::iterator it = players_json.begin(); it != players_json.end(); ++it) {
         json player_json = it.value();
-        if(players.find(player_json["idx"].get<std::int32_t>()) != players.end()) {
+        if (players.find(player_json["idx"].get<std::int32_t>()) != players.end()) {
             addPlayer(player_json);
         }
     }
@@ -39,7 +37,8 @@ void Game::update(json state_json) {
         player.second.update(state_json);
     }
 
-    for (auto player: players) if (player.first != idx){
+    for (auto player: players)
+        if (player.first != idx) {
             player.second.is_neutral = false;
             if (!players[idx].whoAttacked[player.first]) {
                 if (player.second.onWhomAttacked.size() == 2 ||
@@ -48,8 +47,6 @@ void Game::update(json state_json) {
                 }
             }
         }
-
-
 
 
     for (auto it = state_json["vehicles"].begin(); it != state_json["vehicles"].end(); ++it) {
@@ -141,7 +138,7 @@ void Game::addTank(json vehicle, int vehicle_id) {
 
 
     if (tank != nullptr) {
-        map.changeOccupied(tank->getPosition(),true);
+        map.changeOccupied(tank->getPosition(), true);
 
         if (vehicle["player_id"].get<std::int32_t>() == idx) {
             player_vehicles.push_back(tank);
@@ -163,9 +160,9 @@ void Game::updateTank(int id, int x, int y, int z) {
     std::shared_ptr<Tank> tank = all_vehicles[id - 1];
 
     if (tank != nullptr) {
-        map.changeOccupied(tank->getPosition(),false);
+        map.changeOccupied(tank->getPosition(), false);
         tank->update(x, y, z);
-        map.changeOccupied(tank->getPosition(),true);
+        map.changeOccupied(tank->getPosition(), true);
     }
 }
 
@@ -173,14 +170,14 @@ void Game::updateTank(int id, int x, int y, int z, int health, int capture_point
     std::shared_ptr<Tank> tank = all_vehicles[id - 1];
 
     if (tank != nullptr) {
-        map.changeOccupied(tank->getPosition(),false);
+        map.changeOccupied(tank->getPosition(), false);
         tank->update(x, y, z, health, capture_points);
-        map.changeOccupied(tank->getPosition(),true);
+        map.changeOccupied(tank->getPosition(), true);
     }
 }
 
 
-std::vector<std::vector<std::shared_ptr<Tank> > > Game::tanksUnderShoot(std::shared_ptr <Tank> tank) {
+std::vector<std::vector<std::shared_ptr<Tank> > > Game::tanksUnderShoot(std::shared_ptr<Tank> tank) {
     std::vector<std::vector<std::shared_ptr<Tank> > > tanks;
 
     auto shootingHexesAreas = tank->getShootingHexesAreas(map);
@@ -188,7 +185,7 @@ std::vector<std::vector<std::shared_ptr<Tank> > > Game::tanksUnderShoot(std::sha
     for (auto hexPtrList: shootingHexesAreas) {
         for (auto hex: hexPtrList) {
             std::vector<std::shared_ptr<Tank> > tankList;
-            for (auto tank: opponent_vehicles){
+            for (auto tank: opponent_vehicles) {
                 if (*hex == tank->getPosition()
                     && tank->getHealthPoints() != 0
                     && !players[tank->getPlayerId()].is_neutral) {
@@ -207,7 +204,7 @@ std::vector<std::vector<std::shared_ptr<Tank> > > Game::tanksUnderShoot(std::sha
 void Game::updateDanger() {
     map_danger.clear();
     for (auto hex: map.hexes_map) {
-        map_danger.insert({hex.first,0});
+        map_danger.insert({hex.first, 0});
     }
 
 
@@ -225,9 +222,9 @@ void Game::updateDanger() {
 }
 
 
-
-std::vector<Hex *> Game::findSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::shared_ptr<Tank> opponent_tank) {
-    std::vector<Hex *> hexes;
+std::vector<std::shared_ptr<Hex>>
+Game::findSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::shared_ptr<Tank> opponent_tank) {
+    std::vector<std::shared_ptr<Hex>> hexes;
 
     Hex hex_player_tank = player_tank->getPosition();
     Hex hex_opponent_tank = opponent_tank->getPosition();
@@ -236,7 +233,7 @@ std::vector<Hex *> Game::findSafePositionsToShoot(std::shared_ptr<Tank> player_t
 
     for (auto hexList: player_tank->getShootingHexesAreas(map)) {
         for (auto hex: hexList) {
-            std::vector<int> pos = {hex->x, hex->y, hex->z };
+            std::vector<int> pos = {hex->x, hex->y, hex->z};
             if (!hex->is_occupied && hex->content->is_reacheble && map_danger[pos] == 0) {
                 hexes.push_back(hex);
             }
@@ -248,19 +245,18 @@ std::vector<Hex *> Game::findSafePositionsToShoot(std::shared_ptr<Tank> player_t
 }
 
 
-std::vector<Hex *> Game::findNearestSafePositions(Hex * start)
-{
+std::vector<std::shared_ptr<Hex>> Game::findNearestSafePositions(std::shared_ptr<Hex> start) {
 
-    std::vector<Hex *> hexes;
+    std::vector<std::shared_ptr<Hex>> hexes;
 
-    std::queue<Hex *> Queue;
+    std::queue<std::shared_ptr<Hex>> Queue;
     Queue.push(start);
 
 
     bool reached_end = false;
 
-    while(!Queue.empty()) {
-        Hex *current_node = Queue.front();
+    while (!Queue.empty()) {
+        std::shared_ptr<Hex> current_node = Queue.front();
 
         std::vector<int> pos = {current_node->x, current_node->y, current_node->z};
         if (map_danger[pos] == 0) {
@@ -270,7 +266,8 @@ std::vector<Hex *> Game::findNearestSafePositions(Hex * start)
         Queue.pop();
 
         if (!reached_end) {
-            for (Hex *node: current_node->neighbors) if (!node->visited){
+            for (std::shared_ptr<Hex> node: current_node->neighbors)
+                if (!node->visited) {
                     if (node->content != nullptr && node->content->is_reacheble) {
                         node->visited = true;
                         Queue.push(node);

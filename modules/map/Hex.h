@@ -17,15 +17,15 @@ public:
     int z;
     bool is_occupied = false;
     std::shared_ptr<Content> content = nullptr;
-    std::vector<Hex *> neighbors;
+    std::vector<std::shared_ptr<Hex>> neighbors;
     bool visited = false;
-    Hex *prev = nullptr;
+    std::shared_ptr<Hex> prev = nullptr;
 
     Hex(int x, int y, int z, ContentType content_type = ContentType::EMPTY, json data = json::parse("{}"), int id = -1);
 
     void setHex(ContentType content_type = ContentType::EMPTY, json data = json::parse("{}"), int id = -1);
 
-    bool operator<(const Hex& other) const;
+    bool operator<(const Hex &other) const;
 
     Hex &operator+=(const Hex &hex);
 
@@ -45,7 +45,7 @@ public:
 
     int getDistance(Hex hex);
 
-    void addNeighbour(Hex *hex);
+    void addNeighbour(std::shared_ptr<Hex> hex);
 
     json getJson();
 
@@ -57,5 +57,6 @@ public:
     bool operator==(Hex hex);
 
     void clear();
+
 
 };

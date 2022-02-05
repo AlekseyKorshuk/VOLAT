@@ -7,13 +7,16 @@
 #include "../content/vehicles/Tank.h"
 
 class Tank;
+
 class Game;
 
 union Param {
     Param() {
         idp = -1;
     }
-    Param(std::shared_ptr<Tank> tank) :tank(tank) {}
+
+    Param(std::shared_ptr<Tank> tank) : tank(tank) {}
+
     ~Param() {}
 
     std::shared_ptr<Tank> tank;
@@ -23,17 +26,20 @@ union Param {
 
 class State {
 public:
-    State(std::shared_ptr<Tank>, Game*, Param* = new Param);
+    State(std::shared_ptr<Tank>, std::shared_ptr<Game>, std::shared_ptr<Param> = std::make_shared<Param>());
+
     virtual std::string getType() = 0;
+
     virtual std::string calculateAction() = 0;
 
-    Param* param;
+    std::shared_ptr<Param> param;
 protected:
     std::shared_ptr<Tank> tank;
-    Game* game;
+    std::shared_ptr<Game> game;
 
 
-    std::string moveToString(Hex*);
+    std::string moveToString(std::shared_ptr<Hex>);
+
     std::string shootToString(std::vector<std::shared_ptr<Tank>>);
 };
 

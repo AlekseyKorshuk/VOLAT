@@ -1,6 +1,8 @@
 #include "StateCapture.h"
 
-StateCapture::StateCapture(std::shared_ptr<Tank> tank, Game *game, Param *param) : State(tank, game, param) {
+StateCapture::StateCapture(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game, std::shared_ptr<Param> param)
+        : State(tank, game,
+                param) {
 }
 
 
@@ -15,7 +17,7 @@ std::string StateCapture::getType() {
 #include <vector> //std::vector
 
 
-void remove(std::vector<Hex *> &v) {
+void remove(std::vector<std::shared_ptr<Hex> > &v) {
     auto end = v.end();
     for (auto it = v.begin(); it != end; ++it) {
         end = std::remove(it + 1, end, *it);
@@ -24,9 +26,9 @@ void remove(std::vector<Hex *> &v) {
     v.erase(end, v.end());
 }
 
-std::vector<Hex *> intersection(const std::vector<Hex *> &v1,
-                                std::vector<Hex *> &v2) {
-    std::vector<Hex *> v3;
+std::vector<std::shared_ptr<Hex> > intersection(const std::vector<std::shared_ptr<Hex> > &v1,
+                                                std::vector<std::shared_ptr<Hex> > &v2) {
+    std::vector<std::shared_ptr<Hex> > v3;
     for (auto hex1: v1) {
         for (auto hex2: v2) {
             if (*hex1 == *hex2) {
@@ -44,16 +46,17 @@ std::vector<Hex *> intersection(const std::vector<Hex *> &v1,
 }
 
 
-bool sortbysec(const std::pair<Hex *, int> &a,
-               const std::pair<Hex *, int> &b) {
+bool sortbysec(const std::pair<std::shared_ptr<Hex>, int> &a,
+               const std::pair<std::shared_ptr<Hex>, int> &b) {
     return (a.second < b.second);
 }
 
-std::vector<std::pair<Hex *, int>> calculateShootingVector(Game *game, std::shared_ptr<Tank> tank) {
-    std::map<Hex *, int> shooting_map = game->map.getShootingMap(game->opponent_vehicles);
+std::vector<std::pair<std::shared_ptr<Hex>, int>>
+calculateShootingVector(std::shared_ptr<Game> game, std::shared_ptr<Tank> tank) {
+    std::map<std::shared_ptr<Hex>, int> shooting_map = game->map.getShootingMap(game->opponent_vehicles);
 
 
-    std::vector<Hex *> possible_moves;
+    std::vector<std::shared_ptr<Hex> > possible_moves;
     for (auto hex: intersection(tank->getAchievableHexes(game->map), game->map.base)) {
         bool exist = false;
         for (auto tank: game->all_vehicles) {
@@ -67,7 +70,7 @@ std::vector<std::pair<Hex *, int>> calculateShootingVector(Game *game, std::shar
     }
 
 
-    std::vector<std::pair<Hex *, int>> sorted_hexes;
+    std::vector<std::pair<std::shared_ptr<Hex>, int>> sorted_hexes;
     for (auto hex: possible_moves) {
         bool exist = false;
         for (auto &it: shooting_map) {
@@ -78,7 +81,7 @@ std::vector<std::pair<Hex *, int>> calculateShootingVector(Game *game, std::shar
             }
         }
         if (!exist)
-            sorted_hexes.emplace_back(std::pair<Hex *, int>(hex, 0));
+            sorted_hexes.emplace_back(std::pair<std::shared_ptr<Hex>, int>(hex, 0));
 
     }
 
@@ -89,15 +92,15 @@ std::vector<std::pair<Hex *, int>> calculateShootingVector(Game *game, std::shar
 
 
 std::string StateCapture::calculateAction() {
-    Hex *position = game->map.getHex(tank->getPosition());
+    std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
     if (std::find(game->map.base.begin(), game->map.base.end(), position) != game->map.base.end()) {
-        std::vector<std::pair<Hex *, int>> possible_moves = calculateShootingVector(game, tank);
+        std::vector<std::pair<std::shared_ptr<Hex>, int>> possible_moves = calculateShootingVector(game, tank);
         if (!possible_moves.empty())
             return moveToString(possible_moves[0].first);
         return "";
     }
 
-    std::vector<Hex *> path = game->map.findPath(position, game->map.base, tank);
+    std::vector<std::shared_ptr<Hex> > path = game->map.findPath(position, game->map.base, tank);
 
     if (!path.empty())
         return moveToString(path[1]);

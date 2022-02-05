@@ -1,8 +1,8 @@
 #include "AtSpgStrategy.h"
 
-AtSpgStrategy::AtSpgStrategy(std::shared_ptr<Tank> tank, Game* game) : StateMachine(tank, game) {
+AtSpgStrategy::AtSpgStrategy(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game) : StateMachine(tank, game) {
 }
 
 void AtSpgStrategy::updateState() {
-    changeState(new StateCapture(tank, game, new Param));
+    changeState(std::make_shared<StateCapture>(tank, game, std::make_shared<Param>()));
 }

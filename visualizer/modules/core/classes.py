@@ -159,10 +159,17 @@ class Core:
                             append_images=images_list[1:], optimize=False,
                             duration=1000, loop=0)
 
-        gif_window = Toplevel(self.window)
+        if self.show_gui:
+            gif_window = Toplevel(self.window)
+        else:
+            gif_window = Tk()
+
         lbl = ImageLabel(gif_window)
         lbl.pack(expand=True)
         lbl.load(gif_name)
+
+        if not self.show_gui:
+            gif_window.mainloop()
 
         if self.show_gui:
             self.button["state"] = "normal"

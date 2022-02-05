@@ -3,12 +3,16 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
+
 #if _WIN32
-    #define _WINSOCK_DEPRECATED_NO_WARNINGS
-    #include <winsock2.h>
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include <winsock2.h>
 #else
-    #include "TcpClientSocket.hpp"
+
+#include "TcpClientSocket.hpp"
+
 #endif
+
 #include <string>
 #include <nlohmann/json.hpp>
 
@@ -25,7 +29,7 @@ class Client {
 public:
     Client();
 
-    response login(string name, string password="", string game="", int num_turns=45, int num_players=3);
+    response login(string name, string password = "", string game = "", int num_turns = 45, int num_players = 3);
 
 //    response login(string name, string password, string game);
 
@@ -51,19 +55,17 @@ private:
     response answer();
 
 
-
-
     char inetAddr[100] = {"92.223.34.102"};
     int port = 443;
 
     bool debugging = false;
 
-    #if _WIN32
-        WSADATA WSAData;
-        SOCKET server;
-        SOCKADDR_IN addr;
-    #else
-        TcpClientSocket server;
-    #endif
+#if _WIN32
+    WSADATA WSAData;
+    SOCKET server;
+    SOCKADDR_IN addr;
+#else
+    TcpClientSocket server;
+#endif
 };
 

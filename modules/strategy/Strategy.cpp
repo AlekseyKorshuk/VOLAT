@@ -12,34 +12,34 @@
 #include <memory>
 
 
-
 using json = nlohmann::json;
 
-Strategy::Strategy(int idx, json map_json, json state_json){
-    game = Game(idx, map_json, state_json);
+Strategy::Strategy(int idx, json map_json, json state_json) {
+    game = std::make_shared<Game>(idx, map_json, state_json);
 
-    std::sort(game.player_vehicles.begin(), game.player_vehicles.end(),
-    [](std::shared_ptr<Tank> a, std::shared_ptr<Tank> b)
-    {return int(a->getTankType()) < int(b->getTankType());}
+    std::sort(game->player_vehicles.begin(), game->player_vehicles.end(),
+              [](std::shared_ptr<Tank> a, std::shared_ptr<Tank> b) {
+                  return int(a->getTankType()) < int(b->getTankType());
+              }
     );
 
-    for (auto tank: game.player_vehicles) {
+    for (auto tank: game->player_vehicles) {
         if (tank != nullptr) {
-            switch(tank->getTankType()) {
+            switch (tank->getTankType()) {
                 case TankType::SPG:
-                    tank->current_strategy_ = new SpgStrategy(tank, &game);
+                    tank->current_strategy_ = std::make_shared<SpgStrategy>(tank, game);
                     break;
                 case TankType::LIGHT:
-                    tank->current_strategy_ = new LightTankStrategy(tank, &game);
+                    tank->current_strategy_ = std::make_shared<LightTankStrategy>(tank, game);
                     break;
                 case TankType::HEAVY:
-                    tank->current_strategy_ = new HeavyTankStrategy(tank, &game);
+                    tank->current_strategy_ = std::make_shared<HeavyTankStrategy>(tank, game);
                     break;
                 case TankType::MEDIUM:
-                    tank->current_strategy_ = new MediumTankStrategy(tank, &game);
+                    tank->current_strategy_ = std::make_shared<MediumTankStrategy>(tank, game);
                     break;
                 case TankType::AT_SPG:
-                    tank->current_strategy_ = new AtSpgStrategy(tank, &game);
+                    tank->current_strategy_ = std::make_shared<AtSpgStrategy>(tank, game);
                     break;
             }
         } else {
@@ -53,24 +53,26 @@ json Strategy::calculate_actions(int idx, json state) {
 
     std::string actions;
 
-    game.update(state);
+    game->update(state);
 
-    for (auto tank: game.player_vehicles)  if (tank->current_strategy_  != nullptr) {
-        tank->current_strategy_->updateState();
-    }
+    for (auto tank: game->player_vehicles)
+        if (tank->current_strategy_ != nullptr) {
+            tank->current_strategy_->updateState();
+        }
 
     int k = 0;
-    for (auto tank: game.player_vehicles)  if (tank->current_strategy_  != nullptr)  {
-        std::string action = tank->current_strategy_->calculateAction();
-        if (!action.empty()) {
-            if (!actions.empty()) {
-                actions += ',';
+    for (auto tank: game->player_vehicles)
+        if (tank->current_strategy_ != nullptr) {
+            std::string action = tank->current_strategy_->calculateAction();
+            if (!action.empty()) {
+                if (!actions.empty()) {
+                    actions += ',';
+                }
+
+                actions += "\"" + std::to_string(k++) + "\":" + action;
+
             }
-
-            actions += "\"" + std::to_string(k++) + "\":" + action;
-
         }
-    }
 
     actions = "{" + actions + "}";
 

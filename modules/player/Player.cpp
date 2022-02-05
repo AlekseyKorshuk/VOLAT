@@ -11,7 +11,6 @@ void Player::update(json state_json) {
     json win_points = state_json["win_points"];
 
 
-
     for (json::iterator it = win_points.begin(); it != win_points.end(); ++it) {
         json player = it.value();
         int idx = stoi(it.key());

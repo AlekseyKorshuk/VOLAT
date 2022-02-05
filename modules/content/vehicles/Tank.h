@@ -9,7 +9,7 @@
 
 class StateMachine;
 
-enum TankType: int{
+enum TankType : int {
     SPG = 0,
     LIGHT = 1,
     HEAVY = 2,
@@ -17,7 +17,7 @@ enum TankType: int{
     AT_SPG = 4
 };
 
-using HexPtrList = std::vector<Hex*>;
+using HexPtrList = std::vector<std::shared_ptr<Hex>>;
 
 class Tank : public Content {
 public:
@@ -25,35 +25,43 @@ public:
 
     Tank(json data, int id);
 
-    virtual HexPtrList getAchievableHexes(Map& map) const;
-    virtual std::vector<HexPtrList> getShootingHexesAreas(Map& map) const;
+    virtual HexPtrList getAchievableHexes(Map &map) const;
+
+    virtual std::vector<HexPtrList> getShootingHexesAreas(Map &map) const;
 
     void setPlayerId(int player_id);
+
     int getPlayerId();
 
     Hex getPosition() const;
+
     int getSpeedPoints();
+
     TankType getTankType();
+
     int getHealthPoints();
+
     int getDamage();
     int getDestructionPoints();
 
     void update(int x, int y, int z, int health, int capture_points);
-    void update(int x, int y, int z);
-    void update(int health);
-    void update(Hex*);
-    void update(Hex);
 
+    void update(int x, int y, int z);
+
+    void update(int health);
+
+    void update(std::shared_ptr<Hex>);
+
+    void update(Hex);
 
 
     friend std::ostream &operator<<(std::ostream &stream, const Tank &tank);
 
-    StateMachine* current_strategy_;
-
+    std::shared_ptr<StateMachine> current_strategy_;
 
 
 protected:
-    HexPtrList getHexesInShotRadius(Map& map) const;
+    HexPtrList getHexesInShotRadius(Map &map) const;
 
     TankType type_;
     ContentType content_type;

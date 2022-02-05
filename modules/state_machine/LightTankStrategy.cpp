@@ -1,8 +1,9 @@
 #include "LightTankStrategy.h"
 
-LightTankStrategy::LightTankStrategy(std::shared_ptr<Tank> tank, Game* game) : StateMachine(tank, game) {
+LightTankStrategy::LightTankStrategy(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game) : StateMachine(tank,
+                                                                                                            game) {
 }
 
 void LightTankStrategy::updateState() {
-    changeState(new StateCapture(tank, game, new Param));
+    changeState(std::make_shared<StateCapture>(tank, game, std::make_shared<Param>()));
 }

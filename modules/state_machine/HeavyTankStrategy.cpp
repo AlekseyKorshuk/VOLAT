@@ -1,8 +1,9 @@
 #include "HeavyTankStrategy.h"
 
-HeavyTankStrategy::HeavyTankStrategy(std::shared_ptr<Tank> tank, Game* game) : StateMachine(tank, game) {
+HeavyTankStrategy::HeavyTankStrategy(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game) : StateMachine(tank,
+                                                                                                            game) {
 }
 
 void HeavyTankStrategy::updateState() {
-    changeState(new StateCapture(tank, game, new Param));
+    changeState(std::make_shared<StateCapture>(tank, game, std::make_shared<Param>()));
 }

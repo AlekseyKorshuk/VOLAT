@@ -6,23 +6,23 @@
 using json = nlohmann::json;
 
 Client::Client() {
-    #if _WIN32
-        WSAStartup(MAKEWORD(2, 1), &WSAData);
-        if ((server = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
-            cout << "Socket creation failed with error: " << WSAGetLastError() << endl;
-        }
+#if _WIN32
+    WSAStartup(MAKEWORD(2, 1), &WSAData);
+    if ((server = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+        cout << "Socket creation failed with error: " << WSAGetLastError() << endl;
+    }
 
-        addr.sin_addr.s_addr = inet_addr(inetAddr); //������� � �������
-        addr.sin_family = AF_INET;
-        addr.sin_port = htons(port); //����
+    addr.sin_addr.s_addr = inet_addr(inetAddr); //������� � �������
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port); //����
 
-        if (connect(server, (SOCKADDR *) &addr, sizeof(addr)) == SOCKET_ERROR) {
-            cout << "Server connection failed with error: " << WSAGetLastError() << endl;
-        }
-    #else
-        server = TcpClientSocket(inetAddr, port);
-        server.openConnection();
-    #endif
+    if (connect(server, (SOCKADDR *) &addr, sizeof(addr)) == SOCKET_ERROR) {
+        cout << "Server connection failed with error: " << WSAGetLastError() << endl;
+    }
+#else
+    server = TcpClientSocket(inetAddr, port);
+    server.openConnection();
+#endif
 
 }
 
@@ -37,15 +37,6 @@ response Client::login(string name, string password, string game, int num_turns,
     return answer();
 }
 
-//response Client::login(string name, string password, string game) {
-//    string msg = "{\"name\":\"" + name +
-//                 "\",\"password\":\"" + password +
-//                 "\",\"game\":\"" + game + "\"}";
-//
-//    request(1, msg);
-//
-//    return answer();
-//}
 
 response Client::logout() {
     request(2, "");
@@ -119,38 +110,38 @@ void Client::request(int action, string msg) {
 
     if (debugging) cout << "Client: " << action << " " << msg << '\n';
 
-    #if _WIN32
-        send(server, buffer, 8 + size_msg, 0);
-    #else
-        server.sendData(buffer, 8 + size_msg);
-    #endif
+#if _WIN32
+    send(server, buffer, 8 + size_msg, 0);
+#else
+    server.sendData(buffer, 8 + size_msg);
+#endif
 }
 
 response Client::answer() {
     char buffer[4] = {0};
 
-    #if _WIN32
-        recv(server, buffer, 4, MSG_WAITALL);
-    #else
-        server.receiveData(buffer, 4);
-    #endif
+#if _WIN32
+    recv(server, buffer, 4, MSG_WAITALL);
+#else
+    server.receiveData(buffer, 4);
+#endif
     int result =
             ((buffer[3] & 0xff) << 24) | ((buffer[2] & 0xff) << 16) | ((buffer[1] & 0xff) << 8) | (buffer[0] & 0xff);
-    #if _WIN32
-        recv(server, buffer, 4, MSG_WAITALL);
-    #else
-        server.receiveData(buffer, 4);
-    #endif
+#if _WIN32
+    recv(server, buffer, 4, MSG_WAITALL);
+#else
+    server.receiveData(buffer, 4);
+#endif
     int size_msg =
             ((buffer[3] & 0xff) << 24) | ((buffer[2] & 0xff) << 16) | ((buffer[1] & 0xff) << 8) | (buffer[0] & 0xff);
     if (size_msg == 0)
         return {result, json::parse("{}")};
     char *c_msg = new char[size_msg];
-    #if _WIN32
-        if (size_msg != 0) recv(server, c_msg, size_msg, MSG_WAITALL);
-    #else
-        if (size_msg != 0) server.receiveData(c_msg, size_msg);
-    #endif
+#if _WIN32
+    if (size_msg != 0) recv(server, c_msg, size_msg, MSG_WAITALL);
+#else
+    if (size_msg != 0) server.receiveData(c_msg, size_msg);
+#endif
 
     string msg;
 

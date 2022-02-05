@@ -74,10 +74,9 @@ void Core::play(string game, int num_turns, int num_players) {
             }
             std::cout << "Elapsed: " << since(start).count() << " ms" << std::endl;
             client.turn();
-        } else
-            if (idr != state["current_player_idx"].get<std::int32_t>()) {
-                client.turn();
-            }
+        } else if (idr != state["current_player_idx"].get<std::int32_t>()) {
+            client.turn();
+        }
 
         idr = state["current_player_idx"].get<std::int32_t>();
     }
