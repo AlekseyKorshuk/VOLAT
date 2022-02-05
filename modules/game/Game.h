@@ -3,6 +3,7 @@
 #include "../content/vehicles/Tank.h"
 #include "../player/Player.h"
 #include <vector>
+#include <map>
 
 class Player;
 
@@ -29,7 +30,7 @@ public:
     std::vector<std::shared_ptr<Tank>> player_vehicles;
     std::vector<std::shared_ptr<Tank>> opponent_vehicles;
 
-    std::vector<Player> players;
+    std::map<int, Player> players;
 private:
     void addTank(json, int);
     void addPlayer(json);

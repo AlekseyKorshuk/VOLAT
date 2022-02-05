@@ -30,15 +30,29 @@ void Game::update(json state_json) {
     json players_json = state_json["players"];
     int k = 0;
     for (json::iterator it = players_json.begin(); it != players_json.end(); ++it) {
-        k++;
-
-        if (k > players.size()) {
-            json player_json = it.value();
+        json player_json = it.value();
+        if(players.find(player_json["idx"].get<std::int32_t>()) != players.end()) {
             addPlayer(player_json);
-        } else {
-            //updatePlayer(player_json);
         }
     }
+
+    std::cout << "!" << '\n';
+    for (auto player: players) {
+        player.second.update(state_json);
+    }
+
+    std::cout << "!" << '\n';
+    for (auto player: players) if (player.first != idx){
+            player.second.is_neutral = false;
+            if (!players[idx].whoAttacked[player.first]) {
+                if (player.second.onWhomAttacked.size() == 2 ||
+                    (player.second.onWhomAttacked.size() == 1 && !player.second.onWhomAttacked[idx])) {
+                    player.second.is_neutral = true;
+                }
+            }
+        }
+
+
 
 
     for (auto it = state_json["vehicles"].begin(); it != state_json["vehicles"].end(); ++it) {
@@ -136,17 +150,13 @@ void Game::addTank(json vehicle, int vehicle_id) {
             opponent_vehicles.push_back(tank);
         }
 
-        for (int i = 0; i < players.size(); i++) {
-            if (tank->getPlayerId() == players[i].id) {
-                players[i].vehicles.push_back(tank);
-            }
-        }
+        players[tank->getPlayerId()].vehicles.push_back(tank);
     }
 }
 
 void Game::addPlayer(json player_json) {
     Player player(player_json);
-    players.push_back(player);
+    players[player.id] = player;
 }
 
 
@@ -180,7 +190,9 @@ std::vector<std::vector<std::shared_ptr<Tank> > > Game::tanksUnderShoot(std::sha
         for (auto hex: hexPtrList) {
             std::vector<std::shared_ptr<Tank> > tankList;
             for (auto tank: opponent_vehicles){
-                if (*hex == tank->getPosition() && tank->getHealthPoints() != 0) {
+                if (*hex == tank->getPosition()
+                    && tank->getHealthPoints() != 0
+                    && !players[tank->getPlayerId()].is_neutral) {
                     tankList.push_back(tank);
                 }
             }
