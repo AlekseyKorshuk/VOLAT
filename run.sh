@@ -4,7 +4,7 @@ python visualizer.py  --game_name "testVOLAT" --password "" --num_turns 45 --num
 cd ..
 
 if [[ "$OSTYPE" =~ ^msys ]]; then
-    for file in `find ./cmake-build-debug/*.exe` ; do
+    for file in $(find ./cmake-build-debug/*.exe) ; do
         if [ -x $file ] ; then
             start $file "VOLAT1" "" "testVOLAT" "45" "3"
             start $file "VOLAT2" "" "testVOLAT" "45" "3"
@@ -12,7 +12,7 @@ if [[ "$OSTYPE" =~ ^msys ]]; then
         fi
     done
 else
-      for file in `find ./cmake-build-debug/   -type f`; do
+      for file in $(find ./cmake-build-debug/ -type f) ; do
           if [ -x $file ] ; then
               $file "VOLAT1" "" "testVOLAT" "45" "3" &
               $file "VOLAT2" "" "testVOLAT" "45" "3" &
