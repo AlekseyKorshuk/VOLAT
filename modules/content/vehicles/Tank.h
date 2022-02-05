@@ -36,6 +36,7 @@ public:
     TankType getTankType();
     int getHealthPoints();
     int getDamage();
+    int getDestructionPoints();
 
     void update(int x, int y, int z, int health, int capture_points);
     void update(int x, int y, int z);

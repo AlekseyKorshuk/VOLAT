@@ -282,3 +282,29 @@ std::vector<Hex *> Game::findNearestSafePositions(Hex * start)
     map.clearPath();
     return hexes;
 }
+
+std::vector<std::shared_ptr<Tank>> Game::GuaranteedKill(std::shared_ptr<Tank> tank) {
+    std::vector<std::vector<std::shared_ptr<Tank> > > tanks_under_shoot = tanksUnderShoot(tank);
+
+    int max_kill_points = 0;
+    int q = -1;
+    for (int i = 0; i < tanks_under_shoot.size(); i++) {
+        int  current_kill_points = 0;
+
+        for (auto tank_opponent: tanks_under_shoot[i]) {
+            if (tank_opponent->getHealthPoints() == tank->getDamage()) {
+                current_kill_points += tank_opponent->getDestructionPoints();
+            }
+        }
+
+        if (current_kill_points > max_kill_points) {
+            max_kill_points = current_kill_points;
+            q = i;
+        }
+    }
+    if (q != -1) {
+        return tanks_under_shoot[q];
+    } else {
+        return std::vector<std::shared_ptr<Tank>>();
+    }
+}

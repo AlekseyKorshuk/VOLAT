@@ -155,3 +155,7 @@ int Tank::getHealthPoints() {
 int Tank::getDamage() {
     return damage_;
 }
+
+int Tank::getDestructionPoints() {
+    return destruction_points_;
+}
