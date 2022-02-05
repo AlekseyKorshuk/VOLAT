@@ -15,11 +15,6 @@ std::string StateHunt::getType() {
 
 
 std::string StateHunt::calculateAction() {
-
-    //if (!game->GuaranteedKill(tank).empty()) {
-    //    return shootToString(game->GuaranteedKill(tank));
-    //}
-
     std::vector<std::shared_ptr<Hex>> positions_to_shoot = game->findSafePositionsToShoot(tank, param->tank);
 
     std::shared_ptr<Hex> start = game->map.getHex(tank->getPosition());

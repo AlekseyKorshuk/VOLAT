@@ -2,7 +2,7 @@
 
 #include <vector>
 #include "../content/vehicles/Tank.h"
-
+#include <set>
 class Tank;
 
 class Player {
@@ -23,7 +23,7 @@ public:
     int point_capture = 0;
     int point_kill = 0;
 
-    std::map<int, bool> onWhomAttacked;
-    std::map<int, bool> whoAttacked;
+    std::vector<int> onWhomAttacked;
+    std::vector<int> whoAttacked;
 };
 

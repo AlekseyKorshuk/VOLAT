@@ -10,7 +10,6 @@ void Player::update(json state_json) {
     json attack_matrix = state_json["attack_matrix"];
     json win_points = state_json["win_points"];
 
-
     for (json::iterator it = win_points.begin(); it != win_points.end(); ++it) {
         json player = it.value();
         int idx = stoi(it.key());
@@ -31,13 +30,11 @@ void Player::update(json state_json) {
             int onWhom = it.value().get<std::int32_t>();
 
             if (who == id) {
-                onWhomAttacked[onWhom] = true;
+                onWhomAttacked.push_back(onWhom);
             }
             if (onWhom == id) {
-                whoAttacked[who] = true;
+                whoAttacked.push_back(who);
             }
         }
     }
-
-
 }
