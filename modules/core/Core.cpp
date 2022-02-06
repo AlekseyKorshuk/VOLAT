@@ -1,6 +1,5 @@
 #include "Core.h"
 #include <iostream>
-#include <cstdio>
 #include <cstring>
 #include <nlohmann/json.hpp>
 #include <chrono>
@@ -19,12 +18,12 @@ auto since(std::chrono::time_point<clock_t, duration_t> const &start) {
     return std::chrono::duration_cast<result_t>(clock_t::now() - start);
 }
 
-Core::Core(const string &name, const string &password) {
+Core::Core(const std::string &name, const std::string &password) {
     this->name = name;
     this->password = password;
 }
 
-void Core::play(string game, int num_turns, int num_players) {
+void Core::play(std::string game, int num_turns, int num_players) {
 
     Client client = Client();
     response resp = client.login(this->name, this->password, game, num_turns, num_players);
@@ -50,7 +49,7 @@ void Core::play(string game, int num_turns, int num_players) {
 
 
         if (idx == state["current_player_idx"].get<std::int32_t>()) {
-            cout << "Our turn!" << endl;
+            std::cout << "Our turn!" << std::endl;
             auto start = std::chrono::steady_clock::now();
 
             json actions = strategy.calculate_actions(idx, state);
@@ -58,7 +57,7 @@ void Core::play(string game, int num_turns, int num_players) {
             for (json::iterator it = actions.begin(); it != actions.end(); ++it) {
                 json action = it.value();
                 json data = action["data"];
-                string action_type = action["type"].get<std::string>();
+                std::string action_type = action["type"].get<std::string>();
                 int vehicle_id = data["vehicle_id"].get<std::int32_t>();
                 int x = data["target"]["x"].get<std::int32_t>();
                 int y = data["target"]["y"].get<std::int32_t>();
@@ -66,10 +65,10 @@ void Core::play(string game, int num_turns, int num_players) {
 
                 if (action_type == "MOVE") {
                     std::cout << "MOVE: " << vehicle_id << " {" << x << " " << y << " " << z << "} -> ";
-                    cout << client.move(vehicle_id, x, y, z).msg << '\n';
+                    std::cout << client.move(vehicle_id, x, y, z).msg << '\n';
                 } else if (action_type == "SHOOT") {
                     std::cout << "SHOOT: " << vehicle_id << " {" << x << " " << y << " " << z << "} -> ";
-                    cout << client.shoot(vehicle_id, x, y, z).msg << '\n';
+                    std::cout << client.shoot(vehicle_id, x, y, z).msg << '\n';
                 }
             }
             std::cout << "Elapsed: " << since(start).count() << " ms" << std::endl;
