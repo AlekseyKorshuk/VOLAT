@@ -38,6 +38,9 @@ std::string StateDefence::calculateAction() {
 
     std::vector<std::shared_ptr<Hex>> positions = game->findSortedSafePositionsToShoot(tank, target);
 
+    if (positions.empty())
+        return "";
+    
     if (position == positions[0])
         return shootToString(std::vector<std::shared_ptr<Tank>>{target});
 
