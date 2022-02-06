@@ -1,5 +1,4 @@
 #include "StateHunt.h"
-#include <algorithm> //std::sort
 #include <vector> //std::vector
 
 StateHunt::StateHunt(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game, std::shared_ptr<Param> param) : State(tank,

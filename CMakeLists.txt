@@ -96,7 +96,7 @@ set(STRATEGY
         modules/state_machine/SpgStrategy.cpp
         modules/state_machine/SpgStrategy.h
 
-        )
+        modules/state/StateCamping.cpp modules/state/StateCamping.h)
 
 
 add_executable(
