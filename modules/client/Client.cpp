@@ -9,7 +9,7 @@ Client::Client() {
 #if _WIN32
     WSAStartup(MAKEWORD(2, 1), &WSAData);
     if ((server = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
-        cout << "Socket creation failed with error: " << WSAGetLastError() << endl;
+        std::cout << "Socket creation failed with error: " << WSAGetLastError() << std::endl;
     }
 
     addr.sin_addr.s_addr = inet_addr(inetAddr); //������� � �������
@@ -17,7 +17,7 @@ Client::Client() {
     addr.sin_port = htons(port); //����
 
     if (connect(server, (SOCKADDR *) &addr, sizeof(addr)) == SOCKET_ERROR) {
-        cout << "Server connection failed with error: " << WSAGetLastError() << endl;
+        std::cout << "Server connection failed with error: " << WSAGetLastError() << std::endl;
     }
 #else
     server = TcpClientSocket(inetAddr, port);
