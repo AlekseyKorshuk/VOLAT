@@ -26,12 +26,12 @@ Client::Client() {
 
 }
 
-response Client::login(string name, string password, string game, int num_turns, int num_players) {
-    string msg = "{\"name\":\"" + name +
+response Client::login(std::string name, std::string password, std::string game, int num_turns, int num_players) {
+    std::string msg = "{\"name\":\"" + name +
                  "\",\"password\":\"" + password +
                  "\",\"game\":\"" + game +
-                 "\",\"num_turns\":" + to_string(num_turns) +
-                 ",\"num_players\":" + to_string(num_players) + "}";
+                 "\",\"num_turns\":" + std::to_string(num_turns) +
+                 ",\"num_players\":" + std::to_string(num_players) + "}";
     request(1, msg);
 
     return answer();
@@ -64,35 +64,35 @@ response Client::turn() {
     return answer();
 }
 
-response Client::chat(const string &msg) {
+response Client::chat(const std::string &msg) {
     request(100, "{\"message\":\"" + msg + "\"}");
     return answer();
 }
 
 
 response Client::move(int vehicle_id, int x, int y, int z) {
-    string msg = "{\"vehicle_id\":" + to_string(vehicle_id) +
+    std::string msg = "{\"vehicle_id\":" + std::to_string(vehicle_id) +
                  ",\"target\":{" +
-                 "\"x\":" + to_string(x) +
-                 ",\"y\":" + to_string(y) +
-                 ",\"z\":" + to_string(z) + "}}";
+                 "\"x\":" + std::to_string(x) +
+                 ",\"y\":" + std::to_string(y) +
+                 ",\"z\":" + std::to_string(z) + "}}";
 
     request(101, msg);
     return answer();
 }
 
 response Client::shoot(int vehicle_id, int x, int y, int z) {
-    string msg = "{\"vehicle_id\":" + to_string(vehicle_id) +
+    std::string msg = "{\"vehicle_id\":" + std::to_string(vehicle_id) +
                  ",\"target\":{" +
-                 "\"x\":" + to_string(x) +
-                 ",\"y\":" + to_string(y) +
-                 ",\"z\":" + to_string(z) + "}}";
+                 "\"x\":" + std::to_string(x) +
+                 ",\"y\":" + std::to_string(y) +
+                 ",\"z\":" + std::to_string(z) + "}}";
 
     request(102, msg);
     return answer();
 }
 
-void Client::request(int action, string msg) {
+void Client::request(int action, std::string msg) {
     char *buffer = new char[8 + msg.size()];
 
     for (int i = 0; i < 4; ++i) {
@@ -108,7 +108,7 @@ void Client::request(int action, string msg) {
         buffer[i + 8] = msg[i];
     }
 
-    if (debugging) cout << "Client: " << action << " " << msg << '\n';
+    if (debugging) std::cout << "Client: " << action << " " << msg << '\n';
 
 #if _WIN32
     send(server, buffer, 8 + size_msg, 0);
@@ -143,13 +143,13 @@ response Client::answer() {
     if (size_msg != 0) server.receiveData(c_msg, size_msg);
 #endif
 
-    string msg;
+    std::string msg;
 
     for (int i = 0; i < size_msg; i++) {
         msg += c_msg[i];
     }
 
-    if (debugging) cout << "Server: " << result << " " << msg << "\n\n";
+    if (debugging) std::cout << "Server: " << result << " " << msg << "\n\n";
 
     return {result, json::parse(msg)};
 }
