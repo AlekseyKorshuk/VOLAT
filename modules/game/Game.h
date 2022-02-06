@@ -42,6 +42,9 @@ public:
     findSortedSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::shared_ptr<Tank> opponent_tank);
 
 
+    std::vector<std::shared_ptr<Hex>>
+    findSafePath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends, std::shared_ptr<Tank>);
+
     Map map = Map();
 
     std::vector<std::shared_ptr<Tank>> all_vehicles;
@@ -59,7 +62,5 @@ private:
     void updatePlayers(json);
 
     void updateDanger();
-
-    std::map<std::vector<int>, int> map_danger;
 };
 
