@@ -1,4 +1,7 @@
 #include "StateCapture.h"
+#include <algorithm> //std::sort
+#include <vector> //std::vector
+
 
 StateCapture::StateCapture(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game, std::shared_ptr<Param> param)
         : State(tank, game,
@@ -9,12 +12,6 @@ StateCapture::StateCapture(std::shared_ptr<Tank> tank, std::shared_ptr<Game> gam
 std::string StateCapture::getType() {
     return "capture";
 }
-
-
-#include <algorithm> //std::sort
-#include <iostream> //std::cout
-#include <string> //std::string
-#include <vector> //std::vector
 
 
 std::vector<std::shared_ptr<Hex> > intersection(const std::vector<std::shared_ptr<Hex> > &v1,
@@ -118,7 +115,7 @@ std::string StateCapture::shootAction() {
         int damage = 0;
         for (auto hex: hexes) {
             for (auto opponent_vehicle: game->opponent_vehicles) {
-                if (opponent_vehicle->getPosition() == *hex) {
+                if (opponent_vehicle->getPosition() == *hex && !game->getPlayer(opponent_vehicle->getPlayerId())->is_neutral) {
                     shoot.push_back(opponent_vehicle);
                     damage += std::max(opponent_vehicle->getHealthPoints(), tank->getDamage());
                 }

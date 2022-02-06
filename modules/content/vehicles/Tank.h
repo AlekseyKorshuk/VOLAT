@@ -45,6 +45,8 @@ public:
 
     int getDestructionPoints();
 
+    int getCapturePoints();
+
     void update(int x, int y, int z, int health, int capture_points);
 
     void update(int x, int y, int z);

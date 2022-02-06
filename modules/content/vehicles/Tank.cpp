@@ -156,3 +156,7 @@ int Tank::getDamage() {
 int Tank::getDestructionPoints() {
     return destruction_points_;
 }
+
+int Tank::getCapturePoints() {
+    return capture_points_;
+}

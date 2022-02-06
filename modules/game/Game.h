@@ -34,6 +34,14 @@ public:
 
     std::vector<std::shared_ptr<Tank>> GuaranteedKill(std::shared_ptr<Tank>);
 
+    //Finds possible tanks to shoot in specific area
+    std::vector<std::shared_ptr<Tank>> findTanksToShootOnArea(std::vector<std::shared_ptr<Hex>>);
+
+    //Finds sorted positions to shoot specific tank
+    std::vector<std::shared_ptr<Hex>>
+    findSortedSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::shared_ptr<Tank> opponent_tank);
+
+
     Map map = Map();
 
     std::vector<std::shared_ptr<Tank>> all_vehicles;
@@ -42,11 +50,14 @@ public:
     std::vector<std::shared_ptr<Player>> players;
 
     std::shared_ptr<Player> getPlayer(int);
+
 private:
     void addTank(json, int);
+
     void addPlayer(json);
 
     void updatePlayers(json);
+
     void updateDanger();
 
     std::map<std::vector<int>, int> map_danger;

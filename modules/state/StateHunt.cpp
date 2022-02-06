@@ -18,8 +18,8 @@ std::string StateHunt::calculateAction() {
     std::shared_ptr<Hex> start = game->map.getHex(tank->getPosition());
     if (!positions_to_shoot.empty())
         for (auto tankList: game->tanksUnderShoot(tank))
-            for (auto tanks_under_shoot: tankList)
-                if (tanks_under_shoot->getPosition() == param->tank->getPosition())
+            for (auto tank_under_shoot: tankList)
+                if (tank_under_shoot->getPosition() == param->tank->getPosition())
                     return shootToString(tankList);
 
     std::vector<std::shared_ptr<Hex>> path = game->map.findPath(start, positions_to_shoot, tank);

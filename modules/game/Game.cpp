@@ -141,20 +141,21 @@ void Game::updatePlayers(json state_json) {
     }
 
     std::shared_ptr<Player> me = getPlayer(idx);
-    for (auto player: players) if (player->id != idx) {
-        player->is_neutral = true;
-        if (std::find(me->whoAttacked.begin(), me->whoAttacked.end(), player->id) != me->whoAttacked.end()) {
-            player->is_neutral = false;
-        } else {
-            int k = 0;
-            for (auto i: player->onWhomAttacked) {
-                if (i != idx) k++;
-            }
-            if (k == 0) {
+    for (auto player: players)
+        if (player->id != idx) {
+            player->is_neutral = true;
+            if (std::find(me->whoAttacked.begin(), me->whoAttacked.end(), player->id) != me->whoAttacked.end()) {
                 player->is_neutral = false;
+            } else {
+                int k = 0;
+                for (auto i: player->onWhomAttacked) {
+                    if (i != idx) k++;
+                }
+                if (k == 0) {
+                    player->is_neutral = false;
+                }
             }
         }
-    }
 }
 
 void Game::addPlayer(json player_json) {
@@ -233,7 +234,8 @@ void Game::updateDanger() {
     }
 }
 
-std::vector<std::shared_ptr<Hex>> Game::findSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::shared_ptr<Tank> opponent_tank) {
+std::vector<std::shared_ptr<Hex>>
+Game::findSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::shared_ptr<Tank> opponent_tank) {
     std::vector<std::shared_ptr<Hex>> hexes;
 
     Hex hex_player_tank = player_tank->getPosition();
@@ -312,4 +314,49 @@ std::vector<std::shared_ptr<Tank>> Game::GuaranteedKill(std::shared_ptr<Tank> ta
         return tanks_under_shoot[q];
 
     return std::vector<std::shared_ptr<Tank>>();
+}
+
+std::vector<std::shared_ptr<Tank>> Game::findTanksToShootOnArea(std::vector<std::shared_ptr<Hex>> area) {
+    std::vector<std::shared_ptr<Tank>> tanks;
+    for (auto hex: area)
+        for (auto opponent_vehicle: opponent_vehicles)
+            if (opponent_vehicle->getPosition() == *hex && !getPlayer(opponent_vehicle->getPlayerId())->is_neutral)
+                tanks.push_back(opponent_vehicle);
+    return tanks;
+}
+
+bool sortbysec(const std::pair<std::shared_ptr<Hex>, int> &a,
+               const std::pair<std::shared_ptr<Hex>, int> &b, Hex hex) {
+    if (a.second != b.second)
+        return a.second < b.second;
+
+    return a.first->getDistance(hex) < a.first->getDistance(hex);
+}
+
+std::vector<std::shared_ptr<Hex>>
+Game::findSortedSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::shared_ptr<Tank> opponent_tank) {
+    std::vector<std::pair<std::shared_ptr<Hex>, int>> hexes_pairs;
+
+    Hex hex_player_tank = player_tank->getPosition();
+    Hex hex_opponent_tank = opponent_tank->getPosition();
+
+    player_tank->update(hex_opponent_tank);
+
+    for (auto hexList: player_tank->getShootingHexesAreas(map)) {
+        for (auto hex: hexList) {
+            std::vector<int> pos = {hex->x, hex->y, hex->z};
+            if (!hex->is_occupied && hex->content->is_reacheble) {
+                hexes_pairs.emplace_back(hex, map_danger[pos]);
+            }
+        }
+    }
+    player_tank->update(hex_player_tank);
+    std::sort(hexes_pairs.begin(), hexes_pairs.end(),
+              std::bind(sortbysec, std::placeholders::_1, std::placeholders::_2, hex_player_tank));
+
+    std::vector<std::shared_ptr<Hex>> hexes;
+    hexes.reserve(hexes_pairs.size());
+    for (const auto &pair: hexes_pairs)
+        hexes.push_back(pair.first);
+    return hexes;
 }

@@ -65,10 +65,10 @@ void Core::play(string game, int num_turns, int num_players) {
                 int z = data["target"]["z"].get<std::int32_t>();
 
                 if (action_type == "MOVE") {
-                    std::cout << "MOVE: " << vehicle_id << " {" << x << " " << y << " " << z << "}\n";
+                    std::cout << "MOVE: " << vehicle_id << " {" << x << " " << y << " " << z << "} -> ";
                     cout << client.move(vehicle_id, x, y, z).msg << '\n';
                 } else if (action_type == "SHOOT") {
-                    std::cout << "SHOOT: " << vehicle_id << " {" << x << " " << y << " " << z << "}\n";
+                    std::cout << "SHOOT: " << vehicle_id << " {" << x << " " << y << " " << z << "} -> ";
                     cout << client.shoot(vehicle_id, x, y, z).msg << '\n';
                 }
             }
