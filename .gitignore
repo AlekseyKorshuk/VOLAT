@@ -16,3 +16,5 @@ cmake-build-debug
 venv
 
 /visualizer/assets/*.png
+
+.clang-format

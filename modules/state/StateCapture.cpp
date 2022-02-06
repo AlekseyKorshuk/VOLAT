@@ -115,7 +115,8 @@ std::string StateCapture::shootAction() {
         int damage = 0;
         for (auto hex: hexes) {
             for (auto opponent_vehicle: game->opponent_vehicles) {
-                if (opponent_vehicle->getPosition() == *hex && !game->getPlayer(opponent_vehicle->getPlayerId())->is_neutral) {
+                if (opponent_vehicle->getPosition() == *hex &&
+                    !game->getPlayer(opponent_vehicle->getPlayerId())->is_neutral) {
                     shoot.push_back(opponent_vehicle);
                     damage += std::max(opponent_vehicle->getHealthPoints(), tank->getDamage());
                 }

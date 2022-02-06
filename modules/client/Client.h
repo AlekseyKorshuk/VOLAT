@@ -15,7 +15,6 @@
 
 #endif
 
-
 using json = nlohmann::json;
 
 /**

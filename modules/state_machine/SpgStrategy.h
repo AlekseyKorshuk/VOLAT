@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../state/StateCapture.h"
+#include "../state/StateCamping.h"
 #include "StateMachine.h"
 
 class SpgStrategy : public StateMachine {
