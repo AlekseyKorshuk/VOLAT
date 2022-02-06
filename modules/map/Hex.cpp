@@ -11,6 +11,7 @@ const static std::vector<Hex> hex_diagonals =
 
 Hex::Hex(int x, int y, int z, ContentType content_type, json data, int id) : x(x), y(y), z(z) {
     this->setHex(content_type, data, id);
+    danger = std::vector<double>(5, 0);
 }
 
 bool Hex::operator<(const Hex &other) const {
