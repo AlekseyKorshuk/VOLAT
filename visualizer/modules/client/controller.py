@@ -1,19 +1,15 @@
-from modules.actions.classes import BytesConverter
-from modules.actions import permanent
+from modules.client.classes import BytesConverter
+from modules.client import permanent
 import socket
 import inspect
 from modules.core.permanent import HOST, PORT
 
 
 class Client:
-    """
-    Client-side message performer
-    """
+    """Client-side message performer"""
 
     def __init__(self):
-        """
-        Default constructor of the class. Connects to the Game Server.
-        """
+        """Default constructor of the class. Connects to the Game Server."""
         self.bytes_converter = BytesConverter()
         self.client = socket.socket(
             socket.AF_INET,
@@ -42,7 +38,7 @@ class Client:
         :param message: bytes message to send
         :return: dict response message
         """
-        resp = self.client.sendall(message)
+        self.client.sendall(message)
 
         result_code = int.from_bytes(self.client.recv(4, socket.MSG_WAITALL), "little")
         message_length = int.from_bytes(self.client.recv(4, socket.MSG_WAITALL), "little")
@@ -73,7 +69,8 @@ class Client:
 
         :param name: player's name
         :param password: player's password used to verify the connection,
-                         if player with the same name tries to connect with another password - login will be rejected.
+            if player with the same name tries to connect
+            with another password - login will be rejected.
         :param game: game's name (use it to connect to existing game)
         :param num_turns: number of game turns to be played
         :param num_players: number of players in the game
@@ -122,7 +119,7 @@ class Client:
 
     def game_actions(self):
         """
-        Returns list of game actions that happened in previous turn. Represent changes between turns.
+        Returns list of game client that happened in previous turn. Represent changes between turns.
         :return: dict response message
         """
         action_name = 'GAME_ACTIONS'

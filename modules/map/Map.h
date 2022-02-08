@@ -12,15 +12,14 @@
 using json = nlohmann::json;
 
 
+class Tank;
+
 class Map {
 public:
-
     int radius_;
-    std::vector<Hex *> hexes;
-    std::map<std::vector<int>, Hex *> hexes_map;
-    std::vector<Hex *> player_vehicles;
-    std::vector<Hex *> opponent_vehicles;
-    std::vector<Hex *> base;
+    std::vector<std::shared_ptr<Hex>> hexes;
+    std::map<std::vector<int>, std::shared_ptr<Hex>> hexes_map;
+    std::vector<std::shared_ptr<Hex>> base;
 
     Map(json map_json, int radius = 10);
 
@@ -28,25 +27,31 @@ public:
 
     void setBase(json map_json);
 
-    void setMap(json state);
+    void setSpawnPoints(json map_json);
 
-    void changeOccupied(Hex, bool);
+    void changeOccupied(const Hex&, bool);
 
     void clearPath();
 
-    bool belongs(const Hex& h) const;
+    bool belongs(const Hex &h) const;
 
-    std::vector<Hex *> generateEmptyMap(int radius);
+    std::vector<std::shared_ptr<Hex>> generateEmptyMap(int radius);
 
-    Hex *getHex(const Hex &hex) const;
+    std::shared_ptr<Hex> getHex(const Hex &hex) const;
 
-    std::vector<Hex *> findPath(Hex start, std::vector<Hex> ends);
+    std::vector<std::shared_ptr<Hex>> findPath(Hex start, std::vector<Hex> ends, std::shared_ptr<Tank>);
 
-    std::vector<Hex *> findPath(Hex *start, std::vector<Hex *> ends);
+    std::vector<std::shared_ptr<Hex>>
+    findPath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends, std::shared_ptr<Tank>);
 
-    std::vector<Hex *> findPath(Hex start, Hex end);
+    std::vector<std::shared_ptr<Hex>> findPath(Hex start, Hex end, std::shared_ptr<Tank>);
 
-    std::vector<Hex *> findPath(Hex *start, Hex *end);
+    std::vector<std::shared_ptr<Hex>>
+    findPath(std::shared_ptr<Hex> start, std::shared_ptr<Hex> end, std::shared_ptr<Tank>);
 
-    std::vector<Hex *> traceRoute(Hex *end);
+    std::vector<std::shared_ptr<Hex>> traceRoute(std::shared_ptr<Hex> end);
+
+    std::map<std::shared_ptr<Hex>, int> getShootingMap(std::vector<std::shared_ptr<Tank>> opponent_vehicles);
 };
+
+#include "../content/vehicles/Tank.h"

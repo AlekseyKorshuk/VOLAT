@@ -1,7 +1,5 @@
 #pragma once
 
-
-
 #include "../map/Map.h"
 #include "../content/vehicles/Tank.h"
 #include "../state/State.h"
@@ -9,21 +7,23 @@
 
 
 class Tank;
+
 class State;
 
 class StateMachine {
 public:
-    StateMachine(Tank*, Game*);
+    StateMachine(std::shared_ptr<Tank>, std::shared_ptr<Game>);
 
     virtual void updateState() = 0;
 
     std::string calculateAction();
-    void changeState(State*);
+
+    void changeState(std::shared_ptr<State>);
 
 
 protected:
-    State* state = nullptr;
-    Game* game = nullptr;
-    Tank* tank = nullptr;
+    std::shared_ptr<State> state = nullptr;
+    std::shared_ptr<Game> game = nullptr;
+    std::shared_ptr<Tank> tank = nullptr;
 };
 

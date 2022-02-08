@@ -4,16 +4,17 @@
 #include <tuple>
 
 const static std::vector<Hex> hex_directions =
-        {Hex(1, 0, -1), Hex(1, -1, 0), Hex(0, -1, 1), Hex(-1, 0, 1), Hex(-1, 1, 0),Hex(0, 1, -1)};
+        {Hex(1, 0, -1), Hex(1, -1, 0), Hex(0, -1, 1), Hex(-1, 0, 1), Hex(-1, 1, 0), Hex(0, 1, -1)};
 
 const static std::vector<Hex> hex_diagonals =
         {Hex(2, -1, -1), Hex(1, -2, 1), Hex(-1, -1, 2), Hex(-2, 1, 1), Hex(-1, 2, -1), Hex(1, 1, -2)};
 
 Hex::Hex(int x, int y, int z, ContentType content_type, json data, int id) : x(x), y(y), z(z) {
     this->setHex(content_type, data, id);
+    danger = std::vector<double>(5, 0);
 }
 
-bool Hex::operator<(const Hex& other) const {
+bool Hex::operator<(const Hex &other) const {
     return std::tie(x, y, z) < std::tie(other.x, other.y, other.z);
 }
 
@@ -56,11 +57,11 @@ int Hex::getLength() const {
     return int((abs(this->x) + abs(this->y) + abs(this->z)) / 2);
 }
 
-int Hex::getDistance(Hex hex) {
+int Hex::getDistance(const Hex &hex) {
     return (*this - hex).getLength();
 }
 
-void Hex::addNeighbour(Hex *hex) {
+void Hex::addNeighbour(std::shared_ptr<Hex> hex) {
     this->neighbors.push_back(hex);
 }
 
@@ -77,27 +78,16 @@ bool Hex::operator==(Hex hex) {
 }
 
 void Hex::setHex(ContentType content_type, json data, int id) {
-    //???
     this->is_occupied = true;
     switch (content_type) {
-        /*
-        case ContentType::VEHICLE: {
-            std::string temp_vehicle_type = data["vehicle_type"].get<std::string>();
-            if (temp_vehicle_type == "medium_tank") {
-                std::shared_ptr<MediumTank> tank =
-                    std::make_shared<MediumTank>(
-                        x, y, z, data["health"].get<std::int32_t>(),
-                        data["capture_points"].get<std::int32_t>(), id
-                    );
-                tank->setPlayerId(data["player_id"].get<std::int32_t>());
-                this->content = tank;
-            }
-            break;
-        }
-        */
         case ContentType::BASE: {
             this->is_occupied = false;
             this->content = std::make_shared<Content>(true, ContentType::BASE);
+            break;
+        }
+        case ContentType::SPAWN_POINT: {
+            this->is_occupied = false;
+            this->content = std::make_shared<Content>(false, ContentType::SPAWN_POINT);
             break;
         }
         default: {
@@ -106,7 +96,6 @@ void Hex::setHex(ContentType content_type, json data, int id) {
             break;
         }
     }
-
 }
 
 void Hex::clear() {
@@ -114,6 +103,7 @@ void Hex::clear() {
     content.reset();
     content = nullptr;
     visited = false;
-    delete prev;
+//    delete prev;
+    prev.reset();
     prev = nullptr;
 }

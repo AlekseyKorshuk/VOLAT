@@ -5,13 +5,12 @@
 
 class Core {
 public:
-    Core(std::string name="", std::string password="");
+    Core(const std::string &name = "", const std::string &password = "");
 
-    void play(std::string game, int num_turns=45, int num_players=3);
+    void play(std::string game, int num_turns = 45, int num_players = 3);
 
 private:
     std::string name;
     std::string password;
-
 };
 

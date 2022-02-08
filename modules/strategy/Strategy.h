@@ -6,11 +6,11 @@
 
 using json = nlohmann::json;
 
-class Strategy{
+class Strategy {
 public:
     Strategy(int idx, json, json);
 
     json calculate_actions(int idx, json state);
 
-    Game game;
+    std::shared_ptr<Game> game;
 };

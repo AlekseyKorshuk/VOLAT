@@ -1,4 +1,4 @@
 # VOLAT
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8945fc2b3ef74c258ff0c55ca7dd9ee8)](https://app.codacy.com/gh/AlekseyKorshuk/VOLAT?utm_source=github.com&utm_medium=referral&utm_content=AlekseyKorshuk/VOLAT&utm_campaign=Badge_Grade_Settings)
-[![Coverage Status](https://coveralls.io/repos/github/AlekseyKorshuk/VOLAT/badge.svg?branch=main)](https://coveralls.io/github/AlekseyKorshuk/VOLAT?branch=main)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8945fc2b3ef74c258ff0c55ca7dd9ee8?branch=dev)](https://app.codacy.com/gh/AlekseyKorshuk/VOLAT?utm_source=github.com&utm_medium=referral&utm_content=AlekseyKorshuk/VOLAT&utm_campaign=Badge_Grade_Settings)
+[![CodeFactor](https://www.codefactor.io/repository/github/alekseykorshuk/volat/badge/dev)](https://www.codefactor.io/repository/github/alekseykorshuk/volat/overview/dev)
