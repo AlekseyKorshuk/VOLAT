@@ -28,7 +28,7 @@ std::vector<HexPtrList> AtSpg::getShootingHexesAreas(Map &map) const {
             std::shared_ptr<Hex> potential_shot_aim_ = map.getHex(potential_shot_aim);
 
             if (potential_shot_aim_ != nullptr) {
-                if (!potential_shot_aim_->content->is_reacheble) {
+                if (potential_shot_aim_->content->content_type == ContentType::OBSTACLE) {
                     break;
                 }
                 direction_hexes.push_back(potential_shot_aim_);
