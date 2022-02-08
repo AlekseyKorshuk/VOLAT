@@ -10,7 +10,6 @@ from modules.map.classes import Map
 from modules.core import permanent
 
 
-
 class ImageLabel(Label):
     """A label that displays images, and plays them if they are gifs"""
 

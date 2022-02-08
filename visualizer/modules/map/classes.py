@@ -3,6 +3,7 @@ from matplotlib.patches import RegularPolygon
 import numpy as np
 
 import matplotlib as mpl
+
 mpl.use('agg')
 from svgpathtools import svg2paths
 from svgpath2mpl import parse_path
@@ -88,12 +89,12 @@ class Map:
         map_data = self.client.map()
         for base in map_data['content']['base']:
             hexes[(base['x'], base['y'], base['z'])] = {
-                        'color': 'green'
-                    }
+                'color': 'green'
+            }
         for obstacle in map_data['content']['obstacle']:
             hexes[(obstacle['x'], obstacle['y'], obstacle['z'])] = {
-                        'color': 'black'
-                    }
+                'color': 'black'
+            }
         return hexes
 
     def plot_map(self, current_position: bool = True) -> dict:
@@ -151,7 +152,7 @@ class Map:
         self.map = copy.deepcopy(self.get_default_map)
         text_field = self.get_state_table(state, False, replace=True)
         self.ax.text(-0.3, 0.9, text_field if text_field != '' else None, bbox={'facecolor': 'red',
-                                                  'alpha': 0.5, 'pad': 15},
+                                                                                'alpha': 0.5, 'pad': 15},
                      transform=self.ax.transAxes, ha="center")
         players_colors = {}
         for vehicle in state['vehicles'].values():
