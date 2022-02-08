@@ -24,8 +24,13 @@ std::vector<HexPtrList> AtSpg::getShootingHexesAreas(Map &map) const {
         for (int radius = 1; radius <= 3; ++radius) {
             potential_shot_aim += hex_direction;
 
+
             std::shared_ptr<Hex> potential_shot_aim_ = map.getHex(potential_shot_aim);
+
             if (potential_shot_aim_ != nullptr) {
+                if (!potential_shot_aim_->content->is_reacheble) {
+                    break;
+                }
                 direction_hexes.push_back(potential_shot_aim_);
             }
         }

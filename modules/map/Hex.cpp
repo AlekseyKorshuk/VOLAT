@@ -90,6 +90,11 @@ void Hex::setHex(ContentType content_type, json data, int id) {
             this->content = std::make_shared<Content>(false, ContentType::SPAWN_POINT);
             break;
         }
+        case ContentType::OBSTACLE: {
+            this->is_occupied = false;
+            this->content = std::make_shared<Content>(false, ContentType::OBSTACLE);
+            break;
+        }
         default: {
             this->is_occupied = false;
             this->content = std::make_shared<Content>(true, ContentType::EMPTY);

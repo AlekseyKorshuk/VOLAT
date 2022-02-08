@@ -8,9 +8,9 @@ int main(int argc, char **argv) {
     std::string game, name, password;
     int num_turns, num_players;
     if (argc == 1) {
-        name = "Alex";
+        name = "VOLAT";
         password = "";
-        game = "testVOLAT123";
+        game = "testVOLAT";
         num_turns = 15;
         num_players = 1;
     } else {
@@ -23,11 +23,11 @@ int main(int argc, char **argv) {
 
     Core core(name, password);
 
+
     Client client2 = Client();
     client2.login("VOLAT2", "", game);
     Client client3 = Client();
     client3.login("VOLAT3", "", game);
-
 
     core.play(game, num_turns, num_players);
 

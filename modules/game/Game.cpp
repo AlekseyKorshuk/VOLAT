@@ -32,7 +32,6 @@ void Game::update(json state_json) {
     for (auto it = state_json["vehicles"].begin(); it != state_json["vehicles"].end(); ++it) {
         int vehicle_id = stoi(it.key());
         json vehicle = it.value();
-
         if (all_vehicles[vehicle_id - 1] == nullptr) {
             addTank(vehicle, vehicle_id);
         } else {
@@ -223,7 +222,6 @@ void Game::updateDanger() {
         hex.second->danger.clear();
         hex.second->danger = std::vector<double>(max_dist, 0);
     }
-
 
     for (auto tank: opponent_vehicles) {
         std::queue<std::pair<std::shared_ptr<Hex>, int> > queue;

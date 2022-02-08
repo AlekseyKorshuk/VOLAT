@@ -5,6 +5,7 @@ Map::Map(json map_json, int radius) : radius_(radius) {
     hexes = generateEmptyMap(radius);
     setBase(map_json);
     setSpawnPoints(map_json);
+    setObstacle(map_json);
 }
 
 void Map::setBase(json map_json) {
@@ -39,6 +40,19 @@ void Map::setSpawnPoints(json map_json) {
         }
     }
 }
+
+void Map::setObstacle(json map_json) {
+    json obstacles = map_json["content"]["obstacle"];
+
+    for (auto obstacle = obstacles.begin(); obstacle != obstacles.end(); ++obstacle) {
+        json pos = obstacle.value();
+        Hex hex = Hex(pos["x"].get<std::int32_t>(),
+                      pos["y"].get<std::int32_t>(),
+                      pos["z"].get<std::int32_t>());
+        getHex(hex)->setHex(ContentType::OBSTACLE);
+    }
+}
+
 
 
 void Map::changeOccupied(const Hex& hex, bool is_occupied) {

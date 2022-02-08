@@ -28,6 +28,7 @@ public:
     void setBase(json map_json);
 
     void setSpawnPoints(json map_json);
+    void setObstacle(json map_json);
 
     void changeOccupied(const Hex&, bool);
 
