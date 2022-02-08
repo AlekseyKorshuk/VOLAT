@@ -64,9 +64,8 @@ class Map:
             y = -r
             z = +r
 
-            color = 'green' if r <= 1 else 'white'
             hexes[(x, y, z)] = {
-                'color': color
+                'color': 'white'
             }
             indices[(x, y, z)] = index  # Or store objects here
             index += 1
@@ -81,12 +80,20 @@ class Map:
                     y = y + deltas[j][1]
                     z = z + deltas[j][2]
 
-                    color = 'green' if r <= 1 else 'white'
                     hexes[(x, y, z)] = {
-                        'color': color
+                        'color': 'white'
                     }
                     indices[(x, y, z)] = index  # Or store objects here
                     index += 1
+        map_data = self.client.map()
+        for base in map_data['content']['base']:
+            hexes[(base['x'], base['y'], base['z'])] = {
+                        'color': 'green'
+                    }
+        for obstacle in map_data['content']['obstacle']:
+            hexes[(obstacle['x'], obstacle['y'], obstacle['z'])] = {
+                        'color': 'black'
+                    }
         return hexes
 
     def plot_map(self, current_position: bool = True) -> dict:
