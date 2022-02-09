@@ -2,21 +2,12 @@
 #include <iostream>
 #include <cstring>
 #include <nlohmann/json.hpp>
-#include <chrono>
 
 using json = nlohmann::json;
 
 #include "../client/Client.h"
 #include "../strategy/Strategy.h"
 
-template<
-        class result_t   = std::chrono::milliseconds,
-        class clock_t    = std::chrono::steady_clock,
-        class duration_t = std::chrono::milliseconds
->
-auto since(std::chrono::time_point<clock_t, duration_t> const &start) {
-    return std::chrono::duration_cast<result_t>(clock_t::now() - start);
-}
 
 Core::Core(const std::string &name, const std::string &password) {
     this->name = name;
@@ -50,8 +41,6 @@ void Core::play(std::string game, int num_turns, int num_players) {
 
         if (idx == state["current_player_idx"].get<std::int32_t>()) {
             std::cout << "Our turn!" << std::endl;
-            auto start = std::chrono::steady_clock::now();
-
             json actions = strategy.calculate_actions(idx, state);
 
             for (json::iterator it = actions.begin(); it != actions.end(); ++it) {
@@ -71,7 +60,6 @@ void Core::play(std::string game, int num_turns, int num_players) {
                     std::cout << client.shoot(vehicle_id, x, y, z).msg << '\n';
                 }
             }
-            std::cout << "Elapsed: " << since(start).count() << " ms" << std::endl;
             client.turn();
         } else if (idr != state["current_player_idx"].get<std::int32_t>()) {
             client.turn();

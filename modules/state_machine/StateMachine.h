@@ -20,6 +20,7 @@ public:
 
     void changeState(std::shared_ptr<State>);
 
+    std::string getStateName();
 
 protected:
     std::shared_ptr<State> state = nullptr;
