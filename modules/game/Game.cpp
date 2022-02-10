@@ -436,7 +436,7 @@ std::vector<std::shared_ptr<Tank>> Game::canKillAndStayAlive(const std::shared_p
                 }
             }
         }
-        if (best_damage > damage && kill_points >= best_kill_points) {
+        if (player_tank->getHealthPoints() - damage > 0 && best_damage > damage && kill_points >= best_kill_points) {
             best_shoot = shoot;
         }
 
