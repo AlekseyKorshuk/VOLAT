@@ -234,28 +234,6 @@ void Game::updateDanger() {
                 hex->visited = true;
             }
         }
-        while (!queue.empty()) {
-            std::shared_ptr<Hex> hex = queue.front().first;
-            int dist = queue.front().second;
-            queue.pop();
-
-            if (dist > ld) {
-                ld = dist;
-                if (dist % tank->getSpeedPoints() == 0) {
-                    damage = damage * 0.55;
-                }
-            }
-
-            for (std::shared_ptr<Hex> node: hex->neighbors) if (!node->visited){
-                node->visited = true;
-                node->danger[dist] += damage;
-
-                if (dist + 1 != max_dist) {
-                    queue.push({node,dist + 1});
-                }
-            }
-        }
-        map.clearPath();
     }
 }
 
