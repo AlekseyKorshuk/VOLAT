@@ -18,7 +18,15 @@ std::string StateCamping::calculateAction() {
     if (position->danger[0] == 0) {
         return performAggressiveAction();
     }
+    if (tank->getTankType() == TankType::AT_SPG)
+        std::cout << "-" << std::endl;
+    auto shoot = game->canKillAndStayAlive(tank);
+    if (!shoot.empty()){
+        std::cout << "canKillAndStayAlive\n";
+        return shootToString(shoot);
+    }
     return findSafePosition();
+
 }
 
 std::string StateCamping::moveToBase() {
