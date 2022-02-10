@@ -429,21 +429,16 @@ std::vector<std::shared_ptr<Tank>> Game::canKillAndStayAlive(const std::shared_p
             if (std::find(player_shoot.begin(), player_shoot.end(), map.getHex(danger_tank->getPosition())) !=
                 player_shoot.end()) {
                 shoot.push_back(danger_tank);
-                if (danger_tank->getHealthPoints() - player_tank->getDamage() <= 0) {
+                if (danger_tank->getHealthPoints() - player_tank->getDamage() <= 0)
                     kill_points += danger_tank->getDestructionPoints();
-                } else {
+                else
                     damage += danger_tank->getDamage();
-                }
+
             }
         }
-        if (player_tank->getHealthPoints() - damage > 0 && best_damage > damage && kill_points >= best_kill_points) {
+        if (player_tank->getHealthPoints() - damage > 0 && best_damage > damage && kill_points >= best_kill_points)
             best_shoot = shoot;
-        }
-
-
     }
 
-    if (!best_shoot.empty())
-        std::cout << "canKillAndStayAlive\n";
     return best_shoot;
 }

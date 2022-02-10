@@ -11,8 +11,8 @@ int main(int argc, char **argv) {
     if (argc == 1) {
         name = "VOLAT1";
         password = "";
-        game = "testVOLAT3";
-        num_turns = 45;
+        game = "testVOLATAlex";
+        num_turns = 99;
         num_players = 3;
     } else {
         name = argv[1];
