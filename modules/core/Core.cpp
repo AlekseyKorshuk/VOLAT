@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstring>
 #include <nlohmann/json.hpp>
+#include <thread>
+
 
 using json = nlohmann::json;
 
@@ -67,4 +69,9 @@ void Core::play(std::string game, int num_turns, int num_players) {
 
         idr = state["current_player_idx"].get<std::int32_t>();
     }
+}
+
+std::thread Core::runMultiThread(std::string game, int num_turns, int num_players) {
+    std::thread thread(&Core::play, this, game, num_turns, num_players);
+    return thread;
 }

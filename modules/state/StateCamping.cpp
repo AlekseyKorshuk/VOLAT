@@ -22,7 +22,6 @@ std::string StateCamping::calculateAction() {
         std::cout << "-" << std::endl;
     auto shoot = game->canKillAndStayAlive(tank);
     if (!shoot.empty()){
-        std::cout << "canKillAndStayAlive\n";
         return shootToString(shoot);
     }
     return findSafePosition();

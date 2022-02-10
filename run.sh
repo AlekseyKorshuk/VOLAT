@@ -6,17 +6,17 @@ cd ..
 if [[ "$OSTYPE" =~ ^msys ]]; then
     for file in $(find ./cmake-build-debug/*.exe) ; do
         if [ -x $file ] ; then
-            start $file "VOLAT1" "" "testVOLAT" "45" "3"
-            start $file "VOLAT2" "" "testVOLAT" "45" "3"
-            start $file "VOLAT3" "" "testVOLAT" "45" "3"
+            $file "VOLAT1" "" "testVOLAT" "45" "3"
+#            start $file "VOLAT2" "" "testVOLAT" "45" "3"
+#            start $file "VOLAT3" "" "testVOLAT" "45" "3"
         fi
     done
 else
       for file in $(find ./cmake-build-debug/ -type f) ; do
           if [ -x $file ] ; then
-              $file "VOLAT1" "" "testVOLAT" "45" "3" &
-              $file "VOLAT2" "" "testVOLAT" "45" "3" &
-              $file "VOLAT3" "" "testVOLAT" "45" "3" &
+              $file "VOLAT1" "" "testVOLAT" "45" "3"
+#              $file "VOLAT2" "" "testVOLAT" "45" "3" &
+#              $file "VOLAT3" "" "testVOLAT" "45" "3" &
           fi
       done
 

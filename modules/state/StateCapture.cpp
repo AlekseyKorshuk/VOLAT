@@ -86,7 +86,12 @@ bool checkPosition(std::vector<std::pair<std::shared_ptr<Hex>, int>> moves, std:
 
 std::string StateCapture::calculateAction() {
     std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
+
     if (std::find(game->map.base.begin(), game->map.base.end(), position) != game->map.base.end()) {
+        auto shoot = game->canKillAndStayAlive(tank);
+        if (!shoot.empty())
+            return shootToString(shoot);
+
         std::vector<std::pair<std::shared_ptr<Hex>, int>> possible_moves = calculateShootingVector(game, tank);
         if (!possible_moves.empty() && possible_moves[0].first != position)
             if (checkPosition(possible_moves, position))

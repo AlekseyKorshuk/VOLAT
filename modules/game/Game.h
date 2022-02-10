@@ -45,6 +45,8 @@ public:
     std::vector<std::shared_ptr<Hex>>
     findSafePath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends, std::shared_ptr<Tank>);
 
+    std::vector<std::shared_ptr<Tank>> canKillAndStayAlive(const std::shared_ptr<Tank>& player_tank);
+
     Map map = Map();
 
     std::vector<std::shared_ptr<Tank>> all_vehicles;

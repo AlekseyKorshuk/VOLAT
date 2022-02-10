@@ -320,13 +320,13 @@ std::vector<std::shared_ptr<Tank>> Game::GuaranteedKill(std::shared_ptr<Tank> ta
 std::vector<std::shared_ptr<Hex>>
 Game::findSafePath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends, std::shared_ptr<Tank> tank) {
     std::shared_ptr<Hex> end = nullptr;
-    std::priority_queue<std::pair<std::pair<int, double>,std::shared_ptr<Hex> >> Queue;
+    std::priority_queue<std::pair<std::pair<int, double>, std::shared_ptr<Hex> >> Queue;
     bool reached_end = false;
     start->visited = true;
 
     Hex pos_tank = tank->getPosition();
 
-    Queue.push({{0, 0},start});
+    Queue.push({{0, 0}, start});
     while (!Queue.empty() && !reached_end) {
         double danger = -Queue.top().first.second;
         int dist = -Queue.top().first.first;
@@ -339,11 +339,11 @@ Game::findSafePath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>>
         for (std::shared_ptr<Hex> node: achievable_hexes) {
             if (!node->is_occupied && !node->visited) {
                 node->visited = true;
-                double  n_danger = danger;
+                double n_danger = danger;
                 if (node->danger.size() > dist) {
                     n_danger += node->danger[dist];
                 }
-                Queue.push({{ -(dist + 1),-n_danger},node});
+                Queue.push({{-(dist + 1), -n_danger}, node});
 
                 node->prev = current_node;
                 if (std::find(ends.begin(), ends.end(), node) != ends.end()) {
@@ -403,4 +403,47 @@ Game::findSortedSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::sha
     for (const auto &pair: hexes_pairs)
         hexes.push_back(pair.first);
     return hexes;
+}
+
+std::vector<std::shared_ptr<Tank>> Game::canKillAndStayAlive(const std::shared_ptr<Tank> &player_tank) {
+    auto position = map.getHex(player_tank->getPosition());
+    std::vector<std::shared_ptr<Tank>> danger_tanks;
+
+    for (const auto &tank: opponent_vehicles)
+        for (auto hexes: tank->getShootingHexesAreas(map))
+            if (std::find(hexes.begin(), hexes.end(), position) != hexes.end()) {
+                danger_tanks.push_back(tank);
+            }
+
+    auto player_shootings = player_tank->getShootingHexesAreas(map);
+
+    std::vector<std::shared_ptr<Tank>> best_shoot;
+    int best_damage = INT32_MAX;
+    int best_kill_points = 0;
+
+    for (auto player_shoot: player_shootings) {
+        std::vector<std::shared_ptr<Tank>> shoot;
+        int damage = 0;
+        int kill_points = 0;
+        for (const auto &danger_tank: danger_tanks) {
+            if (std::find(player_shoot.begin(), player_shoot.end(), map.getHex(danger_tank->getPosition())) !=
+                player_shoot.end()) {
+                shoot.push_back(danger_tank);
+                if (danger_tank->getHealthPoints() - player_tank->getDamage() <= 0) {
+                    kill_points += danger_tank->getDestructionPoints();
+                } else {
+                    damage += danger_tank->getDamage();
+                }
+            }
+        }
+        if (best_damage > damage && kill_points >= best_kill_points) {
+            best_shoot = shoot;
+        }
+
+
+    }
+
+    if (!best_shoot.empty())
+        std::cout << "canKillAndStayAlive\n";
+    return best_shoot;
 }
