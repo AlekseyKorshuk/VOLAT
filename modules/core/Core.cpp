@@ -65,7 +65,7 @@ void Core::play(std::string game, int num_turns, int num_players) {
                 }
                 if (!action_name.empty()){
                     auto tank = strategy.game->getTankByID(vehicle_id);
-                    std::cout << tank->getStringTankType() << "[" << tank->id << "] " << action_name << ": " << vehicle_id << " {" << x << " " << y << " " << z << "} -> " << msg << "\n";
+                    std::cout << "[" << tank->id << "]" << tank->getStringTankType() << " " << action_name << ": " << vehicle_id << " {" << x << " " << y << " " << z << "} -> " << msg << "\n";
                 }
 
             }

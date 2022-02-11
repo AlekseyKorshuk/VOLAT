@@ -7,33 +7,41 @@ using json = nlohmann::json;
 
 int main(int argc, char **argv) {
     std::string game, name, password;
-    int num_turns, num_players;
+    int num_turns, num_players, is_solo;
+    std::thread t1, t2, t3;
     if (argc == 1) {
-        name = "VOLAT1";
+        name = "VOLAT";
         password = "";
         game = "testVOLATAlex";
         num_turns = 99;
         num_players = 3;
+        is_solo = 0;
     } else {
         name = argv[1];
         password = argv[2];
         game = argv[3];
         num_turns = std::stoi(argv[4]);
         num_players = std::stoi(argv[5]);
+        is_solo = std::stoi(argv[6]);
     }
 
     Core core1(name, password);
-    std::thread t1 = core1.runMultiThread(game, num_turns, num_players);
+    t1 = core1.runMultiThread(game, num_turns, num_players);
 
-    Core core2("VOLAT2", "");
-    std::thread t2 = core2.runMultiThread(game, num_turns, num_players);
+    if (is_solo == 0) {
+        Core core2("VOLAT2", "");
+        t2 = core2.runMultiThread(game, num_turns, num_players);
 
-    Core core3("VOLAT3", "");
-    std::thread t3 = core3.runMultiThread(game, num_turns, num_players);
+        Core core3("VOLAT3", "");
+        t3 = core3.runMultiThread(game, num_turns, num_players);
+    }
 
     t1.join();
-    t2.join();
-    t3.join();
+
+    if (is_solo == 0) {
+        t2.join();
+        t3.join();
+    }
 
     return 0;
 }
