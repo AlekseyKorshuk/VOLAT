@@ -154,9 +154,13 @@ Map::findPath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends
         tank->update(current_node);
         std::vector<std::shared_ptr<Hex>> achievable_hexes = tank->getAchievableHexes(*this);
 
+        std::sort(achievable_hexes.begin(), achievable_hexes.end(),
+                  [&current_node](std::shared_ptr<Hex> a, std::shared_ptr<Hex>b) {
+            return a->getDistance(*current_node) > b->getDistance(*current_node);
+        });
 
         for (std::shared_ptr<Hex> node: achievable_hexes) {
-            if (!node->is_occupied && !node->visited) {
+            if (!node->is_occupied && !node->visited && node->content->is_reacheble) {
                 node->visited = true;
                 Queue.push(node);
 

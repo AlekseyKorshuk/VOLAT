@@ -71,7 +71,7 @@ HexPtrList Tank::getAchievableHexes(Map &map) const {
                 if (std::find_if(visited.begin(), visited.end(),
                                  [&node](std::shared_ptr<Hex> hex) { return hex->getJson() == node->getJson(); }) ==
                     visited.end()) {
-                    if (node->content != nullptr && node->content->is_reacheble) {
+                    if (node->content != nullptr && node->content->content_type != ContentType::OBSTACLE) {
                         visited.push_back(node);
                         Queue.push({node, current_dist + 1});
                         hexes.push_back(node);
