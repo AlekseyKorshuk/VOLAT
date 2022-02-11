@@ -15,14 +15,14 @@ std::string StateCamping::getType() {
 std::string StateCamping::calculateAction() {
     std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
 
-    if (position->danger[0] == 0) {
+    if (position->danger[0] == 0)
         return performAggressiveAction();
-    }
+
 
     auto shoot = game->canKillAndStayAlive(tank);
-    if (!shoot.empty()){
+    if (!shoot.empty())
         return shootToString(shoot);
-    }
+
     return findSafePosition();
 
 }
@@ -61,9 +61,9 @@ std::string StateCamping::performAggressiveAction() {
     if (!safe_positions_to_shoot.empty()) {
         std::vector<std::shared_ptr<Hex>> path = game->findSafePath(game->map.getHex(tank->getPosition()),
                                                                     safe_positions_to_shoot, tank);
-        if (path.size() > 1) {
+        if (path.size() > 1)
             return moveToString(path[1]);
-        }
+
         std::vector<std::shared_ptr<Hex>> area;
         for (auto list: tank->getShootingHexesAreas(game->map))
             area.insert(area.end(), list.begin(), list.end());
@@ -75,9 +75,9 @@ std::string StateCamping::performAggressiveAction() {
             return lhs->getDestructionPoints() > rhs->getDestructionPoints();
         });
 
-        if (!tanks.empty()) {
+        if (!tanks.empty())
             return shootToString(std::vector<std::shared_ptr<Tank>>{tanks[0]});
-        }
+
     }
     return moveToBase();
 }
