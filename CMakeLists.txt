@@ -9,6 +9,8 @@ set(JSON_VERSION "json-3.10.5")
 
 include_directories(third-party/${JSON_VERSION}/include third-party/${SOCKET})
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 IF (WIN32)
     # set stuff for windows
@@ -117,3 +119,5 @@ add_executable(
         ${GAME}
         ${PLAYER}
 )
+target_link_libraries(WGForgeProject PRIVATE Threads::Threads)
+
