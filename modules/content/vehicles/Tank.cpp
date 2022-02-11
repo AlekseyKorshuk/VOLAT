@@ -160,3 +160,15 @@ int Tank::getDestructionPoints() {
 int Tank::getCapturePoints() {
     return capture_points_;
 }
+
+std::string Tank::getStringTankType() {
+    switch (getTankType())
+    {
+        case TankType::SPG:   return "SPG";
+        case TankType::AT_SPG:   return "AT_SPG";
+        case TankType::MEDIUM: return "MEDIUM";
+        case TankType::LIGHT: return "LIGHT";
+        case TankType::HEAVY: return "HEAVY";
+        default:      return "[Unknown TankType]";
+    }
+}

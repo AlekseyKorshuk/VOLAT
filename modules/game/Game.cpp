@@ -442,3 +442,10 @@ std::vector<std::shared_ptr<Tank>> Game::canKillAndStayAlive(const std::shared_p
 
     return best_shoot;
 }
+
+std::shared_ptr<Tank> Game::getTankByID(int id) {
+    for (auto tank: all_vehicles)
+        if (tank->id == id)
+            return tank;
+    return nullptr;
+}

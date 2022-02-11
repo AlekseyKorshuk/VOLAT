@@ -39,6 +39,8 @@ public:
 
     TankType getTankType();
 
+    std::string getStringTankType();
+
     int getHealthPoints();
 
     int getDamage();

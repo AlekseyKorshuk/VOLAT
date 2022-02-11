@@ -53,14 +53,21 @@ void Core::play(std::string game, int num_turns, int num_players) {
                 int x = data["target"]["x"].get<std::int32_t>();
                 int y = data["target"]["y"].get<std::int32_t>();
                 int z = data["target"]["z"].get<std::int32_t>();
+                std::string action_name;
+                json msg = "";
 
                 if (action_type == "MOVE") {
-                    std::cout << "MOVE: " << vehicle_id << " {" << x << " " << y << " " << z << "} -> ";
-                    std::cout << client.move(vehicle_id, x, y, z).msg << '\n';
+                    action_name = "MOVE";
+                    msg = client.move(vehicle_id, x, y, z).msg;
                 } else if (action_type == "SHOOT") {
-                    std::cout << "SHOOT: " << vehicle_id << " {" << x << " " << y << " " << z << "} -> ";
-                    std::cout << client.shoot(vehicle_id, x, y, z).msg << '\n';
+                    action_name = "SHOOT";
+                    msg = client.shoot(vehicle_id, x, y, z).msg;
                 }
+                if (!action_name.empty()){
+                    auto tank = strategy.game->getTankByID(vehicle_id);
+                    std::cout << tank->getStringTankType() << "[" << tank->id << "] " << action_name << ": " << vehicle_id << " {" << x << " " << y << " " << z << "} -> " << msg << "\n";
+                }
+
             }
             client.turn();
         } else if (idr != state["current_player_idx"].get<std::int32_t>()) {

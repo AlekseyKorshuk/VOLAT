@@ -22,6 +22,7 @@ public:
 
     void updateTank(int id, int x, int y, int z);
 
+    std::shared_ptr<Tank> getTankByID(int id);
 
     //Return tanks that are under shoot from this tank
     std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(std::shared_ptr<Tank>);
