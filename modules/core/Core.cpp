@@ -23,9 +23,26 @@ void Core::play(std::string game, int num_turns, int num_players) {
     std::cout << resp.msg << std::endl;
     int idx = resp.msg["idx"].get<std::int32_t>();
     int idr = idx;
-    json map_json = client.map().msg;
+
+    while(true) {
+        json state_json = client.game_state().msg;
+        int num_players = state_json["num_players"];
+        int num_log_players = 0;
+
+        for (auto player: state_json["players"]) {
+            num_log_players++;
+        }
+        if (num_players == num_log_players) {
+            break;
+        }
+    }
+
     json state_json = client.game_state().msg;
+    json map_json = client.map().msg;
     Strategy strategy(idx, map_json, state_json);
+
+
+
 
     while (true) {
         json state = client.game_state().msg;

@@ -139,15 +139,16 @@ std::vector<std::shared_ptr<Hex>>
 Map::findPath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends, std::shared_ptr<Tank> tank) {
     std::shared_ptr<Hex> end = nullptr;
     // If path does not exist, will be returned list only with the "END" Hex
-    std::queue<std::shared_ptr<Hex>> Queue;
+    std::queue<std::pair<std::shared_ptr<Hex>,int>> Queue;
     bool reached_end = false;
     start->visited = true;
 
     Hex pos_tank = tank->getPosition();
 
-    Queue.push(start);
+    Queue.push({start,0});
     while (!Queue.empty() && !reached_end) {
-        std::shared_ptr<Hex> current_node = Queue.front();
+        std::shared_ptr<Hex> current_node = Queue.front().first;
+        int current_dist = Queue.front().second + 1;
         Queue.pop();
 
 
@@ -162,7 +163,7 @@ Map::findPath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends
         for (std::shared_ptr<Hex> node: achievable_hexes) {
             if (!node->is_occupied && !node->visited && node->content->is_reacheble) {
                 node->visited = true;
-                Queue.push(node);
+                Queue.push({node, current_dist});
 
                 node->prev = current_node;
                 if (std::find(ends.begin(), ends.end(), node) != ends.end()) {
