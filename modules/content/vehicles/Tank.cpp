@@ -15,9 +15,12 @@ Hex Tank::getPosition() const {
 }
 
 void Tank::update(int x, int y, int z, int health, int capture_points) {
-    x_ = x;
-    y_ = y;
-    z_ = z;
+    update(x, y, z);
+    if (x == spawn_x_ && y == spawn_y_ && z == spawn_z_) {
+        list_moves_.clear();
+    } else {
+        list_moves_.push_back(Hex(x, y, z));
+    }
     health_points_ = health;
     capture_points_ = capture_points;
 }

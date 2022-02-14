@@ -83,5 +83,6 @@ protected:
     int shot_radius_;
     int destruction_points_;
     int player_id_ = -1;
+    std::vector<Hex> list_moves_ ={};
 };
 
