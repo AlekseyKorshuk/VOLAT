@@ -48,7 +48,8 @@ void Game::update(json state_json) {
         }
     }
 
-    updateDanger();
+    //updateDanger();
+    predictingBehaviorOpponentsTanks();
 }
 
 
@@ -390,7 +391,7 @@ Game::findSortedSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::sha
     for (auto hexList: player_tank->getShootingHexesAreas(map)) {
         for (auto hex: hexList) {
             if (!hex->is_occupied && hex->content->is_reacheble) {
-                hexes_pairs.emplace_back(hex, hex->danger[0]);
+                hexes_pairs.emplace_back(hex, int(hex->danger[0]));
             }
         }
     }
@@ -448,4 +449,165 @@ std::shared_ptr<Tank> Game::getTankByID(int id) {
         if (tank->id == id)
             return tank;
     return nullptr;
+}
+
+
+void Game::predictingBehaviorOpponentsTanks() {
+
+    for (auto hex: map.hexes) {
+        hex->danger = std::vector<double>(5);
+        hex->visit = std::vector<double>(5);
+    }
+
+    for (auto tank: opponent_vehicles) {
+        predictingTankBehavior(tank);
+    }
+}
+
+
+void Game::predictingTankBehavior(std::shared_ptr<Tank> tank) {
+
+    int max_prediction_step = 3;
+
+
+    std::vector<int> directionSegments;
+    if (tank->list_moves_.size() < 2) {
+        directionSegments = definingDirectionSegments(tank->getPosition(),
+                                                      Hex(0, 0, 0));
+    } else {
+        directionSegments = definingDirectionSegments(tank->getPosition(),
+                                                      tank->list_moves_[tank->list_moves_.size()-2]);
+    }
+
+
+    std::vector<std::vector<double>>  danger_map[5];
+    for (int i = 0; i < 5; i++) {
+        danger_map[i] = std::vector<std::vector<double>>(map.radius_ * 2 + 2, std::vector<double>(map.radius_ * 2 + 2));
+    }
+    std::vector<std::vector<double>>  visit_map[5];
+    for (int i = 0; i < 5; i++) {
+        visit_map[i] = std::vector<std::vector<double>>(map.radius_ * 2 + 2, std::vector<double>(map.radius_ * 2 + 2));
+    }
+
+    int map_radius = map.radius_ + 1;
+
+    int step = 0;
+    Hex pos_tank = tank->getPosition();
+
+    visit_map[0][pos_tank.x + map_radius][pos_tank.y + map_radius] = 1;
+
+    for (auto hexList: tank->getShootingHexesAreas(map)) {
+        for (auto pos: hexList) {
+            danger_map[0][pos->x + map_radius][pos->y + map_radius] += 1;
+        }
+    }
+
+
+    std::queue<std::pair<std::shared_ptr<Hex>,int>> Queue;
+    Queue.push({map.getHex(tank->getPosition()), 0});
+
+
+    int tank_sp = tank->getSpeedPoints();
+    int k = 0;
+    int number_visited_hex[5] = {1, 0, 0, 0, 0};
+    while(Queue.size()) {
+        std::shared_ptr<Hex> current_hex = Queue.front().first;
+        int current_step = Queue.front().second;
+
+        Queue.pop();
+
+
+        tank->update(current_hex);
+        int num_visits_current_hex = visit_map[(current_step + tank_sp - 1) / tank_sp][current_hex->x + map_radius][current_hex->y + map_radius];
+        int step = (current_step + 1 + tank_sp - 1) / tank_sp;
+
+        if (step  != max_prediction_step) {
+            for (auto pos: current_hex->neighbors) {
+                std::vector<int> currentDirectionSegments = definingDirectionSegments(*current_hex, *pos);
+
+                bool f = false;
+                for (auto i: currentDirectionSegments) {
+                    for (auto j: directionSegments) {
+                        if (i == j) {
+                            f = true;
+                        }
+                    }
+                }
+
+                if (!f) continue;
+
+                number_visited_hex[step] += num_visits_current_hex;
+
+                if (visit_map[step][pos->x + map_radius][pos->y + map_radius] == 0) {
+                    Queue.push({pos, current_step + 1});
+                    k++;
+                }
+
+                visit_map[step][pos->x + map_radius][pos->y + map_radius] += num_visits_current_hex;
+            }
+        }
+    }
+
+
+
+
+
+    for (int i = 0; i < map_radius * 2; i++) {
+        for (int j = 0; j < map_radius * 2; j++) {
+            bool f = false;
+            for (int q = 0; q < max_prediction_step; q++) if (visit_map[q][i][j]) {
+                f = 1;
+                break;
+            }
+            if (!f) break;
+
+            tank->update(Hex(i - map_radius, j - map_radius, 0 - i - j + 2 * map_radius));
+
+            std::vector<std::vector<std::shared_ptr<Hex>>> shooting_hexes_areas
+                                = tank->getShootingHexesAreas(map);
+
+            for (int q = 0; q < max_prediction_step; q++) if (visit_map[q][i][j]) {
+                visit_map[q][i][j] = visit_map[q][i][j] / double (number_visited_hex[q]);
+                map.getHex(Hex(i - map_radius, j - map_radius, 0 - i - j + 2 * map_radius))->visit[q]
+                        += visit_map[q][i][j];
+            }
+
+
+            for (auto hexList: shooting_hexes_areas) {
+                for (auto hex: hexList) {
+                    for (int q = 0; q < max_prediction_step; q++)  {
+                        hex->danger[q] += visit_map[q][i][j];
+                    }
+                }
+            }
+        }
+    }
+    tank->update(pos_tank);
+}
+
+std::vector<int> Game::definingDirectionSegments(Hex start, Hex end) {
+    std::vector<Hex> hex_directions =
+            {Hex(1, 0, -1), Hex(1, -1, 0), Hex(0, -1, 1), Hex(-1, 0, 1), Hex(-1, 1, 0), Hex(0, 1, -1)};
+
+    std::vector<std::pair<int, int>> dist;
+
+    for (int i = 0; i < hex_directions.size(); i++) {
+        Hex current_hex = hex_directions[i] + start;
+        dist.push_back({end.getDistance(current_hex), i});
+    }
+    std::sort(dist.begin(), dist.end());
+
+    if (dist[0].first == dist[1].second) {
+        if (dist[0].second == 0 && dist[1].second == 5) {
+            return {5};
+        } else {
+            return {dist[0].second};
+        }
+    } else {
+        if (dist[0].second == 0) {
+            return {0, 5};
+        } else{
+            return {dist[0].second, dist[0].second + 1};
+        }
+    }
 }

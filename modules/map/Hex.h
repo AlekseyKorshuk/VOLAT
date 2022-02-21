@@ -16,6 +16,7 @@ public:
     int y;
     int z;
     std::vector<double> danger;
+    std::vector<double> visit;
     bool is_occupied = false;
     std::shared_ptr<Content> content = nullptr;
     std::vector<std::shared_ptr<Hex>> neighbors;

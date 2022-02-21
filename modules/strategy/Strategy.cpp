@@ -62,7 +62,10 @@ Strategy::Strategy(int idx, json map_json, json state_json) {
 json Strategy::calculate_actions(int idx, json state) {
     std::string actions;
 
+
+    auto start = std::chrono::steady_clock::now();
     game->update(state);
+    std::cout << "update: " << since(start).count() << " ms" << std::endl;
 
     for (auto tank: game->player_vehicles)
         if (tank->current_strategy_ != nullptr) {

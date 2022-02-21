@@ -65,5 +65,11 @@ private:
     void updatePlayers(json);
 
     void updateDanger();
+
+    void predictingBehaviorOpponentsTanks();
+
+    void predictingTankBehavior(std::shared_ptr<Tank>);
+
+    std::vector<int> definingDirectionSegments(Hex, Hex);
 };
 

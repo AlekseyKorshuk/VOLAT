@@ -65,6 +65,7 @@ public:
     std::shared_ptr<StateMachine> current_strategy_;
 
 
+    std::vector<Hex> list_moves_ = {};
 protected:
     HexPtrList getHexesInShotRadius(Map &map) const;
 
@@ -83,6 +84,5 @@ protected:
     int shot_radius_;
     int destruction_points_;
     int player_id_ = -1;
-    std::vector<Hex> list_moves_ ={};
 };
 
