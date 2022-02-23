@@ -43,13 +43,6 @@ void Tank::update(std::shared_ptr<Hex> hex) {
     this->update(*hex);
 }
 
-void Tank::kill()
-{
-    x_ = spawn_x_;
-    y_ = spawn_y_;
-    z_ = spawn_z_;
-    capture_points_ = 0;
-}
 
 Tank::Tank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z, int health_points, int capture_points, int id)
         : Content(is_reacheble = false, content_type = ContentType::VEHICLE, id = id), x_(x), y_(y), z_(z),
