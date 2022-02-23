@@ -14,9 +14,6 @@ std::string State::moveToString(std::shared_ptr<Hex> hex) {
 }
 
 std::string State::shootToString(std::vector<std::shared_ptr<Tank>> tanks) {
-    for (auto tank: tanks) {
-        tank->update(tank->getHealthPoints() - 1);
-    }
 
     Hex hex = tanks[0]->getPosition();
     if (tank->getTankType() == TankType::AT_SPG) {
@@ -29,6 +26,14 @@ std::string State::shootToString(std::vector<std::shared_ptr<Tank>> tanks) {
             }
         }
         hex = hex_mis_dis;
+    }
+
+    for (auto tank: tanks) {
+        if (tank->getHealthPoints() == 1) {
+            tank->kill();
+        } else {
+            tank->update(tank->getHealthPoints() - 1);
+        }
     }
 
     return "{\"type\":\"SHOOT\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +

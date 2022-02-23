@@ -59,6 +59,8 @@ public:
 
     void update(Hex);
 
+    void kill();
+
 
     friend std::ostream &operator<<(std::ostream &stream, const Tank &tank);
 
