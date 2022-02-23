@@ -172,6 +172,11 @@ int Tank::getCapturePoints() {
     return capture_points_;
 }
 
+std::vector<int> Tank::getSpawnPosition()
+{
+    return {spawn_x_, spawn_y_, spawn_z_};
+}
+
 std::string Tank::getStringTankType() {
     switch (getTankType())
     {

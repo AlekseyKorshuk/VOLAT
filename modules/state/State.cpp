@@ -30,10 +30,11 @@ std::string State::shootToString(std::vector<std::shared_ptr<Tank>> tanks) {
 
     for (auto tank: tanks) {
         if (tank->getHealthPoints() == 1) {
-            tank->kill();
-        } else {
-            tank->update(tank->getHealthPoints() - 1);
+            std::vector<int> spawn_pos = tank->getSpawnPosition();
+            game->updateTank(tank->id, spawn_pos[0], spawn_pos[1], spawn_pos[2]);
         }
+        tank->update(tank->getHealthPoints() - 1);
+
     }
 
     return "{\"type\":\"SHOOT\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +

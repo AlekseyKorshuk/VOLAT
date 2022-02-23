@@ -49,6 +49,8 @@ public:
 
     int getCapturePoints();
 
+    std::vector<int> getSpawnPosition();
+
     void update(int x, int y, int z, int health, int capture_points);
 
     void update(int x, int y, int z);
@@ -59,7 +61,7 @@ public:
 
     void update(Hex);
 
-    void kill();
+
 
 
     friend std::ostream &operator<<(std::ostream &stream, const Tank &tank);
