@@ -5,6 +5,7 @@ Map::Map(json map_json, int radius) : radius_(radius) {
     hexes = generateEmptyMap(radius);
     setBase(map_json);
     setSpawnPoints(map_json);
+    setObstacle(map_json);
 }
 
 void Map::setBase(json map_json) {
@@ -39,6 +40,19 @@ void Map::setSpawnPoints(json map_json) {
         }
     }
 }
+
+void Map::setObstacle(json map_json) {
+    json obstacles = map_json["content"]["obstacle"];
+
+    for (auto obstacle = obstacles.begin(); obstacle != obstacles.end(); ++obstacle) {
+        json pos = obstacle.value();
+        Hex hex = Hex(pos["x"].get<std::int32_t>(),
+                      pos["y"].get<std::int32_t>(),
+                      pos["z"].get<std::int32_t>());
+        getHex(hex)->setHex(ContentType::OBSTACLE);
+    }
+}
+
 
 
 void Map::changeOccupied(const Hex& hex, bool is_occupied) {
@@ -125,26 +139,31 @@ std::vector<std::shared_ptr<Hex>>
 Map::findPath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends, std::shared_ptr<Tank> tank) {
     std::shared_ptr<Hex> end = nullptr;
     // If path does not exist, will be returned list only with the "END" Hex
-    std::queue<std::shared_ptr<Hex>> Queue;
+    std::queue<std::pair<std::shared_ptr<Hex>,int>> Queue;
     bool reached_end = false;
     start->visited = true;
 
     Hex pos_tank = tank->getPosition();
 
-    Queue.push(start);
+    Queue.push({start,0});
     while (!Queue.empty() && !reached_end) {
-        std::shared_ptr<Hex> current_node = Queue.front();
+        std::shared_ptr<Hex> current_node = Queue.front().first;
+        int current_dist = Queue.front().second + 1;
         Queue.pop();
 
 
         tank->update(current_node);
         std::vector<std::shared_ptr<Hex>> achievable_hexes = tank->getAchievableHexes(*this);
 
+        std::sort(achievable_hexes.begin(), achievable_hexes.end(),
+                  [&current_node](std::shared_ptr<Hex> a, std::shared_ptr<Hex>b) {
+            return a->getDistance(*current_node) > b->getDistance(*current_node);
+        });
 
         for (std::shared_ptr<Hex> node: achievable_hexes) {
-            if (!node->is_occupied && !node->visited) {
+            if (!node->is_occupied && !node->visited && node->content->is_reacheble) {
                 node->visited = true;
-                Queue.push(node);
+                Queue.push({node, current_dist});
 
                 node->prev = current_node;
                 if (std::find(ends.begin(), ends.end(), node) != ends.end()) {

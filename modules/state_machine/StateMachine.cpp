@@ -14,3 +14,7 @@ void StateMachine::changeState(std::shared_ptr<State> new_state) {
 std::string StateMachine::calculateAction() {
     return state->calculateAction();
 }
+
+std::string StateMachine::getStateName() {
+    return state->getType();
+}

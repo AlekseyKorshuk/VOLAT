@@ -22,6 +22,7 @@ public:
 
     void updateTank(int id, int x, int y, int z);
 
+    std::shared_ptr<Tank> getTankByID(int id);
 
     //Return tanks that are under shoot from this tank
     std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(std::shared_ptr<Tank>);
@@ -45,6 +46,8 @@ public:
     std::vector<std::shared_ptr<Hex>>
     findSafePath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends, std::shared_ptr<Tank>);
 
+    std::vector<std::shared_ptr<Tank>> canKillAndStayAlive(const std::shared_ptr<Tank>& player_tank);
+
     Map map = Map();
 
     std::vector<std::shared_ptr<Tank>> all_vehicles;
@@ -62,5 +65,11 @@ private:
     void updatePlayers(json);
 
     void updateDanger();
+
+    void predictingBehaviorOpponentsTanks();
+
+    void predictingTankBehavior(std::shared_ptr<Tank>);
+
+    std::vector<int> definingDirectionSegments(Hex, Hex);
 };
 

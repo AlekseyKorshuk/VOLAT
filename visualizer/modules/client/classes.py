@@ -29,19 +29,18 @@ class BytesConverter:
         """
         return value.to_bytes(bytes_size, byteorder='little')
 
-    def generate_message(self, action: int, message: dict = '') -> bytes:
+    def generate_message(self, action: int, message: dict = None) -> bytes:
         """
         Generates bytes message from dictionary
         @param action: Action type
         @param message: Dictionary
         @return: Bytes
         """
-        if message != '':
+        message_length = 0
+        if message is not None:
             message = self.del_none(message.copy())
             message = json.dumps(message, separators=(',', ':'))
             message_length = len(str(message))
-        else:
-            message_length = 0
 
         array = [
             self._int_to_bytes(action),
@@ -55,7 +54,7 @@ class BytesConverter:
             array
         )
 
-    def __call__(self, action: int, message: dict = '') -> bytes:
+    def __call__(self, action: int, message: dict = None) -> bytes:
         """
         Call method of the class.
         Generates bytes message from dictionary

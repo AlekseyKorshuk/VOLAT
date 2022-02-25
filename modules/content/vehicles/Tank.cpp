@@ -15,9 +15,12 @@ Hex Tank::getPosition() const {
 }
 
 void Tank::update(int x, int y, int z, int health, int capture_points) {
-    x_ = x;
-    y_ = y;
-    z_ = z;
+    update(x, y, z);
+    if (x == spawn_x_ && y == spawn_y_ && z == spawn_z_) {
+        list_moves_.clear();
+    } else {
+        list_moves_.push_back(Hex(x, y, z));
+    }
     health_points_ = health;
     capture_points_ = capture_points;
 }
@@ -39,6 +42,7 @@ void Tank::update(Hex hex) {
 void Tank::update(std::shared_ptr<Hex> hex) {
     this->update(*hex);
 }
+
 
 Tank::Tank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z, int health_points, int capture_points, int id)
         : Content(is_reacheble = false, content_type = ContentType::VEHICLE, id = id), x_(x), y_(y), z_(z),
@@ -71,7 +75,7 @@ HexPtrList Tank::getAchievableHexes(Map &map) const {
                 if (std::find_if(visited.begin(), visited.end(),
                                  [&node](std::shared_ptr<Hex> hex) { return hex->getJson() == node->getJson(); }) ==
                     visited.end()) {
-                    if (node->content != nullptr && node->content->is_reacheble) {
+                    if (node->content != nullptr && node->content->content_type != ContentType::OBSTACLE) {
                         visited.push_back(node);
                         Queue.push({node, current_dist + 1});
                         hexes.push_back(node);
@@ -159,4 +163,21 @@ int Tank::getDestructionPoints() {
 
 int Tank::getCapturePoints() {
     return capture_points_;
+}
+
+std::vector<int> Tank::getSpawnPosition()
+{
+    return {spawn_x_, spawn_y_, spawn_z_};
+}
+
+std::string Tank::getStringTankType() {
+    switch (getTankType())
+    {
+        case TankType::SPG:   return "SPG";
+        case TankType::AT_SPG:   return "AT_SPG";
+        case TankType::MEDIUM: return "MEDIUM";
+        case TankType::LIGHT: return "LIGHT";
+        case TankType::HEAVY: return "HEAVY";
+        default:      return "[Unknown TankType]";
+    }
 }

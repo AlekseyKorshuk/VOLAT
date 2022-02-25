@@ -2,21 +2,14 @@
 #include <iostream>
 #include <cstring>
 #include <nlohmann/json.hpp>
-#include <chrono>
+#include <thread>
+
 
 using json = nlohmann::json;
 
 #include "../client/Client.h"
 #include "../strategy/Strategy.h"
 
-template<
-        class result_t   = std::chrono::milliseconds,
-        class clock_t    = std::chrono::steady_clock,
-        class duration_t = std::chrono::milliseconds
->
-auto since(std::chrono::time_point<clock_t, duration_t> const &start) {
-    return std::chrono::duration_cast<result_t>(clock_t::now() - start);
-}
 
 Core::Core(const std::string &name, const std::string &password) {
     this->name = name;
@@ -30,9 +23,26 @@ void Core::play(std::string game, int num_turns, int num_players) {
     std::cout << resp.msg << std::endl;
     int idx = resp.msg["idx"].get<std::int32_t>();
     int idr = idx;
-    json map_json = client.map().msg;
+
+    while(true) {
+        json state_json = client.game_state().msg;
+        int num_players = state_json["num_players"];
+        int num_log_players = 0;
+
+        for (auto player: state_json["players"]) {
+            num_log_players++;
+        }
+        if (num_players == num_log_players) {
+            break;
+        }
+    }
+
     json state_json = client.game_state().msg;
+    json map_json = client.map().msg;
     Strategy strategy(idx, map_json, state_json);
+
+
+
 
     while (true) {
         json state = client.game_state().msg;
@@ -50,8 +60,6 @@ void Core::play(std::string game, int num_turns, int num_players) {
 
         if (idx == state["current_player_idx"].get<std::int32_t>()) {
             std::cout << "Our turn!" << std::endl;
-            auto start = std::chrono::steady_clock::now();
-
             json actions = strategy.calculate_actions(idx, state);
 
             for (json::iterator it = actions.begin(); it != actions.end(); ++it) {
@@ -62,16 +70,22 @@ void Core::play(std::string game, int num_turns, int num_players) {
                 int x = data["target"]["x"].get<std::int32_t>();
                 int y = data["target"]["y"].get<std::int32_t>();
                 int z = data["target"]["z"].get<std::int32_t>();
+                std::string action_name;
+                json msg = "";
 
                 if (action_type == "MOVE") {
-                    std::cout << "MOVE: " << vehicle_id << " {" << x << " " << y << " " << z << "} -> ";
-                    std::cout << client.move(vehicle_id, x, y, z).msg << '\n';
+                    action_name = "MOVE";
+                    msg = client.move(vehicle_id, x, y, z).msg;
                 } else if (action_type == "SHOOT") {
-                    std::cout << "SHOOT: " << vehicle_id << " {" << x << " " << y << " " << z << "} -> ";
-                    std::cout << client.shoot(vehicle_id, x, y, z).msg << '\n';
+                    action_name = "SHOOT";
+                    msg = client.shoot(vehicle_id, x, y, z).msg;
                 }
+                if (!action_name.empty()){
+                    auto tank = strategy.game->getTankByID(vehicle_id);
+                    std::cout << "[" << tank->id << "]" << tank->getStringTankType() << " " << action_name << ": " << vehicle_id << " {" << x << " " << y << " " << z << "} -> " << msg << "\n";
+                }
+
             }
-            std::cout << "Elapsed: " << since(start).count() << " ms" << std::endl;
             client.turn();
         } else if (idr != state["current_player_idx"].get<std::int32_t>()) {
             client.turn();
@@ -79,4 +93,9 @@ void Core::play(std::string game, int num_turns, int num_players) {
 
         idr = state["current_player_idx"].get<std::int32_t>();
     }
+}
+
+std::thread Core::runMultiThread(std::string game, int num_turns, int num_players) {
+    std::thread thread(&Core::play, this, game, num_turns, num_players);
+    return thread;
 }

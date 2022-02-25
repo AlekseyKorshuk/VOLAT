@@ -10,7 +10,6 @@ from modules.map.classes import Map
 from modules.core import permanent
 
 
-
 class ImageLabel(Label):
     """A label that displays images, and plays them if they are gifs"""
 
@@ -106,6 +105,9 @@ class Core:
         if self.show_gui:
             self.button["text"] = "Recording..."
             self.button["state"] = "disabled"
+            preview_window = Toplevel(self.window)
+            image_lbl = ImageLabel(preview_window)
+            image_lbl.pack(expand=True)
         else:
             print("Recording...")
 
@@ -134,6 +136,8 @@ class Core:
         data = np.frombuffer(game_map.fig.canvas.tostring_rgb(), dtype=np.uint8)
         data = data.reshape(game_map.fig.canvas.get_width_height()[::-1] + (3,))
         images_dict[0] = Image.fromarray(data, 'RGB')
+        if self.show_gui:
+            image_lbl.load(Image.fromarray(data, 'RGB'))
 
         while True:
             try:
@@ -146,6 +150,7 @@ class Core:
 
                     images_dict[state['current_turn']] = Image.fromarray(data, 'RGB')
                     if self.show_gui:
+                        image_lbl.load(Image.fromarray(data, 'RGB'))
                         self.status.config(text=game_map.get_state_table(state, border=True))
                     game_map.client.turn()
             except KeyError:
@@ -159,17 +164,15 @@ class Core:
                             append_images=images_list[1:], optimize=False,
                             duration=1000, loop=0)
 
-        if self.show_gui:
-            gif_window = Toplevel(self.window)
-        else:
-            gif_window = Tk()
+        if not self.show_gui:
+            preview_window = Tk()
+            image_lbl = ImageLabel(preview_window)
+            image_lbl.pack(expand=True)
 
-        lbl = ImageLabel(gif_window)
-        lbl.pack(expand=True)
-        lbl.load(gif_name)
+        image_lbl.load(gif_name)
 
         if not self.show_gui:
-            gif_window.mainloop()
+            preview_window.mainloop()
 
         if self.show_gui:
             self.button["state"] = "normal"

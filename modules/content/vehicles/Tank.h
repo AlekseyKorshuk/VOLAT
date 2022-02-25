@@ -39,6 +39,8 @@ public:
 
     TankType getTankType();
 
+    std::string getStringTankType();
+
     int getHealthPoints();
 
     int getDamage();
@@ -46,6 +48,8 @@ public:
     int getDestructionPoints();
 
     int getCapturePoints();
+
+    std::vector<int> getSpawnPosition();
 
     void update(int x, int y, int z, int health, int capture_points);
 
@@ -58,11 +62,14 @@ public:
     void update(Hex);
 
 
+
+
     friend std::ostream &operator<<(std::ostream &stream, const Tank &tank);
 
     std::shared_ptr<StateMachine> current_strategy_;
 
 
+    std::vector<Hex> list_moves_ = {};
 protected:
     HexPtrList getHexesInShotRadius(Map &map) const;
 
