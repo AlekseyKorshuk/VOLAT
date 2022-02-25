@@ -4,16 +4,12 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/alekseykorshuk/volat/badge/dev)](https://www.codefactor.io/repository/github/alekseykorshuk/volat/overview/dev)
 [![CMake Build Matrix](https://github.com/AlekseyKorshuk/VOLAT/actions/workflows/c-cpp.yml/badge.svg?branch=dev)](https://github.com/AlekseyKorshuk/VOLAT/actions/workflows/c-cpp.yml)
 
-
 ## How to build
-
 ```
 cmake -B build
 cmake --build build
 ```
-
 ## How to use
-
 ```
 cd build/debug
 WGForgeProject.exe name password game num_turns num_players 1
