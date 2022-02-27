@@ -28,23 +28,23 @@ public:
     std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(std::shared_ptr<Tank>);
 
     //Finds a position from which tank_1 can safely shoot tank_2
-    std::vector<std::shared_ptr<Hex>> findSafePositionsToShoot(std::shared_ptr<Tank>, std::shared_ptr<Tank>);
+    std::vector<Position> findSafePositionsToShoot(std::shared_ptr<Tank>, std::shared_ptr<Tank>);
 
     //Finds safe positions with the minimum distance from the specified position
-    std::vector<std::shared_ptr<Hex>> findNearestSafePositions(std::shared_ptr<Hex>);
+    std::vector<Position> findNearestSafePositions(Position);
 
     std::vector<std::shared_ptr<Tank>> GuaranteedKill(std::shared_ptr<Tank>);
 
     //Finds possible tanks to shoot in specific area
-    std::vector<std::shared_ptr<Tank>> findTanksToShootOnArea(std::vector<std::shared_ptr<Hex>>);
+    std::vector<std::shared_ptr<Tank>> findTanksToShootOnArea(std::vector<Position>);
 
     //Finds sorted positions to shoot specific tank
-    std::vector<std::shared_ptr<Hex>>
+    std::vector<Position>
     findSortedSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::shared_ptr<Tank> opponent_tank);
 
 
-    std::vector<std::shared_ptr<Hex>>
-    findSafePath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends, std::shared_ptr<Tank>);
+    std::vector<Position>
+    findSafePath(Position start, std::vector<Position> ends, std::shared_ptr<Tank>);
 
     std::vector<std::shared_ptr<Tank>> canKillAndStayAlive(const std::shared_ptr<Tank>& player_tank);
 
@@ -64,12 +64,11 @@ private:
 
     void updatePlayers(json);
 
-    void updateDanger();
 
     void predictingBehaviorOpponentsTanks();
 
     void predictingTankBehavior(std::shared_ptr<Tank>);
 
-    std::vector<int> definingDirectionSegments(Hex, Hex);
+    std::vector<int> definingDirectionSegments(Position, Position);
 };
 

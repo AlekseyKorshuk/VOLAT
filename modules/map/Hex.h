@@ -7,56 +7,39 @@
 #include <nlohmann/json.hpp>
 #include <vector>
 #include "../content/Content.h"
+#include "Position.h"
 
 using json = nlohmann::json;
 
 class Hex {
 public:
-    int x;
-    int y;
-    int z;
+    Position pos;
+
     std::vector<double> danger;
     std::vector<double> visit;
+
     bool is_occupied = false;
+
     std::shared_ptr<Content> content = nullptr;
-    std::vector<std::shared_ptr<Hex>> neighbors;
+
+    std::vector<Position> neighbors;
+
     bool visited = false;
-    std::shared_ptr<Hex> prev = nullptr;
+    int  visited_d = 0;
+    Position prev = {-100, -100, -100};
 
     Hex(int x, int y, int z, ContentType content_type = ContentType::EMPTY, json data = json::parse("{}"), int id = -1);
 
     void setHex(ContentType content_type = ContentType::EMPTY, json data = json::parse("{}"), int id = -1);
 
-    bool operator<(const Hex &other) const;
-
-    Hex &operator+=(const Hex &hex);
-
-    friend Hex operator+(Hex &a, const Hex &b);
-
-    Hex &operator-=(const Hex &hex);
-
-    friend Hex operator-(Hex &a, const Hex &b);
-
-    Hex getDirection(int direction);
-
-    Hex getNeighbor(int direction);
-
-    Hex getDiagonalNeighbor(int direction);
-
-    int getLength() const;
-
-    int getDistance(const Hex &hex);
-
-    void addNeighbour(std::shared_ptr<Hex> hex);
+    void addNeighbour(Position pos);
 
     json getJson();
 
     friend std::ostream &operator<<(std::ostream &stream, const Hex &hex) {
-        stream << "(" << hex.x << "," << hex.y << "," << hex.z << ")";
+        stream << "(" << hex.pos << ",..." << ")";
         return stream;
     }
-
-    bool operator==(Hex hex);
 
     void clear();
 

@@ -6,6 +6,7 @@ MediumTank::MediumTank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_
     this->type_ = TankType::MEDIUM;
     this->speed_points_ = 2;
     this->damage_ = 1;
-    this->shot_radius_ = 2;
+    this->max_shot_radius_ = 2;
+    this->min_shot_radius_ = 2;
     this->destruction_points_ = 2;
 }

@@ -17,6 +17,8 @@ std::string StateDefence::getType() {
 
 
 std::string StateDefence::calculateAction() {
+    return "";
+    /*
     std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
 
     std::vector<std::shared_ptr<Tank>> tanks_on_base = game->findTanksToShootOnArea(game->map.base);
@@ -49,4 +51,5 @@ std::string StateDefence::calculateAction() {
     if (!path.empty())
         return moveToString(path[1]);
     return "";
+     */
 }

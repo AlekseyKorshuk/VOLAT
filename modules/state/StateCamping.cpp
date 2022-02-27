@@ -13,6 +13,8 @@ std::string StateCamping::getType() {
 
 
 std::string StateCamping::calculateAction() {
+    return "";
+    /*
     std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
 
     if (position->danger[0] == 0)
@@ -24,9 +26,9 @@ std::string StateCamping::calculateAction() {
         return shootToString(shoot);
 
     return findSafePosition();
-
+    */
 }
-
+/*
 std::string StateCamping::moveToBase() {
     std::vector<std::shared_ptr<Hex>> path = game->findSafePath(game->map.getHex(tank->getPosition()), game->map.base,
                                                                 tank);
@@ -81,3 +83,4 @@ std::string StateCamping::performAggressiveAction() {
     }
     return moveToBase();
 }
+*/

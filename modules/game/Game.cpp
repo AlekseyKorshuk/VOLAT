@@ -8,7 +8,6 @@
 
 Game::Game(int idx, json map_json, json state_json) : idx(idx) {
     map = Map(map_json);
-
     for (int i = 0; i < 15; i++) all_vehicles.push_back(nullptr);
 
     json players_json = state_json["players"];
@@ -198,10 +197,10 @@ std::vector<std::vector<std::shared_ptr<Tank> > > Game::tanksUnderShoot(std::sha
     auto shootingHexesAreas = tank->getShootingHexesAreas(map);
 
     for (auto hexPtrList: shootingHexesAreas) {
-        for (auto hex: hexPtrList) {
+        for (auto pos: hexPtrList) {
             std::vector<std::shared_ptr<Tank> > tankList;
             for (auto tank: opponent_vehicles) {
-                if (*hex == tank->getPosition()
+                if (pos == tank->getPosition()
                     && tank->getHealthPoints() != 0
                     && !getPlayer(tank->getPlayerId())->is_neutral) {
                     tankList.push_back(tank);
@@ -216,80 +215,65 @@ std::vector<std::vector<std::shared_ptr<Tank> > > Game::tanksUnderShoot(std::sha
     return tanks;
 }
 
-void Game::updateDanger() {
 
-    int max_dist = 1;
-    for (auto hex: map.hexes_map) {
-        hex.second->danger.clear();
-        hex.second->danger = std::vector<double>(max_dist, 0);
-    }
-
-    for (auto tank: opponent_vehicles) {
-        std::queue<std::pair<std::shared_ptr<Hex>, int> > queue;
-        double damage = tank->getDamage();
-        int ld = -1;
-        for (auto hexList: tank->getShootingHexesAreas(map)) {
-            for (auto hex: hexList) {
-                queue.push({hex, 0});
-                hex->danger[0] += damage;
-                hex->visited = true;
-            }
-        }
-    }
-}
-
-std::vector<std::shared_ptr<Hex>>
+std::vector<Position>
 Game::findSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::shared_ptr<Tank> opponent_tank) {
-    std::vector<std::shared_ptr<Hex>> hexes;
+    std::vector<Position > hexes;
 
-    Hex hex_player_tank = player_tank->getPosition();
-    Hex hex_opponent_tank = opponent_tank->getPosition();
+    Position pos_player_tank = player_tank->getPosition();
+    Position pos_opponent_tank = opponent_tank->getPosition();
 
-    player_tank->update(hex_opponent_tank);
+    player_tank->update(pos_opponent_tank);
 
     for (auto hexList: player_tank->getShootingHexesAreas(map)) {
-        for (auto hex: hexList) {
+        for (auto pos: hexList) {
+            std::shared_ptr<Hex> hex = map.getHex(pos);
             if (!hex->is_occupied && hex->content->is_reacheble && hex->danger[0] == 0) {
-                hexes.push_back(hex);
+                hexes.push_back(pos);
             }
         }
     }
 
-    player_tank->update(hex_player_tank);
+    player_tank->update(pos_player_tank);
     return hexes;
 }
 
-std::vector<std::shared_ptr<Hex>> Game::findNearestSafePositions(std::shared_ptr<Hex> start) {
+std::vector<Position> Game::findNearestSafePositions(Position start) {
 
-    std::vector<std::shared_ptr<Hex>> hexes;
+    std::vector<Position> hexes;
 
-    std::queue<std::shared_ptr<Hex>> Queue;
+    std::vector<Position> visited_positions;
+    std::queue<Position> Queue;
     Queue.push(start);
+
 
 
     bool reached_end = false;
 
     while (!Queue.empty()) {
-        std::shared_ptr<Hex> current_node = Queue.front();
+        Position current_pos = Queue.front();
 
-        if (current_node->danger[0] == 0) {
+        if (map.getHex(current_pos)->danger[0] == 0) {
             reached_end = true;
-            hexes.push_back(current_node);
+            hexes.push_back(current_pos);
         }
         Queue.pop();
 
         if (!reached_end) {
-            for (std::shared_ptr<Hex> node: current_node->neighbors)
+            for (Position pos: map.getHex(current_pos)->neighbors) {
+                std::shared_ptr<Hex> node = map.getHex(pos);
                 if (!node->visited) {
                     if (node->content != nullptr && node->content->is_reacheble) {
                         node->visited = true;
-                        Queue.push(node);
+                        visited_positions.push_back(pos);
+                        Queue.push(pos);
                     }
                 }
+            }
         }
     }
 
-    map.clearPath();
+    map.clearPath(visited_positions);
     return hexes;
 }
 
@@ -318,38 +302,44 @@ std::vector<std::shared_ptr<Tank>> Game::GuaranteedKill(std::shared_ptr<Tank> ta
     return std::vector<std::shared_ptr<Tank>>();
 }
 
-std::vector<std::shared_ptr<Hex>>
-Game::findSafePath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends, std::shared_ptr<Tank> tank) {
-    std::shared_ptr<Hex> end = nullptr;
-    std::priority_queue<std::pair<std::pair<int, double>, std::shared_ptr<Hex> >> Queue;
+std::vector<Position>
+Game::findSafePath(Position start, std::vector<Position> ends, std::shared_ptr<Tank> tank) {
+    Position end = {-100, -100, -100};
+    std::priority_queue<std::pair<std::pair<int, double>, Position >> Queue;
     bool reached_end = false;
-    start->visited = true;
+    std::vector<Position> visited_positions;
 
-    Hex pos_tank = tank->getPosition();
+    visited_positions.push_back(start);
+    map.getHex(start)->visited = true;
+
+    Position pos_tank = tank->getPosition();
 
     Queue.push({{0, 0}, start});
     while (!Queue.empty() && !reached_end) {
         double danger = -Queue.top().first.second;
         int dist = -Queue.top().first.first;
-        std::shared_ptr<Hex> current_node = Queue.top().second;
+        Position current_pos = Queue.top().second;
         Queue.pop();
 
-        tank->update(current_node);
-        std::vector<std::shared_ptr<Hex>> achievable_hexes = tank->getAchievableHexes(map);
+        tank->update(current_pos);
+        std::vector<Position> achievable_hexes = tank->getAchievableHexes(map);
 
-        for (std::shared_ptr<Hex> node: achievable_hexes) {
+        for (Position pos: achievable_hexes) {
+            std::shared_ptr<Hex> node = map.getHex(pos);
             if (!node->is_occupied && !node->visited) {
                 node->visited = true;
+                visited_positions.push_back(pos);
+
                 double n_danger = danger;
                 if (node->danger.size() > dist) {
                     n_danger += node->danger[dist];
                 }
-                Queue.push({{-(dist + 1), -n_danger}, node});
+                Queue.push({{-(dist + 1), -n_danger}, pos});
 
-                node->prev = current_node;
-                if (std::find(ends.begin(), ends.end(), node) != ends.end()) {
+                node->prev = current_pos;
+                if (std::find(ends.begin(), ends.end(), pos) != ends.end()) {
                     reached_end = true;
-                    end = node;
+                    end = pos;
                     break;
                 }
             }
@@ -357,57 +347,61 @@ Game::findSafePath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>>
     }
     tank->update(pos_tank);
 
-    std::vector<std::shared_ptr<Hex>> route = map.traceRoute(end);
-    map.clearPath();
+    std::vector<Position> route = map.traceRoute(end);
+    map.clearPath(visited_positions);
     return route;
 }
 
-std::vector<std::shared_ptr<Tank>> Game::findTanksToShootOnArea(std::vector<std::shared_ptr<Hex>> area) {
+std::vector<std::shared_ptr<Tank>>
+Game::findTanksToShootOnArea(std::vector<Position> area) {
     std::vector<std::shared_ptr<Tank>> tanks;
-    for (auto hex: area)
+
+    for (auto pos: area)
         for (auto opponent_vehicle: opponent_vehicles)
-            if (opponent_vehicle->getPosition() == *hex && !getPlayer(opponent_vehicle->getPlayerId())->is_neutral)
+            if (opponent_vehicle->getPosition() == pos && !getPlayer(opponent_vehicle->getPlayerId())->is_neutral)
                 tanks.push_back(opponent_vehicle);
     return tanks;
 }
 
-bool sortbysec(const std::pair<std::shared_ptr<Hex>, int> &a,
-               const std::pair<std::shared_ptr<Hex>, int> &b, Hex hex) {
+bool sortbysec(const std::pair<Position, int> &a,
+               const std::pair<Position, int> &b, Position pos) {
     if (a.second != b.second)
         return a.second < b.second;
 
-    return a.first->getDistance(hex) < a.first->getDistance(hex);
+    return a.first.getDistance(pos) < a.first.getDistance(pos);
 }
 
-std::vector<std::shared_ptr<Hex>>
+std::vector<Position>
 Game::findSortedSafePositionsToShoot(std::shared_ptr<Tank> player_tank, std::shared_ptr<Tank> opponent_tank) {
-    std::vector<std::pair<std::shared_ptr<Hex>, int>> hexes_pairs;
+    std::vector<std::pair<Position, int>> hexes_pairs;
 
-    Hex hex_player_tank = player_tank->getPosition();
-    Hex hex_opponent_tank = opponent_tank->getPosition();
+    Position pos_player_tank = player_tank->getPosition();
+    Position pos_opponent_tank = opponent_tank->getPosition();
 
-    player_tank->update(hex_opponent_tank);
+    player_tank->update(pos_opponent_tank);
 
-    for (auto hexList: player_tank->getShootingHexesAreas(map)) {
-        for (auto hex: hexList) {
+    for (auto posList: player_tank->getShootingHexesAreas(map)) {
+        for (auto pos: posList) {
+            std::shared_ptr<Hex> hex = map.getHex(pos);
             if (!hex->is_occupied && hex->content->is_reacheble) {
-                hexes_pairs.emplace_back(hex, int(hex->danger[0]));
+                hexes_pairs.emplace_back(pos, int(hex->danger[0]));
             }
         }
     }
-    player_tank->update(hex_player_tank);
+    player_tank->update(pos_player_tank);
     std::sort(hexes_pairs.begin(), hexes_pairs.end(),
-              std::bind(sortbysec, std::placeholders::_1, std::placeholders::_2, hex_player_tank));
+              std::bind(sortbysec, std::placeholders::_1, std::placeholders::_2, pos_player_tank));
 
-    std::vector<std::shared_ptr<Hex>> hexes;
+    std::vector<Position> hexes;
     hexes.reserve(hexes_pairs.size());
     for (const auto &pair: hexes_pairs)
         hexes.push_back(pair.first);
+
     return hexes;
 }
 
 std::vector<std::shared_ptr<Tank>> Game::canKillAndStayAlive(const std::shared_ptr<Tank> &player_tank) {
-    auto position = map.getHex(player_tank->getPosition());
+    auto position = player_tank->getPosition();
     std::vector<std::shared_ptr<Tank>> danger_tanks;
 
     for (const auto &tank: opponent_vehicles)
@@ -427,7 +421,7 @@ std::vector<std::shared_ptr<Tank>> Game::canKillAndStayAlive(const std::shared_p
         int damage = 0;
         int kill_points = 0;
         for (const auto &danger_tank: danger_tanks) {
-            if (std::find(player_shoot.begin(), player_shoot.end(), map.getHex(danger_tank->getPosition())) !=
+            if (std::find(player_shoot.begin(), player_shoot.end(), danger_tank->getPosition()) !=
                 player_shoot.end()) {
                 shoot.push_back(danger_tank);
                 if (danger_tank->getHealthPoints() - player_tank->getDamage() <= 0)
@@ -473,7 +467,7 @@ void Game::predictingTankBehavior(std::shared_ptr<Tank> tank) {
     std::vector<int> directionSegments;
     if (tank->list_moves_.size() < 2) {
         directionSegments = definingDirectionSegments(tank->getPosition(),
-                                                      Hex(0, 0, 0));
+                                                      Position(0, 0, 0));
     } else {
         directionSegments = definingDirectionSegments(tank->getPosition(),
                                                       tank->list_moves_[tank->list_moves_.size()-2]);
@@ -492,38 +486,38 @@ void Game::predictingTankBehavior(std::shared_ptr<Tank> tank) {
     int map_radius = map.radius_ + 1;
 
     int step = 0;
-    Hex pos_tank = tank->getPosition();
+    Position pos_tank = tank->getPosition();
 
-    visit_map[0][pos_tank.x + map_radius][pos_tank.y + map_radius] = 1;
+    visit_map[0][pos_tank.getX() + map_radius][pos_tank.getY() + map_radius] = 1;
 
     for (auto hexList: tank->getShootingHexesAreas(map)) {
         for (auto pos: hexList) {
-            danger_map[0][pos->x + map_radius][pos->y + map_radius] += 1;
+            danger_map[0][pos.getX() + map_radius][pos.getY() + map_radius] += 1;
         }
     }
 
 
-    std::queue<std::pair<std::shared_ptr<Hex>,int>> Queue;
-    Queue.push({map.getHex(tank->getPosition()), 0});
+    std::queue<std::pair<Position,int>> Queue;
+    Queue.push({tank->getPosition(), 0});
 
 
     int tank_sp = tank->getSpeedPoints();
     int k = 0;
     int number_visited_hex[5] = {1, 0, 0, 0, 0};
     while(Queue.size()) {
-        std::shared_ptr<Hex> current_hex = Queue.front().first;
+        Position current_pos = Queue.front().first;
         int current_step = Queue.front().second;
 
         Queue.pop();
 
 
-        tank->update(current_hex);
-        int num_visits_current_hex = visit_map[(current_step + tank_sp - 1) / tank_sp][current_hex->x + map_radius][current_hex->y + map_radius];
+        tank->update(current_pos);
+        int num_visits_current_hex = visit_map[(current_step + tank_sp - 1) / tank_sp][current_pos.getX() + map_radius][current_pos.getY() + map_radius];
         int step = (current_step + 1 + tank_sp - 1) / tank_sp;
 
         if (step  != max_prediction_step) {
-            for (auto pos: current_hex->neighbors) {
-                std::vector<int> currentDirectionSegments = definingDirectionSegments(*current_hex, *pos);
+            for (auto pos: map.getHex(current_pos)->neighbors) {
+                std::vector<int> currentDirectionSegments = definingDirectionSegments(current_pos, pos);
 
                 bool f = false;
                 for (auto i: currentDirectionSegments) {
@@ -538,12 +532,12 @@ void Game::predictingTankBehavior(std::shared_ptr<Tank> tank) {
 
                 number_visited_hex[step] += num_visits_current_hex;
 
-                if (visit_map[step][pos->x + map_radius][pos->y + map_radius] == 0) {
+                if (visit_map[step][pos.getX() + map_radius][pos.getY() + map_radius] == 0) {
                     Queue.push({pos, current_step + 1});
                     k++;
                 }
 
-                visit_map[step][pos->x + map_radius][pos->y + map_radius] += num_visits_current_hex;
+                visit_map[step][pos.getX() + map_radius][pos.getY() + map_radius] += num_visits_current_hex;
             }
         }
     }
@@ -561,22 +555,22 @@ void Game::predictingTankBehavior(std::shared_ptr<Tank> tank) {
             }
             if (!f) break;
 
-            tank->update(Hex(i - map_radius, j - map_radius, 0 - i - j + 2 * map_radius));
+            tank->update(Position(i - map_radius, j - map_radius, 0 - i - j + 2 * map_radius));
 
-            std::vector<std::vector<std::shared_ptr<Hex>>> shooting_hexes_areas
+            std::vector<std::vector<Position>> shooting_hexes_areas
                                 = tank->getShootingHexesAreas(map);
 
             for (int q = 0; q < max_prediction_step; q++) if (visit_map[q][i][j]) {
                 visit_map[q][i][j] = visit_map[q][i][j] / double (number_visited_hex[q]);
-                map.getHex(Hex(i - map_radius, j - map_radius, 0 - i - j + 2 * map_radius))->visit[q]
+                map.getHex(Position(i - map_radius, j - map_radius, 0 - i - j + 2 * map_radius))->visit[q]
                         += visit_map[q][i][j];
             }
 
 
             for (auto hexList: shooting_hexes_areas) {
-                for (auto hex: hexList) {
+                for (auto pos: hexList) {
                     for (int q = 0; q < max_prediction_step; q++)  {
-                        hex->danger[q] += visit_map[q][i][j];
+                        map.getHex(pos)->danger[q] += visit_map[q][i][j];
                     }
                 }
             }
@@ -585,14 +579,14 @@ void Game::predictingTankBehavior(std::shared_ptr<Tank> tank) {
     tank->update(pos_tank);
 }
 
-std::vector<int> Game::definingDirectionSegments(Hex start, Hex end) {
-    std::vector<Hex> hex_directions =
-            {Hex(1, 0, -1), Hex(1, -1, 0), Hex(0, -1, 1), Hex(-1, 0, 1), Hex(-1, 1, 0), Hex(0, 1, -1)};
+std::vector<int> Game::definingDirectionSegments(Position start, Position end) {
+    std::vector<Position> hex_directions =
+            {Position(1, 0, -1), Position(1, -1, 0), Position(0, -1, 1), Position(-1, 0, 1), Position(-1, 1, 0), Position(0, 1, -1)};
 
     std::vector<std::pair<int, int>> dist;
 
     for (int i = 0; i < hex_directions.size(); i++) {
-        Hex current_hex = hex_directions[i] + start;
+        Position current_hex = hex_directions[i] + start;
         dist.push_back({end.getDistance(current_hex), i});
     }
     std::sort(dist.begin(), dist.end());

@@ -38,7 +38,7 @@ protected:
     std::shared_ptr<Game> game;
 
 
-    std::string moveToString(std::shared_ptr<Hex>);
+    std::string moveToString(Position);
 
     std::string shootToString(std::vector<std::shared_ptr<Tank>>);
 };
