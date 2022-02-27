@@ -182,12 +182,12 @@ void Game::updateTank(int id, int x, int y, int z) {
     }
 }
 
-void Game::updateTank(int id, int x, int y, int z, int health, int capture_points) {
+void Game::updateTank(int id, int x, int y, int z, int health, int capture_points, int shoot_range_bonus) {
     std::shared_ptr<Tank> tank = all_vehicles[id - 1];
 
     if (tank != nullptr) {
         map.changeOccupied(tank->getPosition(), false);
-        tank->update(x, y, z, health, capture_points);
+        tank->update(x, y, z, health, capture_points, shoot_range_bonus);
         map.changeOccupied(tank->getPosition(), true);
     }
 }

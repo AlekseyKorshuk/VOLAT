@@ -18,7 +18,7 @@ public:
 
     void update(json);
 
-    void updateTank(int id, int x, int y, int z, int health, int capture_points);
+    void updateTank(int id, int x, int y, int z, int health, int capture_points, int shoot_range_bonus);
 
     void updateTank(int id, int x, int y, int z);
 
