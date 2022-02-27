@@ -42,8 +42,10 @@ void Game::update(json state_json) {
 
             int capture_points = vehicle["capture_points"].get<std::int32_t>();
             int health = vehicle["health"].get<std::int32_t>();
+            int shoot_range_bonus = vehicle["shoot_range_bonus"].get<std::int32_t>();
 
-            updateTank(vehicle_id, x, y, z, health, capture_points);
+
+            updateTank(vehicle_id, x, y, z, health, capture_points, shoot_range_bonus);
         }
     }
 

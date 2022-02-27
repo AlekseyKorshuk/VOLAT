@@ -14,7 +14,7 @@ Position Tank::getPosition() const {
     return pos_;
 }
 
-void Tank::update(int x, int y, int z, int health, int capture_points) {
+void Tank::update(int x, int y, int z, int health, int capture_points, int shoot_range_bonus) {
     update(x, y, z);
 
     if (pos_ == spawn_pos_) {
@@ -24,6 +24,7 @@ void Tank::update(int x, int y, int z, int health, int capture_points) {
     }
     health_points_ = health;
     capture_points_ = capture_points;
+    shoot_range_bonus_ = shoot_range_bonus;
 }
 
 void Tank::update(int x, int y, int z) {

@@ -51,7 +51,7 @@ public:
 
     Position getSpawnPosition();
 
-    void update(int x, int y, int z, int health, int capture_points);
+    void update(int x, int y, int z, int health, int capture_points, int shoot_range_bonus);
 
     void update(int x, int y, int z);
 
