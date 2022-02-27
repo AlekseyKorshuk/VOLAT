@@ -6,6 +6,9 @@ Map::Map(json map_json, int radius) : radius_(radius) {
     setBase(map_json);
     setSpawnPoints(map_json);
     setObstacle(map_json);
+    setLightRepair(map_json);
+    setHardRepair(map_json);
+    setCatapult(map_json);
 }
 
 void Map::setBase(json map_json) {
@@ -54,8 +57,44 @@ void Map::setObstacle(json map_json) {
 }
 
 
+void Map::setLightRepair(json map_json) {
+    json objects = map_json["content"]["light_repair"];
 
-void Map::changeOccupied(const Hex& hex, bool is_occupied) {
+    for (auto object = objects.begin(); object != objects.end(); ++object) {
+        json pos = object.value();
+        Hex hex = Hex(pos["x"].get<std::int32_t>(),
+                      pos["y"].get<std::int32_t>(),
+                      pos["z"].get<std::int32_t>());
+        getHex(hex)->setHex(ContentType::LIGHT_RAPAIR);
+    }
+}
+
+void Map::setHardRepair(json map_json) {
+    json objects = map_json["content"]["hard_repair"];
+
+    for (auto object = objects.begin(); object != objects.end(); ++object) {
+        json pos = object.value();
+        Hex hex = Hex(pos["x"].get<std::int32_t>(),
+                      pos["y"].get<std::int32_t>(),
+                      pos["z"].get<std::int32_t>());
+        getHex(hex)->setHex(ContentType::HARD_REPAIR);
+    }
+}
+
+void Map::setCatapult(json map_json) {
+    json objects = map_json["content"]["catapult"];
+
+    for (auto object = objects.begin(); object != objects.end(); ++object) {
+        json pos = object.value();
+        Hex hex = Hex(pos["x"].get<std::int32_t>(),
+                      pos["y"].get<std::int32_t>(),
+                      pos["z"].get<std::int32_t>());
+        getHex(hex)->setHex(ContentType::CATAPULT);
+    }
+}
+
+
+void Map::changeOccupied(const Hex &hex, bool is_occupied) {
     getHex(hex)->is_occupied = is_occupied;
 }
 
@@ -139,13 +178,13 @@ std::vector<std::shared_ptr<Hex>>
 Map::findPath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends, std::shared_ptr<Tank> tank) {
     std::shared_ptr<Hex> end = nullptr;
     // If path does not exist, will be returned list only with the "END" Hex
-    std::queue<std::pair<std::shared_ptr<Hex>,int>> Queue;
+    std::queue<std::pair<std::shared_ptr<Hex>, int>> Queue;
     bool reached_end = false;
     start->visited = true;
 
     Hex pos_tank = tank->getPosition();
 
-    Queue.push({start,0});
+    Queue.push({start, 0});
     while (!Queue.empty() && !reached_end) {
         std::shared_ptr<Hex> current_node = Queue.front().first;
         int current_dist = Queue.front().second + 1;
@@ -156,9 +195,9 @@ Map::findPath(std::shared_ptr<Hex> start, std::vector<std::shared_ptr<Hex>> ends
         std::vector<std::shared_ptr<Hex>> achievable_hexes = tank->getAchievableHexes(*this);
 
         std::sort(achievable_hexes.begin(), achievable_hexes.end(),
-                  [&current_node](std::shared_ptr<Hex> a, std::shared_ptr<Hex>b) {
-            return a->getDistance(*current_node) > b->getDistance(*current_node);
-        });
+                  [&current_node](std::shared_ptr<Hex> a, std::shared_ptr<Hex> b) {
+                      return a->getDistance(*current_node) > b->getDistance(*current_node);
+                  });
 
         for (std::shared_ptr<Hex> node: achievable_hexes) {
             if (!node->is_occupied && !node->visited && node->content->is_reacheble) {
@@ -222,3 +261,5 @@ std::map<std::shared_ptr<Hex>, int> Map::getShootingMap(std::vector<std::shared_
     }
     return shooting_map;
 }
+
+
