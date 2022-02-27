@@ -42,7 +42,7 @@ public:
 
     void clearPath(std::vector<Position>);
 
-    bool belongs(const Hex &h) const;
+    bool belongs(const Position &h) const;
 
     std::vector<std::shared_ptr<Hex>> generateEmptyMap(int radius);
 

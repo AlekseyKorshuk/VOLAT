@@ -47,7 +47,6 @@ void Game::update(json state_json) {
         }
     }
 
-    //updateDanger();
     predictingBehaviorOpponentsTanks();
 }
 
@@ -473,7 +472,6 @@ void Game::predictingTankBehavior(std::shared_ptr<Tank> tank) {
                                                       tank->list_moves_[tank->list_moves_.size()-2]);
     }
 
-
     std::vector<std::vector<double>>  danger_map[5];
     for (int i = 0; i < 5; i++) {
         danger_map[i] = std::vector<std::vector<double>>(map.radius_ * 2 + 2, std::vector<double>(map.radius_ * 2 + 2));
@@ -489,7 +487,6 @@ void Game::predictingTankBehavior(std::shared_ptr<Tank> tank) {
     Position pos_tank = tank->getPosition();
 
     visit_map[0][pos_tank.getX() + map_radius][pos_tank.getY() + map_radius] = 1;
-
     for (auto hexList: tank->getShootingHexesAreas(map)) {
         for (auto pos: hexList) {
             danger_map[0][pos.getX() + map_radius][pos.getY() + map_radius] += 1;
@@ -541,10 +538,6 @@ void Game::predictingTankBehavior(std::shared_ptr<Tank> tank) {
             }
         }
     }
-
-
-
-
 
     for (int i = 0; i < map_radius * 2; i++) {
         for (int j = 0; j < map_radius * 2; j++) {

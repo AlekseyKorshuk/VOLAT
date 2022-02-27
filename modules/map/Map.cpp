@@ -162,14 +162,15 @@ std::vector<std::shared_ptr<Hex>> Map::generateEmptyMap(int radius) {
     return hexes;
 }
 
-bool Map::belongs(const Hex &h) const {
-    return h.pos.getLength() <= radius_;
+bool Map::belongs(const Position &h) const {
+    return h.getLength() <= radius_;
 }
 
 std::shared_ptr<Hex> Map::getHex(const Position &pos) const {
-    if (pos.getX() == -100) {
+    if (pos.getX() == -100 || !belongs(pos)) {
         return nullptr;
     }
+
     return  hexes_map[pos.getX() + radius_ + 1][pos.getY() + radius_ + 1];
 }
 
