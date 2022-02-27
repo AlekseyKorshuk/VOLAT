@@ -6,6 +6,9 @@ Map::Map(json map_json, int radius) : radius_(radius) {
     setBase(map_json);
     setSpawnPoints(map_json);
     setObstacle(map_json);
+    setLightRepair(map_json);
+    setHardRepair(map_json);
+    setCatapult(map_json);
 }
 
 void Map::setBase(json map_json) {
@@ -51,10 +54,50 @@ void Map::setObstacle(json map_json) {
 }
 
 
+void Map::setLightRepair(json map_json) {
+    json objects = map_json["content"]["light_repair"];
+
 
 void Map::changeOccupied(const Position& pos, bool is_occupied) {
     getHex(pos)->is_occupied = is_occupied;
 }
+
+  void Map::setLightRepair(json map_json) {
+    for (auto object = objects.begin(); object != objects.end(); ++object) {
+        json pos = object.value();
+        Position hex = Position(pos["x"].get<std::int32_t>(),
+                                pos["y"].get<std::int32_t>(),
+                                pos["z"].get<std::int32_t>());
+        getHex(hex)->setHex(ContentType::LIGHT_RAPAIR);
+    }
+}
+
+void Map::setHardRepair(json map_json) {
+    json objects = map_json["content"]["hard_repair"];
+
+    for (auto object = objects.begin(); object != objects.end(); ++object) {
+        json pos = object.value();
+        Position hex = Position(pos["x"].get<std::int32_t>(),
+                                pos["y"].get<std::int32_t>(),
+                                pos["z"].get<std::int32_t>());
+        getHex(hex)->setHex(ContentType::HARD_REPAIR);
+    }
+}
+
+void Map::setCatapult(json map_json) {
+    json objects = map_json["content"]["catapult"];
+
+    for (auto object = objects.begin(); object != objects.end(); ++object) {
+        json pos = object.value();
+        Position hex = Position(pos["x"].get<std::int32_t>(),
+                                pos["y"].get<std::int32_t>(),
+                                pos["z"].get<std::int32_t>());
+        getHex(hex)->setHex(ContentType::CATAPULT);
+    }
+}
+
+
+
 
 void Map::clearPath(std::vector<Position> posList) {
     for (auto pos: posList) {
@@ -136,6 +179,7 @@ Map::findPath(Position start, std::vector<Position> ends, std::shared_ptr<Tank> 
 
     std::vector<Position> visited_positions;
     std::queue<std::pair<Position,int>> Queue;
+
     bool reached_end = false;
     visited_positions.push_back(start);
     getHex(start)->visited = true;
@@ -218,3 +262,4 @@ std::map<std::shared_ptr<Hex>, int> Map::getShootingMap(std::vector<std::shared_
     return shooting_map;
 }
 */
+

@@ -33,6 +33,10 @@ public:
 
     void setSpawnPoints(json map_json);
     void setObstacle(json map_json);
+    void setCatapult(json map_json);
+    void setLightRepair(json map_json);
+    void setHardRepair(json map_json);
+
 
     void changeOccupied(const Position&, bool);
 
