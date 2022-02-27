@@ -108,7 +108,7 @@ class Map:
 
         for catapult in map_data['content']['catapult']:
             hexes[(catapult['x'], catapult['y'], catapult['z'])] = {
-                'color': 'brown'
+                'color': 'aqua'
             }
         return hexes
 
