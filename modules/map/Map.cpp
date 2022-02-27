@@ -54,15 +54,15 @@ void Map::setObstacle(json map_json) {
 }
 
 
-void Map::setLightRepair(json map_json) {
-    json objects = map_json["content"]["light_repair"];
+
 
 
 void Map::changeOccupied(const Position& pos, bool is_occupied) {
     getHex(pos)->is_occupied = is_occupied;
 }
 
-  void Map::setLightRepair(json map_json) {
+void Map::setLightRepair(json map_json) {
+    json objects = map_json["content"]["light_repair"];
     for (auto object = objects.begin(); object != objects.end(); ++object) {
         json pos = object.value();
         Position hex = Position(pos["x"].get<std::int32_t>(),
