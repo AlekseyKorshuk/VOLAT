@@ -7,6 +7,8 @@ LightTankStrategy::LightTankStrategy(std::shared_ptr<Tank> tank, std::shared_ptr
 }
 
 void LightTankStrategy::updateState() {
+    changeState(std::make_shared<StateCapture>(tank, game, std::make_shared<Param>()));
+    /*
     //Val1 - tank capture points. Val2 - player capture points. Val3 - player kill points
     std::pair<int,std::pair< int, int> >max_win_point = {-1,{-1, -1}};
     std::shared_ptr<Tank> tank_for_hunting = nullptr;
@@ -36,4 +38,5 @@ void LightTankStrategy::updateState() {
     } else {
         changeState(std::make_shared<StateDefence>(tank, game, std::make_shared<Param>()));
     }
+    */
 }

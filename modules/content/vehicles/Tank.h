@@ -17,7 +17,7 @@ enum TankType : int {
     AT_SPG = 4
 };
 
-using HexPtrList = std::vector<std::shared_ptr<Hex>>;
+using PosList = std::vector<Position>;
 
 class Tank : public Content {
 public:
@@ -25,15 +25,15 @@ public:
 
     Tank(json data, int id);
 
-    virtual HexPtrList getAchievableHexes(Map &map) const;
+    virtual PosList getAchievableHexes(Map &map) const;
 
-    virtual std::vector<HexPtrList> getShootingHexesAreas(Map &map) const;
+    virtual std::vector<PosList> getShootingHexesAreas(Map &map) const;
 
     void setPlayerId(int player_id);
 
     int getPlayerId();
 
-    Hex getPosition() const;
+    Position getPosition() const;
 
     int getSpeedPoints();
 
@@ -49,7 +49,7 @@ public:
 
     int getCapturePoints();
 
-    std::vector<int> getSpawnPosition();
+    Position getSpawnPosition();
 
     void update(int x, int y, int z, int health, int capture_points);
 
@@ -57,35 +57,28 @@ public:
 
     void update(int health);
 
-    void update(std::shared_ptr<Hex>);
 
-    void update(Hex);
-
-
+    void update(Position);
 
 
     friend std::ostream &operator<<(std::ostream &stream, const Tank &tank);
 
     std::shared_ptr<StateMachine> current_strategy_;
 
-
-    std::vector<Hex> list_moves_ = {};
+    std::vector<Position> list_moves_ = {};
 protected:
-    HexPtrList getHexesInShotRadius(Map &map) const;
 
     TankType type_;
     ContentType content_type;
-    int x_;
-    int y_;
-    int z_;
-    int spawn_x_;
-    int spawn_y_;
-    int spawn_z_;
+    Position pos_;
+    Position spawn_pos_;
     int health_points_;
     int capture_points_;
     int speed_points_;
     int damage_;
-    int shot_radius_;
+    int max_shot_radius_ = 0;
+    int min_shot_radius_ = 0;
+    int shoot_range_bonus_ = 0;
     int destruction_points_;
     int player_id_ = -1;
 };

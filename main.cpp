@@ -10,11 +10,11 @@ int main(int argc, char **argv) {
     int num_turns, num_players, is_solo;
     std::thread t1, t2, t3;
     if (argc == 1) {
-        name = "AKELKA";
+        name = "AKELKA123123123";
         password = "";
-        game = "GAMAVAKA";
+        game = "GAMAVAKA123123123";
         num_turns = 45;
-        num_players = 3;
+        num_players = 1;
         is_solo = 1;
     } else {
         name = argv[1];

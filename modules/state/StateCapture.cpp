@@ -14,6 +14,10 @@ std::string StateCapture::getType() {
 }
 
 
+std::string StateCapture::calculateAction() {
+    return "";
+}
+/*
 std::vector<std::shared_ptr<Hex> > intersection(const std::vector<std::shared_ptr<Hex> > &v1,
                                                 std::vector<std::shared_ptr<Hex> > &v2) {
     std::vector<std::shared_ptr<Hex> > v3;
@@ -85,6 +89,8 @@ bool checkPosition(std::vector<std::pair<std::shared_ptr<Hex>, int>> moves, std:
 }
 
 std::string StateCapture::calculateAction() {
+    return "";
+
     std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
 
     if (std::find(game->map.base.begin(), game->map.base.end(), position) != game->map.base.end()) {
@@ -105,6 +111,7 @@ std::string StateCapture::calculateAction() {
     if (!path.empty())
         return moveToString(path[1]);
     return shootAction();
+
 }
 
 std::string StateCapture::shootAction() {
@@ -138,3 +145,4 @@ std::string StateCapture::shootAction() {
 
     return "";
 }
+ */

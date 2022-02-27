@@ -13,8 +13,8 @@ public:
 
     virtual std::string calculateAction();
 
-private:
-    virtual std::string shootAction();
+//private:
+    //virtual std::string shootAction();
 
 };
 

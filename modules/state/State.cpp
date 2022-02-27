@@ -5,40 +5,41 @@ State::State(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game, std::shared
                                                                                                      param(param) {
 };
 
-std::string State::moveToString(std::shared_ptr<Hex> hex) {
-    game->updateTank(tank->id, hex->x, hex->y, hex->z);
+std::string State::moveToString(Position pos) {
+    game->updateTank(tank->id, pos.getX(), pos.getY(), pos.getZ());
 
     return "{\"type\":\"MOVE\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
-           ",\"target\":{\"x\":" + std::to_string(hex->x) + ",\"y\":" + std::to_string(hex->y) + ",\"z\":" +
-           std::to_string(hex->z) + "}}}";
+           ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" + std::to_string(pos.getY()) + ",\"z\":" +
+           std::to_string(pos.getZ()) + "}}}";
 }
 
 std::string State::shootToString(std::vector<std::shared_ptr<Tank>> tanks) {
 
-    Hex hex = tanks[0]->getPosition();
+    Position pos = tanks[0]->getPosition();
     if (tank->getTankType() == TankType::AT_SPG) {
-        Hex hex_mis_dis = hex;
+        Position pos_mis_dis = pos;
         int min_dis = 1e9;
-        for (auto pos: tank->getPosition().neighbors) {
-            if (hex.getDistance(*pos) < min_dis) {
-                min_dis = hex.getDistance(*pos);
-                hex_mis_dis = *pos;
+        for (auto pos_neighbors: game->map.getHex(tank->getPosition())->neighbors) {
+
+            if (pos_neighbors.getDistance(pos) < min_dis) {
+                min_dis = pos_neighbors.getDistance(pos);
+                pos_mis_dis = pos_neighbors;
             }
         }
-        hex = hex_mis_dis;
+        pos = pos_mis_dis;
     }
 
     for (auto tank: tanks) {
         if (tank->getHealthPoints() == 1) {
-            std::vector<int> spawn_pos = tank->getSpawnPosition();
-            game->updateTank(tank->id, spawn_pos[0], spawn_pos[1], spawn_pos[2]);
+            Position pos  = tank->getSpawnPosition();
+            game->updateTank(tank->id, pos.getX(), pos.getY(), pos.getZ());
         }
         tank->update(tank->getHealthPoints() - 1);
 
     }
 
     return "{\"type\":\"SHOOT\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
-           ",\"target\":{\"x\":" + std::to_string(hex.x) + ",\"y\":" + std::to_string(hex.y) + ",\"z\":" +
-           std::to_string(hex.z) + "}}}";
+           ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" + std::to_string(pos.getY()) + ",\"z\":" +
+           std::to_string(pos.getZ()) + "}}}";
 }
 

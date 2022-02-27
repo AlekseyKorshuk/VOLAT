@@ -36,6 +36,8 @@ Strategy::Strategy(int idx, json map_json, json state_json) {
 
     for (auto tank: game->player_vehicles) {
         if (tank != nullptr) {
+            tank->current_strategy_ = nullptr;
+            /*
             switch (tank->getTankType()) {
                 case TankType::SPG:
                     tank->current_strategy_ = std::make_shared<SpgStrategy>(tank, game);
@@ -53,6 +55,7 @@ Strategy::Strategy(int idx, json map_json, json state_json) {
                     tank->current_strategy_ = std::make_shared<AtSpgStrategy>(tank, game);
                     break;
             }
+            */
         } else {
             tank->current_strategy_ = nullptr;
         }
@@ -61,6 +64,7 @@ Strategy::Strategy(int idx, json map_json, json state_json) {
 
 json Strategy::calculate_actions(int idx, json state) {
     std::string actions;
+
 
 
     auto start = std::chrono::steady_clock::now();
