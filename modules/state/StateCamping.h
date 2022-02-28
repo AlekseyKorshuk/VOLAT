@@ -14,11 +14,11 @@ public:
 
     virtual std::string calculateAction();
 
-    //virtual std::string moveToBase();
+    virtual std::string moveToBase();
 
-    //virtual std::string findSafePosition();
+    virtual std::string findSafePosition();
 
-    //virtual std::string performAggressiveAction();
+    virtual std::string performAggressiveAction();
 
 
 

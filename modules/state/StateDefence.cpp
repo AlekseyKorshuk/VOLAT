@@ -17,14 +17,11 @@ std::string StateDefence::getType() {
 
 
 std::string StateDefence::calculateAction() {
-    return "";
-    /*
-    std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
 
     std::vector<std::shared_ptr<Tank>> tanks_on_base = game->findTanksToShootOnArea(game->map.base);
 
     if (tanks_on_base.empty()) {
-        std::vector<std::shared_ptr<Hex> > path = game->map.findPath(position, game->map.base, tank);
+        auto path = game->map.findPath(tank->getPosition(), game->map.base, tank);
         if (!path.empty())
             return moveToString(path[1]);
         return "";
@@ -38,18 +35,18 @@ std::string StateDefence::calculateAction() {
             tank->getPosition().getDistance(tank_on_base->getPosition()))
             target = tank_on_base;
 
-    std::vector<std::shared_ptr<Hex>> positions = game->findSortedSafePositionsToShoot(tank, target);
+    auto positions = game->findSortedSafePositionsToShoot(tank, target);
 
     if (positions.empty())
         return "";
-    
-    if (position == positions[0])
+
+    if (tank->getPosition() == positions[0])
         return shootToString(std::vector<std::shared_ptr<Tank>>{target});
 
 
-    std::vector<std::shared_ptr<Hex> > path = game->map.findPath(position, positions[0], tank);
+    auto path = game->map.findPath(tank->getPosition(), positions[0], tank);
     if (!path.empty())
         return moveToString(path[1]);
     return "";
-     */
+
 }

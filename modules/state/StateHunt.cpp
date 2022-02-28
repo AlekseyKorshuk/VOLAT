@@ -13,10 +13,9 @@ std::string StateHunt::getType() {
 
 
 std::string StateHunt::calculateAction() {
-    return "";
-    /*
-    std::vector<std::shared_ptr<Hex>> positions_to_shoot = game->findSafePositionsToShoot(tank, param->tank);
-    std::shared_ptr<Hex> start = game->map.getHex(tank->getPosition());
+
+    auto positions_to_shoot = game->findSafePositionsToShoot(tank, param->tank);
+    Position start = tank->getPosition();
     if (!positions_to_shoot.empty())
         for (auto tankList: game->tanksUnderShoot(tank))
             for (auto tank_under_shoot: tankList)
@@ -24,9 +23,9 @@ std::string StateHunt::calculateAction() {
                     return shootToString(tankList);
 
     //std::vector<std::shared_ptr<Hex>> path = game->map.findPath(start, positions_to_shoot, tank);
-    std::vector<std::shared_ptr<Hex>> path = game->findSafePath(start, positions_to_shoot, tank);
+    auto path = game->findSafePath(start, positions_to_shoot, tank);
     if (path.size() != 0)
         return moveToString(path[1]);
     return "";
-     */
+
 }

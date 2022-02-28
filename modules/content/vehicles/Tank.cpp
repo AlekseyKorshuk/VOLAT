@@ -43,7 +43,7 @@ void Tank::update(Position pos) {
 Tank::Tank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z, int health_points, int capture_points, int id)
         : Content(is_reacheble = false, content_type = ContentType::VEHICLE, id = id),
           pos_(x, y, z),
-          spawn_pos_(spawn_x, spawn_x, spawn_z), health_points_(health_points),
+          spawn_pos_(spawn_x, spawn_y, spawn_z), health_points_(health_points),
           capture_points_(capture_points), current_strategy_(nullptr) {
 }
 
@@ -55,7 +55,7 @@ Tank::Tank(json data, int id)
           spawn_pos_(data["spawn_position"]["x"].get<std::int32_t>(),
                      data["spawn_position"]["y"].get<std::int32_t>(),
                      data["spawn_position"]["z"].get<std::int32_t>()),
-               health_points_(data["health"].get<std::int32_t>()),
+          health_points_(data["health"].get<std::int32_t>()),
           current_strategy_(nullptr) {
 }
 
@@ -75,8 +75,7 @@ PosList Tank::getAchievableHexes(Map &map) const {
         if (current_dist != speed_points_) {
             for (Position pos: map.getHex(current_pos)->neighbors) {
                 std::shared_ptr<Hex> node = map.getHex(pos);
-                if (node->visited_d < map.num_visited)
-                {
+                if (node->visited_d < map.num_visited) {
                     node->visited_d = map.num_visited;
                     if (node->content != nullptr && node->content->content_type != ContentType::OBSTACLE) {
                         Queue.push({pos, current_dist + 1});
@@ -103,13 +102,11 @@ std::vector<PosList> Tank::getShootingHexesAreas(Map &map) const {
         int current_dist = Queue.front().second;
 
 
-
         Queue.pop();
         if (current_dist != max_shot_radius_ + shoot_range_bonus_) {
             for (Position pos: map.getHex(current_pos)->neighbors) {
                 std::shared_ptr<Hex> node = map.getHex(pos);
-                if (node->visited_d < map.num_visited)
-                {
+                if (node->visited_d < map.num_visited) {
                     node->visited_d = map.num_visited;
                     if (node->content != nullptr && node->content->content_type != ContentType::OBSTACLE) {
                         Queue.push({pos, current_dist + 1});
@@ -158,19 +155,23 @@ int Tank::getCapturePoints() {
     return capture_points_;
 }
 
-Position Tank::getSpawnPosition()
-{
+Position Tank::getSpawnPosition() {
     return spawn_pos_;
 }
 
 std::string Tank::getStringTankType() {
-    switch (getTankType())
-    {
-        case TankType::SPG:   return "SPG";
-        case TankType::AT_SPG:   return "AT_SPG";
-        case TankType::MEDIUM: return "MEDIUM";
-        case TankType::LIGHT: return "LIGHT";
-        case TankType::HEAVY: return "HEAVY";
-        default:      return "[Unknown TankType]";
+    switch (getTankType()) {
+        case TankType::SPG:
+            return "SPG";
+        case TankType::AT_SPG:
+            return "AT_SPG";
+        case TankType::MEDIUM:
+            return "MEDIUM";
+        case TankType::LIGHT:
+            return "LIGHT";
+        case TankType::HEAVY:
+            return "HEAVY";
+        default:
+            return "[Unknown TankType]";
     }
 }

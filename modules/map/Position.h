@@ -8,13 +8,17 @@
 class Position {
 public:
     Position(int x, int y, int z);
+
     Position(const Position &pos);
 
     int getX() const;
+
     int getY() const;
+
     int getZ() const;
 
     int getLength() const;
+
     int getDistance(const Position &pos) const;
 
     bool operator<(const Position &other) const;
@@ -22,16 +26,19 @@ public:
     Position getNeighbor(int direction);
 
     friend Position operator+(const Position &a, const Position &b);
+
     Position &operator+=(const Position &pos);
 
     friend Position operator-(const Position &a, const Position &b);
+
     Position &operator-=(const Position &pos);
 
 
+    bool operator==(const Position &pos) const;
 
-    bool operator==(const Position& pos) const;
-    bool operator==(Position& pos) const;
+    bool operator==(Position &pos) const;
 
+    bool operator!=(Position &pos) const;
 
 
     friend std::ostream &operator<<(std::ostream &stream, const Position &pos) {
@@ -43,5 +50,5 @@ public:
 private:
     int x_ = 0;
     int y_ = 0;
-    int z_ = 0 ;
+    int z_ = 0;
 };

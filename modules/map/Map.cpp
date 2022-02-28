@@ -54,10 +54,7 @@ void Map::setObstacle(json map_json) {
 }
 
 
-
-
-
-void Map::changeOccupied(const Position& pos, bool is_occupied) {
+void Map::changeOccupied(const Position &pos, bool is_occupied) {
     getHex(pos)->is_occupied = is_occupied;
 }
 
@@ -97,8 +94,6 @@ void Map::setCatapult(json map_json) {
 }
 
 
-
-
 void Map::clearPath(std::vector<Position> posList) {
     for (auto pos: posList) {
         std::shared_ptr<Hex> hex = getHex(pos);
@@ -114,7 +109,7 @@ std::vector<std::shared_ptr<Hex>> Map::generateEmptyMap(int radius) {
     hexes.clear();
 
     hexes_map = std::vector<std::vector<std::shared_ptr<Hex>>>
-            (radius * 2 + 2, std::vector<std::shared_ptr<Hex>>(radius*2 + 2));
+            (radius * 2 + 2, std::vector<std::shared_ptr<Hex>>(radius * 2 + 2));
 
     for (int r = 0; r < radius + 1; r++) {
         int x = 0;
@@ -122,7 +117,7 @@ std::vector<std::shared_ptr<Hex>> Map::generateEmptyMap(int radius) {
         int z = r;
 
         std::shared_ptr<Hex> hex = std::make_shared<Hex>(x, y, z);
-        hexes_map[x  + radius_ + 1][y + radius_ + 1] = hex;
+        hexes_map[x + radius_ + 1][y + radius_ + 1] = hex;
         hexes.push_back(hex);
 
         for (int j = 0; j < 6; j++) {
@@ -138,14 +133,14 @@ std::vector<std::shared_ptr<Hex>> Map::generateEmptyMap(int radius) {
                 z = z + deltas[j].getZ();
 
                 hex = std::make_shared<Hex>(x, y, z);
-                hexes_map[x +  radius_ + 1][y +  radius_ + 1] = hex;
+                hexes_map[x + radius_ + 1][y + radius_ + 1] = hex;
                 hexes.push_back(hex);
 
             }
         }
     }
 
-    for (auto itr :hexes) {
+    for (auto itr: hexes) {
         std::shared_ptr<Hex> hex = itr;
         for (int i = 0; i < 6; i++) {
             Position neighbor_temp = hex->pos.getNeighbor(i);
@@ -171,7 +166,7 @@ std::shared_ptr<Hex> Map::getHex(const Position &pos) const {
         return nullptr;
     }
 
-    return  hexes_map[pos.getX() + radius_ + 1][pos.getY() + radius_ + 1];
+    return hexes_map[pos.getX() + radius_ + 1][pos.getY() + radius_ + 1];
 }
 
 std::vector<Position>
@@ -179,7 +174,7 @@ Map::findPath(Position start, std::vector<Position> ends, std::shared_ptr<Tank> 
     Position end = {-100, -100, -100};
 
     std::vector<Position> visited_positions;
-    std::queue<std::pair<Position,int>> Queue;
+    std::queue<std::pair<Position, int>> Queue;
 
     bool reached_end = false;
     visited_positions.push_back(start);
@@ -187,7 +182,7 @@ Map::findPath(Position start, std::vector<Position> ends, std::shared_ptr<Tank> 
 
     Position pos_tank = tank->getPosition();
 
-    Queue.push({start,0});
+    Queue.push({start, 0});
 
     while (!Queue.empty() && !reached_end) {
         Position current_pos = Queue.front().first;
@@ -199,9 +194,9 @@ Map::findPath(Position start, std::vector<Position> ends, std::shared_ptr<Tank> 
         std::vector<Position> achievable_hexes = tank->getAchievableHexes(*this);
 
         std::sort(achievable_hexes.begin(), achievable_hexes.end(),
-                  [&current_pos](Position a,  Position b) {
-            return a.getDistance(current_pos) > b.getDistance(current_pos);
-        });
+                  [&current_pos](Position a, Position b) {
+                      return a.getDistance(current_pos) > b.getDistance(current_pos);
+                  });
 
         for (Position pos: achievable_hexes) {
             std::shared_ptr<Hex> node = getHex(pos);
@@ -210,7 +205,7 @@ Map::findPath(Position start, std::vector<Position> ends, std::shared_ptr<Tank> 
                 node->visited = true;
                 Queue.push({pos, current_dist});
 
-                node->prev = pos;
+                node->prev = current_pos;
                 if (std::find(ends.begin(), ends.end(), pos) != ends.end()) {
                     reached_end = true;
                     end = pos;

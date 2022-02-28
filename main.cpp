@@ -26,21 +26,22 @@ int main(int argc, char **argv) {
     }
 
     Core core1(name, password);
-    t1 = core1.runMultiThread(game, num_turns, num_players);
 
     if (is_solo == 0) {
+        t1 = core1.runMultiThread(game, num_turns, num_players);
+
         Core core2("VOLAT2", "");
         t2 = core2.runMultiThread(game, num_turns, num_players);
 
         Core core3("VOLAT3", "");
         t3 = core3.runMultiThread(game, num_turns, num_players);
-    }
 
-    t1.join();
-
-    if (is_solo == 0) {
+        t1.join();
         t2.join();
         t3.join();
+    }
+    else{
+        core1.play(game, num_turns, num_players);
     }
 
     return 0;

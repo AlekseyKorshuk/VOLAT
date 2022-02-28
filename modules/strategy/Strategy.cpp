@@ -37,7 +37,6 @@ Strategy::Strategy(int idx, json map_json, json state_json) {
     for (auto tank: game->player_vehicles) {
         if (tank != nullptr) {
             tank->current_strategy_ = nullptr;
-            /*
             switch (tank->getTankType()) {
                 case TankType::SPG:
                     tank->current_strategy_ = std::make_shared<SpgStrategy>(tank, game);
@@ -55,7 +54,6 @@ Strategy::Strategy(int idx, json map_json, json state_json) {
                     tank->current_strategy_ = std::make_shared<AtSpgStrategy>(tank, game);
                     break;
             }
-            */
         } else {
             tank->current_strategy_ = nullptr;
         }
@@ -64,7 +62,6 @@ Strategy::Strategy(int idx, json map_json, json state_json) {
 
 json Strategy::calculate_actions(int idx, json state) {
     std::string actions;
-
 
 
     auto start = std::chrono::steady_clock::now();
@@ -78,11 +75,13 @@ json Strategy::calculate_actions(int idx, json state) {
 
     int k = 0;
     auto total_start = std::chrono::steady_clock::now();
-    for (auto tank: game->player_vehicles)
+    for (auto tank: game->player_vehicles){
         if (tank->current_strategy_ != nullptr) {
             auto start = std::chrono::steady_clock::now();
+
+            std::cout << tank->getStringTankType() << " " << tank->current_strategy_->getStateName() << ": ";
             std::string action = tank->current_strategy_->calculateAction();
-            std::cout << tank->current_strategy_->getStateName() << ": " << since(start).count() << " ms" << std::endl;
+            std::cout << since(start).count() << " ms" << std::endl;
 
             if (!action.empty()) {
                 if (!actions.empty()) {
@@ -93,10 +92,11 @@ json Strategy::calculate_actions(int idx, json state) {
 
             }
         }
+    }
+
     std::cout << "Total elapsed: " << since(total_start).count() << " ms" << std::endl;
 
 
     actions = "{" + actions + "}";
-
     return json::parse(actions);
 }

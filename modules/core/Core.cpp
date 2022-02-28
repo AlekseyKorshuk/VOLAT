@@ -24,7 +24,7 @@ void Core::play(std::string game, int num_turns, int num_players) {
     int idx = resp.msg["idx"].get<std::int32_t>();
     int idr = idx;
 
-    while(true) {
+    while (true) {
         json state_json = client.game_state().msg;
         int num_players = state_json["num_players"];
         int num_log_players = 0;
@@ -40,8 +40,6 @@ void Core::play(std::string game, int num_turns, int num_players) {
     json state_json = client.game_state().msg;
     json map_json = client.map().msg;
     Strategy strategy(idx, map_json, state_json);
-
-
 
 
     while (true) {
@@ -61,7 +59,6 @@ void Core::play(std::string game, int num_turns, int num_players) {
         if (idx == state["current_player_idx"].get<std::int32_t>()) {
             std::cout << "Our turn!" << std::endl;
             json actions = strategy.calculate_actions(idx, state);
-
             for (json::iterator it = actions.begin(); it != actions.end(); ++it) {
                 json action = it.value();
                 json data = action["data"];
@@ -80,9 +77,10 @@ void Core::play(std::string game, int num_turns, int num_players) {
                     action_name = "SHOOT";
                     msg = client.shoot(vehicle_id, x, y, z).msg;
                 }
-                if (!action_name.empty()){
+                if (!action_name.empty()) {
                     auto tank = strategy.game->getTankByID(vehicle_id);
-                    std::cout << "[" << tank->id << "]" << tank->getStringTankType() << " " << action_name << ": " << vehicle_id << " {" << x << " " << y << " " << z << "} -> " << msg << "\n";
+                    std::cout << "[" << tank->id << "]" << tank->getStringTankType() << " " << action_name << ": "
+                              << vehicle_id << " {" << x << " " << y << " " << z << "} -> " << msg << "\n";
                 }
 
             }

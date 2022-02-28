@@ -13,8 +13,6 @@ std::string StateCamping::getType() {
 
 
 std::string StateCamping::calculateAction() {
-    return "";
-    /*
     std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
 
     if (position->danger[0] == 0)
@@ -26,11 +24,10 @@ std::string StateCamping::calculateAction() {
         return shootToString(shoot);
 
     return findSafePosition();
-    */
 }
-/*
+
 std::string StateCamping::moveToBase() {
-    std::vector<std::shared_ptr<Hex>> path = game->findSafePath(game->map.getHex(tank->getPosition()), game->map.base,
+    auto path = game->findSafePath(tank->getPosition(), game->map.base,
                                                                 tank);
     if (path.size() != 0)
         return moveToString(path[1]);
@@ -38,9 +35,9 @@ std::string StateCamping::moveToBase() {
 }
 
 std::string StateCamping::findSafePosition() {
-    std::vector<std::shared_ptr<Hex>> safe_positions = game->findNearestSafePositions(
-            game->map.getHex(tank->getPosition()));
-    std::vector<std::shared_ptr<Hex>> path = game->map.findPath(game->map.getHex(tank->getPosition()), safe_positions,
+    auto safe_positions = game->findNearestSafePositions(
+            tank->getPosition());
+    auto path = game->map.findPath(tank->getPosition(), safe_positions,
                                                                 tank);
     if (path.size() != 0)
         return moveToString(path[1]);
@@ -48,25 +45,25 @@ std::string StateCamping::findSafePosition() {
 }
 
 std::string StateCamping::performAggressiveAction() {
-    std::vector<std::shared_ptr<Hex>> safe_positions_to_shoot;
+    std::vector<Position> safe_positions_to_shoot;
     for (auto opponent_vehicle: game->opponent_vehicles) {
-        std::vector<std::shared_ptr<Hex>> new_safe_positions = game->findSafePositionsToShoot(tank,
+        auto new_safe_positions = game->findSafePositionsToShoot(tank,
                                                                                               opponent_vehicle);
         safe_positions_to_shoot.insert(safe_positions_to_shoot.end(), new_safe_positions.begin(),
                                        new_safe_positions.end());
     }
     for (auto base: game->map.base)
-        if (base->danger[0] == 0)
+        if (game->map.getHex(base)->danger[0] == 0)
             safe_positions_to_shoot.push_back(base);
 
 
     if (!safe_positions_to_shoot.empty()) {
-        std::vector<std::shared_ptr<Hex>> path = game->findSafePath(game->map.getHex(tank->getPosition()),
+        auto path = game->findSafePath(tank->getPosition(),
                                                                     safe_positions_to_shoot, tank);
         if (path.size() > 1)
             return moveToString(path[1]);
 
-        std::vector<std::shared_ptr<Hex>> area;
+        std::vector<Position> area;
         for (auto list: tank->getShootingHexesAreas(game->map))
             area.insert(area.end(), list.begin(), list.end());
 
@@ -83,4 +80,3 @@ std::string StateCamping::performAggressiveAction() {
     }
     return moveToBase();
 }
-*/

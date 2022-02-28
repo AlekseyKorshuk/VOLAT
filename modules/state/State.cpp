@@ -31,7 +31,7 @@ std::string State::shootToString(std::vector<std::shared_ptr<Tank>> tanks) {
 
     for (auto tank: tanks) {
         if (tank->getHealthPoints() == 1) {
-            Position pos  = tank->getSpawnPosition();
+            Position pos = tank->getSpawnPosition();
             game->updateTank(tank->id, pos.getX(), pos.getY(), pos.getZ());
         }
         tank->update(tank->getHealthPoints() - 1);

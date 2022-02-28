@@ -12,6 +12,8 @@ class Game {
 public:
     int idx;
 
+    json current_game_state;
+
     Game() {};
 
     Game(int, json, json);
@@ -26,6 +28,8 @@ public:
 
     //Return tanks that are under shoot from this tank
     std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(std::shared_ptr<Tank>);
+
+    bool isDefenceNeeded(std::shared_ptr<Tank>);
 
     //Finds a position from which tank_1 can safely shoot tank_2
     std::vector<Position> findSafePositionsToShoot(std::shared_ptr<Tank>, std::shared_ptr<Tank>);
