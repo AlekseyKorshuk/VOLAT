@@ -1,4 +1,5 @@
 #include "HeavyTankStrategy.h"
+#include "../state/StateCapture.h"
 
 HeavyTankStrategy::HeavyTankStrategy(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game) : StateMachine(tank,
                                                                                                             game) {

@@ -604,29 +604,40 @@ std::vector<int> Game::definingDirectionSegments(Position start, Position end) {
     }
 }
 
-bool Game::isDefenceNeeded(std::shared_ptr<Tank> player_tank) {
+bool Game::isDefenceNeeded(const std::shared_ptr<Tank> &player_tank) {
     auto position = player_tank->getPosition();
     auto player_id = player_tank->getPlayerId();
     json players_on_base;
     for (auto player: current_game_state["players"]) {
         players_on_base[std::to_string(player["idx"].get<std::int32_t>())]["tanks_on_base"] = 0;
-        int capture_points = current_game_state["win_points"][std::to_string(player["idx"].get<std::int32_t>())]["capture"].get<std::int32_t>();
+        int capture_points = current_game_state["win_points"][std::to_string(
+                player["idx"].get<std::int32_t>())]["capture"].get<std::int32_t>();
         players_on_base[std::to_string(player["idx"].get<std::int32_t>())]["capture_points"] = capture_points;
     }
 
     int total_num_vehicles_on_base = 0;
     for (auto vehicle: all_vehicles) {
         if (std::find(map.base.begin(), map.base.end(), vehicle->getPosition()) != map.base.end()) {
-            int value =  players_on_base[std::to_string(vehicle->getPlayerId())]["tanks_on_base"].get<std::int32_t>();
+            int value = players_on_base[std::to_string(vehicle->getPlayerId())]["tanks_on_base"].get<std::int32_t>();
 
             players_on_base[std::to_string(vehicle->getPlayerId())]["tanks_on_base"] = value + 1;
-            total_num_vehicles_on_base ++;
+            total_num_vehicles_on_base++;
         }
     }
 
-
-    if (players_on_base[std::to_string(player_id)]["tanks_on_base"].get<std::int32_t>() == 0 && total_num_vehicles_on_base != 0)
+    if (players_on_base[std::to_string(player_id)]["tanks_on_base"].get<std::int32_t>() == 0 &&
+        total_num_vehicles_on_base != 0)
         return true;
-//    else if()
+    return false;
+}
+
+
+bool Game::isCaptureNeeded(const std::shared_ptr<Tank> &player_tank) {
+    for (auto position: map.base) {
+        auto hex = map.getHex(position);
+        if (hex->danger[0] < player_tank->getHealthPoints() && !hex->is_occupied && hex->content->is_reacheble)
+            return true;
+    }
+
     return false;
 }

@@ -29,7 +29,10 @@ public:
     //Return tanks that are under shoot from this tank
     std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(std::shared_ptr<Tank>);
 
-    bool isDefenceNeeded(std::shared_ptr<Tank>);
+    bool isDefenceNeeded(const std::shared_ptr<Tank>&);
+
+    bool isCaptureNeeded(const std::shared_ptr<Tank>& player_tank);
+
 
     //Finds a position from which tank_1 can safely shoot tank_2
     std::vector<Position> findSafePositionsToShoot(std::shared_ptr<Tank>, std::shared_ptr<Tank>);
@@ -50,7 +53,7 @@ public:
     std::vector<Position>
     findSafePath(Position start, std::vector<Position> ends, std::shared_ptr<Tank>);
 
-    std::vector<std::shared_ptr<Tank>> canKillAndStayAlive(const std::shared_ptr<Tank>& player_tank);
+    std::vector<std::shared_ptr<Tank>> canKillAndStayAlive(const std::shared_ptr<Tank> &player_tank);
 
     Map map = Map();
 
@@ -74,5 +77,6 @@ private:
     void predictingTankBehavior(std::shared_ptr<Tank>);
 
     std::vector<int> definingDirectionSegments(Position, Position);
+
 };
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../state/StateCamping.h"
 #include "StateMachine.h"
 
 class AtSpgStrategy : public StateMachine {
