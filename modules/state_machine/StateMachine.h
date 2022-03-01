@@ -22,6 +22,8 @@ public:
 
     std::string getStateName();
 
+    std::shared_ptr<State> getState();
+
 protected:
     std::shared_ptr<State> state = nullptr;
     std::shared_ptr<Game> game = nullptr;

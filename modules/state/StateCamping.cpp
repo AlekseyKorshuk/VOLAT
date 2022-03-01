@@ -11,13 +11,23 @@ std::string StateCamping::getType() {
     return "camping";
 }
 
-
 std::string StateCamping::calculateAction() {
     std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
 
-    if (position->danger[0] == 0)
+    if (position->danger[0] == 0) {
         return performAggressiveAction();
-
+    } else {
+        auto safe_base = game->getSafePositions(tank, game->map.base, true);
+        if (!safe_base.empty()) {
+            auto path = game->findSafePath(tank->getPosition(), safe_base,
+                                           tank);
+            if (!path.empty())
+                return moveToString(path[1]);
+        }
+        std::string action = game->getSafeShootAction(tank);
+        if (!action.empty())
+            return action;
+    }
 
     auto shoot = game->canKillAndStayAlive(tank);
     if (!shoot.empty())
@@ -26,9 +36,10 @@ std::string StateCamping::calculateAction() {
     return findSafePosition();
 }
 
+
 std::string StateCamping::moveToBase() {
     auto path = game->findSafePath(tank->getPosition(), game->map.base,
-                                                                tank);
+                                   tank);
     if (path.size() != 0)
         return moveToString(path[1]);
     return "";
@@ -38,45 +49,30 @@ std::string StateCamping::findSafePosition() {
     auto safe_positions = game->findNearestSafePositions(
             tank->getPosition());
     auto path = game->map.findPath(tank->getPosition(), safe_positions,
-                                                                tank);
+                                   tank);
     if (path.size() != 0)
         return moveToString(path[1]);
     return "";
 }
 
 std::string StateCamping::performAggressiveAction() {
-    std::vector<Position> safe_positions_to_shoot;
-    for (auto opponent_vehicle: game->opponent_vehicles) {
-        auto new_safe_positions = game->findSafePositionsToShoot(tank,
-                                                                                              opponent_vehicle);
-        safe_positions_to_shoot.insert(safe_positions_to_shoot.end(), new_safe_positions.begin(),
-                                       new_safe_positions.end());
+    auto shoot = game->canKillAndStayAlive(tank);
+    if (!shoot.empty())
+        return shootToString(shoot);
+
+    auto action = findSafePosition();
+    if (!action.empty())
+        return action;
+
+    std::vector<std::vector<std::shared_ptr<Tank>>> shoots;
+    for (auto list: tank->getShootingHexesAreas(game->map)){
+        std::vector<std::shared_ptr<Tank>> shoot;
+        for (auto position: list){
+            for (const auto &opponent_vehicle: game->opponent_vehicles)
+                if (opponent_vehicle->getPosition() == position && !game->getPlayer(opponent_vehicle->getPlayerId())->is_neutral)
+                    shoot.push_back(opponent_vehicle);
+        }
     }
-    for (auto base: game->map.base)
-        if (game->map.getHex(base)->danger[0] == 0)
-            safe_positions_to_shoot.push_back(base);
 
-
-    if (!safe_positions_to_shoot.empty()) {
-        auto path = game->findSafePath(tank->getPosition(),
-                                                                    safe_positions_to_shoot, tank);
-        if (path.size() > 1)
-            return moveToString(path[1]);
-
-        std::vector<Position> area;
-        for (auto list: tank->getShootingHexesAreas(game->map))
-            area.insert(area.end(), list.begin(), list.end());
-
-        std::vector<std::shared_ptr<Tank>> tanks = game->findTanksToShootOnArea(area);
-        std::sort(tanks.begin(), tanks.end(), [](const auto &lhs, const auto &rhs) {
-            if (lhs->getDestructionPoints() == rhs->getDestructionPoints())
-                return lhs->getHealthPoints() > rhs->getHealthPoints();
-            return lhs->getDestructionPoints() > rhs->getDestructionPoints();
-        });
-
-        if (!tanks.empty())
-            return shootToString(std::vector<std::shared_ptr<Tank>>{tanks[0]});
-
-    }
-    return moveToBase();
+    return shootToString(game->selectBestShoot(shoots, tank));
 }

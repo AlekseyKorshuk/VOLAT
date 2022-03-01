@@ -32,15 +32,16 @@ public:
 
     virtual std::string calculateAction() = 0;
 
+    std::string moveToString(Position);
+
+    std::string shootToString(std::vector<std::shared_ptr<Tank>>);
+
     std::shared_ptr<Param> param;
 protected:
     std::shared_ptr<Tank> tank;
     std::shared_ptr<Game> game;
 
 
-    std::string moveToString(Position);
-
-    std::string shootToString(std::vector<std::shared_ptr<Tank>>);
 };
 
 

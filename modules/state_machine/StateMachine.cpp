@@ -18,3 +18,7 @@ std::string StateMachine::calculateAction() {
 std::string StateMachine::getStateName() {
     return state->getType();
 }
+
+std::shared_ptr<State> StateMachine::getState() {
+    return state;
+}
