@@ -505,7 +505,6 @@ void Game::predictingTankBehavior(const std::shared_ptr<Tank> &tank) {
     Queue.push({tank->getPosition(), 0});
 
 
-
     int tank_sp = tank->getSpeedPoints();
     int k = 0;
     int number_visited_hex[5] = {1, 0, 0, 0, 0};
@@ -687,7 +686,7 @@ std::string Game::getSafeShootAction(std::shared_ptr<Tank> player_tank) {
     }
 
     if (!shoots.empty()) {
-        return player_tank->current_strategy_->getState()->shootToString(selectBestShoot(shoots, player_tank));
+        return player_tank->current_strategy_->getState()->shootToString(selectBestShoot(shoots, player_tank, false));
     }
 
     if (!moves.empty())
@@ -697,7 +696,8 @@ std::string Game::getSafeShootAction(std::shared_ptr<Tank> player_tank) {
 }
 
 std::vector<std::shared_ptr<Tank>>
-Game::selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank>& player_tank) {
+Game::selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank> &player_tank,
+                      bool stay_alive = false) {
     if (shoots.empty())
         return std::vector<std::shared_ptr<Tank>>(0);
     auto best_shoot = shoots[0];
@@ -706,18 +706,25 @@ Game::selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, co
         int damage = 0, kill_points = 0;
         double income_damage = map.getHex(player_tank->getPosition())->danger[0];
         for (const auto &tank: shoot) {
-            if (!getPlayer(tank->getPlayerId())->is_neutral){
+            if (!getPlayer(tank->getPlayerId())->is_neutral) {
                 damage += std::max(player_tank->getDamage(), tank->getHealthPoints());
-                if (player_tank->getDamage() >= tank->getHealthPoints()){
+                if (player_tank->getDamage() >= tank->getHealthPoints()) {
                     kill_points += tank->getDestructionPoints();
                     income_damage -= tank->getDamage();
                 }
             }
         }
         if (kill_points >= best_kill_points && damage > best_damage) {
-            best_shoot = shoot;
-            best_damage = damage;
-            best_kill_points = kill_points;
+            bool add = true;
+            if (stay_alive)
+                if (player_tank->getHealthPoints() <= income_damage)
+                    add = false;
+            if (add) {
+                best_shoot = shoot;
+                best_damage = damage;
+                best_kill_points = kill_points;
+            }
+
         }
     }
     return best_shoot;
@@ -743,7 +750,6 @@ std::vector<std::vector<std::shared_ptr<Tank>>> Game::getPossibleShoots(const st
         std::vector<std::shared_ptr<Tank>> shoot;
         for (auto hex: hexes) {
             for (auto opponent_vehicle: opponent_vehicles) {
-
                 if (opponent_vehicle->getPosition() == hex && !getPlayer(opponent_vehicle->getPlayerId())->is_neutral) {
                     shoot.push_back(opponent_vehicle);
                 }
@@ -753,5 +759,36 @@ std::vector<std::vector<std::shared_ptr<Tank>>> Game::getPossibleShoots(const st
             shoots.push_back(shoot);
     }
     return shoots;
+}
+
+std::vector<std::shared_ptr<Tank>>
+Game::selectBestShootDefence(std::vector<std::vector<std::shared_ptr<Tank>>> shoots,
+                             const std::shared_ptr<Tank> &player_tank) {
+    if (shoots.empty())
+        return std::vector<std::shared_ptr<Tank>>(0);
+    auto best_shoot = shoots[0];
+    int best_damage = -1, best_kill_points = -1, best_defence_points = 0;
+    for (const auto &shoot: shoots) {
+        int damage = 0, kill_points = 0, defence_points = 0;
+        double income_damage = map.getHex(player_tank->getPosition())->danger[0];
+        for (const auto &tank: shoot) {
+            if (std::find(map.base.begin(), map.base.end(), tank->getPosition()) != map.base.end() &&
+                !getPlayer(tank->getPlayerId())->is_neutral) {
+                damage += std::max(player_tank->getDamage(), tank->getHealthPoints());
+                if (player_tank->getDamage() >= tank->getHealthPoints()) {
+                    kill_points += tank->getDestructionPoints();
+                    income_damage -= tank->getDamage();
+                    defence_points += tank->getCapturePoints();
+                }
+            }
+        }
+        if (defence_points > best_defence_points) {
+            best_shoot = shoot;
+            best_damage = damage;
+            best_kill_points = kill_points;
+            best_defence_points = defence_points;
+        }
+    }
+    return best_shoot;
 }
 

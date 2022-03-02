@@ -27,7 +27,7 @@ public:
     std::shared_ptr<Tank> getTankByID(int id);
 
     //Return tanks that are under shoot from this tank
-    std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(const std::shared_ptr<Tank>&);
+    std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(const std::shared_ptr<Tank> &);
 
     bool isDefenceNeeded(const std::shared_ptr<Tank> &);
 
@@ -35,29 +35,32 @@ public:
 
 
     //Finds a position from which tank_1 can safely shoot tank_2
-    std::vector<Position> findSafePositionsToShoot(const std::shared_ptr<Tank>&, const std::shared_ptr<Tank>&);
+    std::vector<Position> findSafePositionsToShoot(const std::shared_ptr<Tank> &, const std::shared_ptr<Tank> &);
 
     //Finds safe positions with the minimum distance from the specified position
-    std::vector<Position> findNearestSafePositions(const Position&);
+    std::vector<Position> findNearestSafePositions(const Position &);
 
-    std::vector<std::shared_ptr<Tank>> GuaranteedKill(const std::shared_ptr<Tank>&);
+    std::vector<std::shared_ptr<Tank>> GuaranteedKill(const std::shared_ptr<Tank> &);
 
     //Finds possible tanks to shoot in specific area
-    std::vector<std::shared_ptr<Tank>> findTanksToShootOnArea(const std::vector<Position>&);
+    std::vector<std::shared_ptr<Tank>> findTanksToShootOnArea(const std::vector<Position> &);
 
     //Finds sorted positions to shoot specific tank
     std::vector<Position>
-    findSortedSafePositionsToShoot(const std::shared_ptr<Tank>& player_tank, const std::shared_ptr<Tank>& opponent_tank);
+    findSortedSafePositionsToShoot(const std::shared_ptr<Tank> &player_tank,
+                                   const std::shared_ptr<Tank> &opponent_tank);
 
     std::string getSafeShootAction(std::shared_ptr<Tank> player_tank);
 
-    std::vector<std::shared_ptr<Tank>> selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank>& player_tank);
+    std::vector<std::shared_ptr<Tank>>
+    selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank> &player_tank,
+                    bool stay_alive);
 
     Position selectBestMove(std::vector<Position> moves, std::shared_ptr<Tank> player_tank);
 
 
     std::vector<Position>
-    findSafePath(const Position& start, std::vector<Position> ends, const std::shared_ptr<Tank>&);
+    findSafePath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &);
 
     std::vector<std::shared_ptr<Tank>> canKillAndStayAlive(const std::shared_ptr<Tank> &player_tank);
 
@@ -65,6 +68,8 @@ public:
     getSafePositions(const std::shared_ptr<Tank> &player_tank, std::vector<Position> area, bool is_zero_danger);
 
     std::vector<std::vector<std::shared_ptr<Tank>>> getPossibleShoots(const std::shared_ptr<Tank> &player_tank);
+
+    std::vector<std::shared_ptr<Tank>> selectBestShootDefence(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank> &player_tank);
 
     Map map = Map();
 
@@ -78,14 +83,14 @@ public:
 private:
     void addTank(json, int);
 
-    void addPlayer(const json&);
+    void addPlayer(const json &);
 
     void updatePlayers(json);
 
 
     void predictingBehaviorOpponentsTanks();
 
-    void predictingTankBehavior(const std::shared_ptr<Tank>&);
+    void predictingTankBehavior(const std::shared_ptr<Tank> &);
 
     std::vector<int> definingDirectionSegments(Position, Position);
 

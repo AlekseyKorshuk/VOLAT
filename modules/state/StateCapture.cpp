@@ -101,7 +101,7 @@ std::string StateCapture::calculateAction() {
 
     auto possible_shoots = game->getPossibleShoots(tank);
     if (!possible_shoots.empty())
-        return shootToString(game->selectBestShoot(possible_shoots, tank));
+        return shootToString(game->selectBestShoot(possible_shoots, tank, false));
 
     return "";
 
@@ -111,7 +111,7 @@ std::string StateCapture::onBaseAction() {
     if (game->map.getHex(tank->getPosition())->danger[0] > 0) {
         // in danger
 //        std::cout << "in danger! ";
-        auto shoot = game->canKillAndStayAlive(tank);
+        auto shoot = game->selectBestShoot(game->getPossibleShoots(tank), tank, true);
         if (!shoot.empty())
             return shootToString(shoot);
         auto safe_position = game->getSafePositions(tank, game->map.base, true);
@@ -130,7 +130,7 @@ std::string StateCapture::onBaseAction() {
     auto possible_shoots = game->getPossibleShoots(tank);
     std::cout << possible_shoots.size();
     if (!possible_shoots.empty())
-        return shootToString(game->selectBestShoot(possible_shoots, tank));
+        return shootToString(game->selectBestShoot(possible_shoots, tank, false));
     return "";
 }
 
