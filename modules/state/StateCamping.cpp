@@ -71,6 +71,7 @@ std::string StateCamping::performAggressiveAction() {
             for (const auto &opponent_vehicle: game->opponent_vehicles)
                 if (opponent_vehicle->getPosition() == position && !game->getPlayer(opponent_vehicle->getPlayerId())->is_neutral)
                     shoot.push_back(opponent_vehicle);
+
         }
     }
     auto best_shoot = game->selectBestShoot(shoots, tank, false);

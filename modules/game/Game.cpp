@@ -624,6 +624,7 @@ bool Game::isDefenceNeeded(const std::shared_ptr<Tank> &player_tank) {
 
     int total_num_vehicles_on_base = 0;
     for (const auto &vehicle: all_vehicles) {
+        if (vehicle == nullptr) continue;
         if (std::find(map.base.begin(), map.base.end(), vehicle->getPosition()) != map.base.end()) {
             int value = players_on_base[std::to_string(vehicle->getPlayerId())]["tanks_on_base"].get<std::int32_t>();
 
