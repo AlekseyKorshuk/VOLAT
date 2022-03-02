@@ -150,7 +150,7 @@ void Game::updatePlayers(json state_json) {
                 player->is_neutral = false;
             } else {
                 int k = 0;
-                for (auto i: player->onWhomAttacked) {
+                for (auto i: player->whoAttacked) {
                     if (i != idx) k++;
                 }
                 if (k == 0) {
