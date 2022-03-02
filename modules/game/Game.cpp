@@ -698,6 +698,8 @@ std::string Game::getSafeShootAction(std::shared_ptr<Tank> player_tank) {
 
 std::vector<std::shared_ptr<Tank>>
 Game::selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank>& player_tank) {
+    if (shoots.empty())
+        return std::vector<std::shared_ptr<Tank>>(0);
     auto best_shoot = shoots[0];
     int best_damage = -1, best_kill_points = -1;
     for (const auto &shoot: shoots) {
@@ -732,5 +734,24 @@ Position Game::selectBestMove(std::vector<Position> moves, std::shared_ptr<Tank>
         }
     }
     return best_move;
+}
+
+std::vector<std::vector<std::shared_ptr<Tank>>> Game::getPossibleShoots(const std::shared_ptr<Tank> &player_tank) {
+    auto shooting_hexes = player_tank->getShootingHexesAreas(map);
+    std::vector<std::vector<std::shared_ptr<Tank>>> shoots;
+    for (auto hexes: shooting_hexes) {
+        std::vector<std::shared_ptr<Tank>> shoot;
+        for (auto hex: hexes) {
+            for (auto opponent_vehicle: opponent_vehicles) {
+
+                if (opponent_vehicle->getPosition() == hex && !getPlayer(opponent_vehicle->getPlayerId())->is_neutral) {
+                    shoot.push_back(opponent_vehicle);
+                }
+            }
+        }
+        if (!shoot.empty())
+            shoots.push_back(shoot);
+    }
+    return shoots;
 }
 

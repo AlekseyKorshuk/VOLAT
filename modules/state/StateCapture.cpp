@@ -78,55 +78,59 @@ std::string StateCapture::calculateAction() {
     auto position = tank->getPosition();
 
     if (std::find(game->map.base.begin(), game->map.base.end(), position) != game->map.base.end()) {
-        auto shoot = game->canKillAndStayAlive(tank);
-        if (!shoot.empty())
-            return shootToString(shoot);
-
-        std::vector<std::pair<Position, int>> possible_moves = calculateShootingVector(game, tank);
-        if (!possible_moves.empty() && possible_moves[0].first != position)
-            if (checkPosition(possible_moves, position))
-                return moveToString(possible_moves[0].first);
-
-        return shootAction();
+        // Already on base
+        return onBaseAction();
+    }
+    // Not on base
+    auto base_positions = game->getSafePositions(tank, game->map.base, false);
+    if (!base_positions.empty()) {
+        auto path = game->map.findPath(tank->getPosition(), base_positions,
+                                       tank);
+        if (!path.empty())
+            return moveToString(path[1]);
     }
 
-    auto path = game->map.findPath(position, game->map.base, tank);
+    std::string action = game->getSafeShootAction(tank);
+    if (!action.empty())
+        return action;
+
+    auto path = game->findSafePath(position, game->map.base, tank);
 
     if (!path.empty())
         return moveToString(path[1]);
-    return shootAction();
+
+    auto possible_shoots = game->getPossibleShoots(tank);
+    if (!possible_shoots.empty())
+        return shootToString(game->selectBestShoot(possible_shoots, tank));
+
+    return "";
 
 }
 
-std::string StateCapture::shootAction() {
-    std::vector<std::shared_ptr<Tank>> tanks = game->GuaranteedKill(tank);
-    if (!tanks.empty())
-        return shootToString(tanks);
-
-    auto shooting_hexes = tank->getShootingHexesAreas(game->map);
-    std::vector<std::shared_ptr<Tank>> best_shoot;
-    int best_damage = -1;
-    for (auto hexes: shooting_hexes) {
-        std::vector<std::shared_ptr<Tank>> shoot;
-        int damage = 0;
-        for (auto hex: hexes) {
-            for (auto opponent_vehicle: game->opponent_vehicles) {
-                if (opponent_vehicle->getPosition() == hex &&
-                    !game->getPlayer(opponent_vehicle->getPlayerId())->is_neutral) {
-                    shoot.push_back(opponent_vehicle);
-                    damage += std::max(opponent_vehicle->getHealthPoints(), tank->getDamage());
-                }
-            }
-        }
-        if (!shoot.empty() && best_damage < damage) {
-            best_damage = damage;
-            best_shoot = shoot;
+std::string StateCapture::onBaseAction() {
+    if (game->map.getHex(tank->getPosition())->danger[0] > 0) {
+        // in danger
+//        std::cout << "in danger! ";
+        auto shoot = game->canKillAndStayAlive(tank);
+        if (!shoot.empty())
+            return shootToString(shoot);
+        auto safe_position = game->getSafePositions(tank, game->map.base, true);
+        if (!safe_position.empty()) {
+            auto path = game->map.findPath(tank->getPosition(), safe_position,
+                                           tank);
+            if (!path.empty())
+                return moveToString(path[1]);
         }
     }
+//    std::cout << "in safe position OR the only way is to shoot! ";
+    if (game->current_game_state["current_turn"] == 19)
+        std::cout << game->map.getHex(tank->getPosition())->danger[0];
 
-    if (!best_shoot.empty())
-        return shootToString(best_shoot);
-
+    // in safe position OR the only way is to shoot
+    auto possible_shoots = game->getPossibleShoots(tank);
+    std::cout << possible_shoots.size();
+    if (!possible_shoots.empty())
+        return shootToString(game->selectBestShoot(possible_shoots, tank));
     return "";
 }
 

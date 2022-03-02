@@ -14,7 +14,7 @@ public:
     virtual std::string calculateAction();
 
 private:
-    virtual std::string shootAction();
+    virtual std::string onBaseAction();
 
 };
 

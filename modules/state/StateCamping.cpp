@@ -73,6 +73,8 @@ std::string StateCamping::performAggressiveAction() {
                     shoot.push_back(opponent_vehicle);
         }
     }
-
-    return shootToString(game->selectBestShoot(shoots, tank));
+    auto best_shoot = game->selectBestShoot(shoots, tank);
+    if (!best_shoot.empty())
+        return shootToString(best_shoot);
+    return "";
 }
