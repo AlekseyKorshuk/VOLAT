@@ -64,6 +64,8 @@ public:
     std::vector<Position>
     getSafePositions(const std::shared_ptr<Tank> &player_tank, std::vector<Position> area, bool is_zero_danger);
 
+    std::vector<std::vector<std::shared_ptr<Tank>>> getPossibleShoots(const std::shared_ptr<Tank> &player_tank);
+
     Map map = Map();
 
     std::vector<std::shared_ptr<Tank>> all_vehicles;
