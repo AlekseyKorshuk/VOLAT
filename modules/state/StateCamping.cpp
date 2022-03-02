@@ -14,7 +14,7 @@ std::string StateCamping::getType() {
 std::string StateCamping::calculateAction() {
     std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
 
-    if (position->danger[0] == 0) {
+    if (position->danger[0] != 0) {
         return performAggressiveAction();
     } else {
         auto safe_base = game->getSafePositions(tank, game->map.base, true);
