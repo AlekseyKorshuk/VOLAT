@@ -464,6 +464,7 @@ void Game::predictingBehaviorOpponentsTanks() {
 
 void Game::predictingTankBehavior(const std::shared_ptr<Tank> &tank) {
 
+
     int max_prediction_step = 3;
 
 
@@ -491,15 +492,18 @@ void Game::predictingTankBehavior(const std::shared_ptr<Tank> &tank) {
     Position pos_tank = tank->getPosition();
 
     visit_map[0][pos_tank.getX() + map_radius][pos_tank.getY() + map_radius] = 1;
+    /*
     for (const auto &hexList: tank->getShootingHexesAreas(map)) {
         for (const auto &pos: hexList) {
             danger_map[0][pos.getX() + map_radius][pos.getY() + map_radius] += 1;
         }
     }
+    */
 
 
     std::queue<std::pair<Position, int>> Queue;
     Queue.push({tank->getPosition(), 0});
+
 
 
     int tank_sp = tank->getSpeedPoints();
@@ -544,15 +548,16 @@ void Game::predictingTankBehavior(const std::shared_ptr<Tank> &tank) {
         }
     }
 
+
     for (int i = 0; i < map_radius * 2; i++) {
         for (int j = 0; j < map_radius * 2; j++) {
             bool f = false;
             for (int q = 0; q < max_prediction_step; q++)
-                if (visit_map[q][i][j]) {
-                    f = 1;
+                if (visit_map[q][i][j] != 0) {
+                    f = true;
                     break;
                 }
-            if (!f) break;
+            if (!f) continue;
 
             tank->update(Position(i - map_radius, j - map_radius, 0 - i - j + 2 * map_radius));
 
