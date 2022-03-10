@@ -64,6 +64,7 @@ json Strategy::calculate_actions(int idx, json state) {
     std::string actions;
 
     auto total_start = std::chrono::steady_clock::now();
+
     auto start = std::chrono::steady_clock::now();
     game->update(state);
     std::cout << "update: " << since(start).count() << " ms" << std::endl;
@@ -112,6 +113,7 @@ json Strategy::calculate_actions(int idx, json state) {
             numDoAction++;
         } else
         if (numCalcAction != 5) {
+            auto start = std::chrono::steady_clock::now();
             int j = calcAction[numCalcAction++].second;
             fCalcAction[j] = true;
 
