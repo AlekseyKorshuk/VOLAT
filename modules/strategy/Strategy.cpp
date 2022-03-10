@@ -63,7 +63,7 @@ Strategy::Strategy(int idx, json map_json, json state_json) {
 json Strategy::calculate_actions(int idx, json state) {
     std::string actions;
 
-
+    auto total_start = std::chrono::steady_clock::now();
     auto start = std::chrono::steady_clock::now();
     game->update(state);
     std::cout << "update: " << since(start).count() << " ms" << std::endl;
@@ -73,8 +73,63 @@ json Strategy::calculate_actions(int idx, json state) {
             tank->current_strategy_->updateState();
         }
 
+
+
+    std::vector<std::string> actionList(5);
+    std::vector<bool> fCalcAction(5);
+    std::vector<std::pair<int, int> > calcAction;
+
+
+    for (int i = 0 ; i < game->player_vehicles.size(); i++) {
+        calcAction.push_back({game->player_vehicles[i]->current_strategy_->getPriority(),i});
+    }
+
+    sort(calcAction.begin(), calcAction.end(),
+         [](std::pair<int, int> a, std::pair<int, int> b) {
+        return (a.first > b.first) || (a.first == b.first && a.second < b.second);
+    });
+
+    int numCalcAction = 0;
+    int numDoAction = 0;
+
+    while(numCalcAction != 5 || numDoAction != 5) {
+        if (numDoAction != 5 && fCalcAction[numDoAction] == true) {
+            auto start = std::chrono::steady_clock::now();
+
+            std::string action = actionList[numDoAction];
+            if (!action.empty()) {
+                if (!actions.empty()) {
+                    actions += ',';
+                }
+                actions += "\"" + std::to_string(numDoAction) + "\":" + action;
+            }
+
+            std::cout << game->player_vehicles[numDoAction]->getStringTankType()
+                << " do " << game->player_vehicles[numDoAction]->current_strategy_->getStateName() << ": ";
+            game->player_vehicles[numDoAction] ->current_strategy_->doAction(action);
+            std::cout << since(start).count() << " ms" << std::endl;
+
+            numDoAction++;
+        } else
+        if (numCalcAction != 5) {
+            int j = calcAction[numCalcAction++].second;
+            fCalcAction[j] = true;
+
+            std::cout << game->player_vehicles[j]->getStringTankType()
+                << " calc " << game->player_vehicles[j]->current_strategy_->getStateName() << ": ";
+            actionList[j] = game->player_vehicles[j]->current_strategy_->calculateAction();
+            std::cout << since(start).count() << " ms" << std::endl;
+        }
+    }
+
+
+
+
+
+
+    /*
     int k = 0;
-    auto total_start = std::chrono::steady_clock::now();
+
     for (auto tank: game->player_vehicles){
         if (tank->current_strategy_ != nullptr) {
             auto start = std::chrono::steady_clock::now();
@@ -93,6 +148,7 @@ json Strategy::calculate_actions(int idx, json state) {
             }
         }
     }
+    */
 
     std::cout << "Total elapsed: " << since(total_start).count() << " ms" << std::endl;
 
