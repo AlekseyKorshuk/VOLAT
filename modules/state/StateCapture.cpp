@@ -83,6 +83,7 @@ std::string StateCapture::calculateAction() {
     }
     // Not on base
     auto base_positions = game->getSafePositions(tank, game->map.base, false);
+    // TODO отобрать лучшие позиции из лучших
     if (!base_positions.empty()) {
         auto path = game->map.findPath(tank->getPosition(), base_positions,
                                        tank);
@@ -122,15 +123,16 @@ std::string StateCapture::onBaseAction() {
                 return moveToString(path[1]);
         }
     }
-//    std::cout << "in safe position OR the only way is to shoot! ";
-    if (game->current_game_state["current_turn"] == 19)
-        std::cout << game->map.getHex(tank->getPosition())->danger[0];
 
     // in safe position OR the only way is to shoot
     auto possible_shoots = game->getPossibleShoots(tank);
     std::cout << possible_shoots.size();
     if (!possible_shoots.empty())
         return shootToString(game->selectBestShoot(possible_shoots, tank, false));
+
+    // TODO занять более сейвовую позицию с учетом предположений на все ходы в массиве ЕСЛИ В БЕЗОПАСНОСТИ
+    // TODO ЕСЛИ В ОПАСНОСТИ: если мы выигрываем за ход, то остаться | иначе уехать с базы в сейвовую позицию если такая есть
+
     return "";
 }
 

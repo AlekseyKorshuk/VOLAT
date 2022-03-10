@@ -50,7 +50,7 @@ public:
     findSortedSafePositionsToShoot(const std::shared_ptr<Tank> &player_tank,
                                    const std::shared_ptr<Tank> &opponent_tank);
 
-    std::string getSafeShootAction(std::shared_ptr<Tank> player_tank);
+    std::string getSafeShootAction(const std::shared_ptr<Tank>& player_tank);
 
     std::vector<std::shared_ptr<Tank>>
     selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank> &player_tank,

@@ -641,9 +641,12 @@ bool Game::isDefenceNeeded(const std::shared_ptr<Tank> &player_tank) {
 
 
 bool Game::isCaptureNeeded(const std::shared_ptr<Tank> &player_tank) {
+//    std::cout << player_tank->getStringTankType() << std::endl;
+
     for (const auto &position: map.base) {
         auto hex = map.getHex(position);
-        if (hex->danger[0] < player_tank->getHealthPoints() && !hex->is_occupied && hex->content->is_reacheble)
+//        std::cout << *hex << " " << hex->danger[0] << std::endl;
+        if (hex->danger[0] < player_tank->getHealthPoints() && (!hex->is_occupied || player_tank->getPosition() == position))
             return true;
     }
 
@@ -672,7 +675,7 @@ Game::getSafePositions(const std::shared_ptr<Tank> &player_tank, std::vector<Pos
     return list;
 }
 
-std::string Game::getSafeShootAction(std::shared_ptr<Tank> player_tank) {
+std::string Game::getSafeShootAction(const std::shared_ptr<Tank>& player_tank) {
     std::vector<std::vector<std::shared_ptr<Tank>>> shoots;
     std::vector<Position> moves;
     for (const auto &opponent_vehicle: opponent_vehicles) {

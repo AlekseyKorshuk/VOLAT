@@ -35,6 +35,7 @@ std::string StateDefence::calculateAction() {
     if (!possible_shoots.empty())
         return shootToString(game->selectBestShoot(possible_shoots, tank, false));
 
+    // TODO едем к ближайшему танку на базе для выстрела
     return "";
 
 }

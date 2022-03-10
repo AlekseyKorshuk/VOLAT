@@ -65,6 +65,7 @@ std::string StateCamping::performAggressiveAction() {
         return action;
 
     std::vector<std::vector<std::shared_ptr<Tank>>> shoots;
+    // TODO заменить на новый
     for (auto list: tank->getShootingHexesAreas(game->map)){
         std::vector<std::shared_ptr<Tank>> shoot;
         for (auto position: list){
@@ -74,6 +75,7 @@ std::string StateCamping::performAggressiveAction() {
 
         }
     }
+
     auto best_shoot = game->selectBestShoot(shoots, tank, false);
     if (!best_shoot.empty())
         return shootToString(best_shoot);
