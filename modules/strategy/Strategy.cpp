@@ -67,33 +67,73 @@ json Strategy::calculate_actions(int idx, json state) {
 
     auto start = std::chrono::steady_clock::now();
     game->update(state);
+    game->predictingBehaviorOpponentsTanks();
+
     std::cout << "update: " << since(start).count() << " ms" << std::endl;
 
     for (auto tank: game->player_vehicles)
-        if (tank->current_strategy_ != nullptr) {
-            tank->current_strategy_->updateState();
-        }
+        tank->current_strategy_->updateState();
 
+//    std::vector<std::shared_ptr<Tank>> tanks(game->player_vehicles.size());
+//    std::copy(game->player_vehicles.begin(), game->player_vehicles.end(), tanks.begin());
 
+//    std::vector<std::pair<int,std::string>> id_action;
+//
+//    while (!tanks.empty()){
+//        double best_score = -99999999;
+//        int best_index = 0;
+//        std::string best_action;
+//        for (int i = 0; i < tanks.size(); i++){
+//            game->update(state);
+//            for (const auto& it: id_action){
+//                std::shared_ptr<Tank> this_tank;
+//                for (auto t: game->player_vehicles)
+//                    if (t->id == )
+//                tanks[i]->current_strategy_->doAction(it.second);
+//            }
+//            tanks[i]->current_strategy_->updateState();
+//            auto action = tanks[i]->current_strategy_->calculateAction();
+//            tanks[i]->current_strategy_->doAction(action);
+//            auto score = game->calculateCurrentStateScore();
+//            if (best_score < score){
+//                best_score = score;
+//                best_index = i;
+//                best_action = action;
+//            }
+//        }
+////        tanks[best_index]->current_strategy_->doAction(best_action);
+//        id_action.emplace_back(tanks[best_index]->getTankType(), best_action);
+//        tanks.erase (tanks.begin() + best_index);
+//    }
+//
+//    std::sort(id_action.begin(), id_action.end());
+//    for(int i = 0; i < id_action.size(); i++){
+//        if (!id_action[i].second.empty()) {
+//            if (!actions.empty()) {
+//                actions += ',';
+//            }
+//            actions += "\"" + std::to_string(i) + "\":" + id_action[i].second;
+//        }
+//    }
 
+//    game->update(state);
     std::vector<std::string> actionList(5);
     std::vector<bool> fCalcAction(5);
     std::vector<std::pair<int, int> > calcAction;
 
-
-    for (int i = 0 ; i < game->player_vehicles.size(); i++) {
-        calcAction.push_back({game->player_vehicles[i]->current_strategy_->getPriority(),i});
+    for (int i = 0; i < game->player_vehicles.size(); i++) {
+        calcAction.push_back({game->player_vehicles[i]->current_strategy_->getPriority(), i});
     }
 
     sort(calcAction.begin(), calcAction.end(),
          [](std::pair<int, int> a, std::pair<int, int> b) {
-        return (a.first > b.first) || (a.first == b.first && a.second < b.second);
-    });
+             return (a.first > b.first) || (a.first == b.first && a.second < b.second);
+         });
 
     int numCalcAction = 0;
     int numDoAction = 0;
 
-    while(numCalcAction != 5 || numDoAction != 5) {
+    while (numCalcAction != 5 || numDoAction != 5) {
         if (numDoAction != 5 && fCalcAction[numDoAction] == true) {
             auto start = std::chrono::steady_clock::now();
 
@@ -106,54 +146,25 @@ json Strategy::calculate_actions(int idx, json state) {
             }
 
             std::cout << game->player_vehicles[numDoAction]->getStringTankType()
-                << " do " << game->player_vehicles[numDoAction]->current_strategy_->getStateName() << ": ";
-            game->player_vehicles[numDoAction] ->current_strategy_->doAction(action);
+                      << " do " << game->player_vehicles[numDoAction]->current_strategy_->getStateName() << ": ";
+            game->player_vehicles[numDoAction]->current_strategy_->doAction(action);
             std::cout << since(start).count() << " ms" << std::endl;
 
             numDoAction++;
-        } else
-        if (numCalcAction != 5) {
+        } else if (numCalcAction != 5) {
             auto start = std::chrono::steady_clock::now();
             int j = calcAction[numCalcAction++].second;
             fCalcAction[j] = true;
-
+            game->player_vehicles[j]->current_strategy_->updateState();
             std::cout << game->player_vehicles[j]->getStringTankType()
-                << " calc " << game->player_vehicles[j]->current_strategy_->getStateName() << ": ";
+                      << " calc " << game->player_vehicles[j]->current_strategy_->getStateName() << ": ";
             actionList[j] = game->player_vehicles[j]->current_strategy_->calculateAction();
             std::cout << since(start).count() << " ms" << std::endl;
         }
     }
 
 
-
-
-
-
-    /*
-    int k = 0;
-
-    for (auto tank: game->player_vehicles){
-        if (tank->current_strategy_ != nullptr) {
-            auto start = std::chrono::steady_clock::now();
-
-            std::cout << tank->getStringTankType() << " " << tank->current_strategy_->getStateName() << ": ";
-            std::string action = tank->current_strategy_->calculateAction();
-            std::cout << since(start).count() << " ms" << std::endl;
-
-            if (!action.empty()) {
-                if (!actions.empty()) {
-                    actions += ',';
-                }
-
-                actions += "\"" + std::to_string(k++) + "\":" + action;
-
-            }
-        }
-    }
-    */
-
     std::cout << "Total elapsed: " << since(total_start).count() << " ms" << std::endl;
-
 
     actions = "{" + actions + "}";
     return json::parse(actions);

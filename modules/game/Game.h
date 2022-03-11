@@ -30,13 +30,15 @@ public:
     std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(const std::shared_ptr<Tank> &);
 
     bool isDefenceNeeded(const std::shared_ptr<Tank> &);
-    json getCaptureState(const std::shared_ptr<Tank> &);
+
+    json getCaptureState();
 
     bool isCaptureNeeded(const std::shared_ptr<Tank> &player_tank);
 
 
     //Finds a position from which tank_1 can safely shoot tank_2
-    std::vector<Position> findSafePositionsToShoot(const std::shared_ptr<Tank> &, const std::shared_ptr<Tank> &, bool is_zero_danger);
+    std::vector<Position>
+    findSafePositionsToShoot(const std::shared_ptr<Tank> &, const std::shared_ptr<Tank> &, bool is_zero_danger);
 
     //Finds safe positions with the minimum distance from the specified position
     std::vector<Position> findNearestSafePositions(const Position &);
@@ -51,7 +53,7 @@ public:
     findSortedSafePositionsToShoot(const std::shared_ptr<Tank> &player_tank,
                                    const std::shared_ptr<Tank> &opponent_tank);
 
-    std::string getSafeShootAction(const std::shared_ptr<Tank>& player_tank);
+    std::string getSafeShootAction(const std::shared_ptr<Tank> &player_tank);
 
     std::vector<std::shared_ptr<Tank>>
     selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank> &player_tank,
@@ -66,11 +68,17 @@ public:
     std::vector<std::shared_ptr<Tank>> canKillAndStayAlive(const std::shared_ptr<Tank> &player_tank);
 
     std::vector<Position>
-    getSafePositions(const std::shared_ptr<Tank> &player_tank, const std::vector<Position>& area, bool is_zero_danger, bool choose_best);
+    getSafePositions(const std::shared_ptr<Tank> &player_tank, const std::vector<Position> &area, bool is_zero_danger,
+                     bool choose_best);
 
     std::vector<std::vector<std::shared_ptr<Tank>>> getPossibleShoots(const std::shared_ptr<Tank> &player_tank);
 
-    std::vector<std::shared_ptr<Tank>> selectBestShootDefence(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank> &player_tank);
+    std::vector<std::shared_ptr<Tank>> selectBestShootDefence(std::vector<std::vector<std::shared_ptr<Tank>>> shoots,
+                                                              const std::shared_ptr<Tank> &player_tank);
+
+    void predictingBehaviorOpponentsTanks();
+
+    double calculateCurrentStateScore();
 
     Map map = Map();
 
@@ -88,8 +96,6 @@ private:
 
     void updatePlayers(json);
 
-
-    void predictingBehaviorOpponentsTanks();
 
     void predictingTankBehavior(const std::shared_ptr<Tank> &);
 

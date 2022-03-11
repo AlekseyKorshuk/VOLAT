@@ -48,8 +48,6 @@ void Game::update(json state_json) {
             updateTank(vehicle_id, x, y, z, health, capture_points, shoot_range_bonus);
         }
     }
-
-    predictingBehaviorOpponentsTanks();
 }
 
 
@@ -617,7 +615,7 @@ std::vector<int> Game::definingDirectionSegments(Position start, Position end) {
 
 bool Game::isDefenceNeeded(const std::shared_ptr<Tank> &player_tank) {
     auto position = player_tank->getPosition();
-    json players_on_base = getCaptureState(player_tank);
+    json players_on_base = getCaptureState();
     auto player_id = player_tank->getPlayerId();
 
     int total_num_vehicles_on_base = 0;
@@ -808,7 +806,7 @@ Game::selectBestShootDefence(std::vector<std::vector<std::shared_ptr<Tank>>> sho
     return best_shoot;
 }
 
-json Game::getCaptureState(const std::shared_ptr<Tank>& player_tank) {
+json Game::getCaptureState() {
     json players_on_base;
     for (auto player: current_game_state["players"]) {
         players_on_base[std::to_string(player["idx"].get<std::int32_t>())]["tanks_on_base"] = 0;
@@ -828,5 +826,40 @@ json Game::getCaptureState(const std::shared_ptr<Tank>& player_tank) {
     }
 
     return players_on_base;
+}
+
+double Game::calculateCurrentStateScore() {
+    double score = 0;
+    auto player_id = player_vehicles[0]->getPlayerId();
+
+    // очки захвата + захват базы (+1000) + очки убийств - (возможный урон после хода - возможный урон до хода)
+    json player_data = current_game_state["win_points"][std::to_string(player_id)];
+    score += player_data["capture"].get<std::int32_t>();
+    score += player_data["kill"].get<std::int32_t>();
+    for (const auto& tank: player_vehicles)
+        score -= map.getHex(tank->getPosition())->danger[0];
+
+    auto capture_state = getCaptureState();
+
+    int opponent1 = -1;
+    int opponent2 = -1;
+    int player = 0;
+    int player_capture = 0;
+    for (auto it = capture_state.begin(); it != capture_state.end(); ++it) {
+        if (std::stoi(it.key()) == player_id) {
+            player = it.value()["tanks_on_base"].get<std::int32_t>();
+            player_capture = it.value()["capture_points"].get<std::int32_t>();
+        } else if (opponent1 == -1) {
+            opponent1 = it.value()["tanks_on_base"].get<std::int32_t>();
+        } else {
+            opponent2 = it.value()["tanks_on_base"].get<std::int32_t>();
+        }
+    }
+
+    if ((opponent1 == 0 || opponent2 == 0) && player_capture + player >= 5) {
+        score += 100000;
+    }
+
+    return score;
 }
 
