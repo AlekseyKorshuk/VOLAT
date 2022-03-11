@@ -6,8 +6,10 @@ State::State(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game, std::shared
 };
 
 std::string State::moveToString(Position pos) {
-    game->map.changeOccupied(pos, true);
+    if (pos == tank->getPosition())
+        return "";
 
+    game->map.changeOccupied(pos, true);
 
     return "{\"type\":\"MOVE\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
            ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" + std::to_string(pos.getY()) + ",\"z\":" +
@@ -33,7 +35,7 @@ std::string State::shootToString(std::vector<std::shared_ptr<Tank>> tanks) {
     for (auto tank: tanks) {
         if (tank->getHealthPoints() == 1) {
             Position sp_pos = tank->getSpawnPosition();
-            Position pos =tank->getPosition();
+            Position pos = tank->getPosition();
             game->updateTank(tank->id, sp_pos.getX(), sp_pos.getY(), sp_pos.getZ());
             game->map.changeOccupied(pos, true);
         }
@@ -47,14 +49,14 @@ std::string State::shootToString(std::vector<std::shared_ptr<Tank>> tanks) {
 }
 
 void State::doAction(std::string action_s) {
-    if(action_s.empty()) return;
+    if (action_s.empty()) return;
 
     json action = json::parse(action_s);
     Position pos = Position(
             action["data"]["target"]["x"].get<std::int32_t>(),
             action["data"]["target"]["y"].get<std::int32_t>(),
             action["data"]["target"]["z"].get<std::int32_t>()
-            );
+    );
     if (action["type"].get<std::string>() == "MOVE") {
         game->updateTank(tank->id, pos.getX(), pos.getY(), pos.getZ());
     } else {
