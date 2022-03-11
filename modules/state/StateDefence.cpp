@@ -18,7 +18,7 @@ std::string StateDefence::getType() {
 
 std::string StateDefence::calculateAction() {
     auto position = tank->getPosition();
-    
+
     auto shoots = game->getPossibleShoots(tank);
 
     auto shoot = game->selectBestShootDefence(shoots, tank);
@@ -35,7 +35,14 @@ std::string StateDefence::calculateAction() {
     if (!possible_shoots.empty())
         return shootToString(game->selectBestShoot(possible_shoots, tank, false));
 
-    // TODO едем к ближайшему танку на базе для выстрела
+    auto tanks_on_base = game->findTanksToShootOnArea(game->map.base);
+    std::vector<Position> positions_list;
+    for (const auto &opponent_tank: tanks_on_base) {
+        auto positions = game->findSafePositionsToShoot(tank, opponent_tank, false);
+        positions_list.insert(positions_list.end(), positions.begin(), positions.end());
+    }
+    auto path = game->map.findPath(tank->getPosition(), positions_list, tank);
+    if (!path.empty())
+        return moveToString(path[1]);
     return "";
-
 }

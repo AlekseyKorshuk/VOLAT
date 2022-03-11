@@ -14,7 +14,7 @@ std::string StateHunt::getType() {
 
 std::string StateHunt::calculateAction() {
 
-    auto positions_to_shoot = game->findSafePositionsToShoot(tank, param->tank);
+    auto positions_to_shoot = game->findSafePositionsToShoot(tank, param->tank, true);
     Position start = tank->getPosition();
     if (!positions_to_shoot.empty())
         for (auto tankList: game->tanksUnderShoot(tank))

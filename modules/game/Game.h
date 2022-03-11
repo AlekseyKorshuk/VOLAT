@@ -30,12 +30,13 @@ public:
     std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(const std::shared_ptr<Tank> &);
 
     bool isDefenceNeeded(const std::shared_ptr<Tank> &);
+    json getCaptureState(const std::shared_ptr<Tank> &);
 
     bool isCaptureNeeded(const std::shared_ptr<Tank> &player_tank);
 
 
     //Finds a position from which tank_1 can safely shoot tank_2
-    std::vector<Position> findSafePositionsToShoot(const std::shared_ptr<Tank> &, const std::shared_ptr<Tank> &);
+    std::vector<Position> findSafePositionsToShoot(const std::shared_ptr<Tank> &, const std::shared_ptr<Tank> &, bool is_zero_danger);
 
     //Finds safe positions with the minimum distance from the specified position
     std::vector<Position> findNearestSafePositions(const Position &);
@@ -65,7 +66,7 @@ public:
     std::vector<std::shared_ptr<Tank>> canKillAndStayAlive(const std::shared_ptr<Tank> &player_tank);
 
     std::vector<Position>
-    getSafePositions(const std::shared_ptr<Tank> &player_tank, std::vector<Position> area, bool is_zero_danger);
+    getSafePositions(const std::shared_ptr<Tank> &player_tank, const std::vector<Position>& area, bool is_zero_danger, bool choose_best);
 
     std::vector<std::vector<std::shared_ptr<Tank>>> getPossibleShoots(const std::shared_ptr<Tank> &player_tank);
 

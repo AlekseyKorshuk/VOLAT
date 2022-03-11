@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
         game = "test1234";
         num_turns = 99;
         num_players = 3;
-        is_solo = 1;
+        is_solo = 0;
     } else {
         name = argv[1];
         password = argv[2];

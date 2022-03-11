@@ -17,7 +17,7 @@ std::string StateCamping::calculateAction() {
     if (position->danger[0] != 0) {
         return performAggressiveAction();
     } else {
-        auto safe_base = game->getSafePositions(tank, game->map.base, true);
+        auto safe_base = game->getSafePositions(tank, game->map.base, true, false);
         if (!safe_base.empty()) {
             auto path = game->findSafePath(tank->getPosition(), safe_base,
                                            tank);
@@ -48,6 +48,11 @@ std::string StateCamping::moveToBase() {
 std::string StateCamping::findSafePosition() {
     auto safe_positions = game->findNearestSafePositions(
             tank->getPosition());
+
+    if (std::find(safe_positions.begin(), safe_positions.end(), tank->getPosition()) != safe_positions.end()) {
+        return "";
+    }
+
     auto path = game->map.findPath(tank->getPosition(), safe_positions,
                                    tank);
     if (path.size() != 0)
@@ -64,20 +69,9 @@ std::string StateCamping::performAggressiveAction() {
     if (!action.empty())
         return action;
 
-    std::vector<std::vector<std::shared_ptr<Tank>>> shoots;
-    // TODO заменить на новый
-    for (auto list: tank->getShootingHexesAreas(game->map)){
-        std::vector<std::shared_ptr<Tank>> shoot;
-        for (auto position: list){
-            for (const auto &opponent_vehicle: game->opponent_vehicles)
-                if (opponent_vehicle->getPosition() == position && !game->getPlayer(opponent_vehicle->getPlayerId())->is_neutral)
-                    shoot.push_back(opponent_vehicle);
+    auto possible_shoots = game->getPossibleShoots(tank);
+    if (!possible_shoots.empty())
+        return shootToString(game->selectBestShoot(possible_shoots, tank, false));
 
-        }
-    }
-
-    auto best_shoot = game->selectBestShoot(shoots, tank, false);
-    if (!best_shoot.empty())
-        return shootToString(best_shoot);
     return "";
 }

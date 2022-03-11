@@ -1,6 +1,7 @@
 #include "StateCapture.h"
 #include <algorithm> //std::sort
 #include <vector> //std::vector
+#include <numeric>
 
 
 StateCapture::StateCapture(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game, std::shared_ptr<Param> param)
@@ -28,7 +29,6 @@ std::vector<Position> intersection(const std::vector<Position> &v1,
 
     return v3;
 }
-
 
 bool sortbysec(const std::pair<Position, int> &a,
                const std::pair<Position, int> &b) {
@@ -82,8 +82,7 @@ std::string StateCapture::calculateAction() {
         return onBaseAction();
     }
     // Not on base
-    auto base_positions = game->getSafePositions(tank, game->map.base, false);
-    // TODO отобрать лучшие позиции из лучших
+    auto base_positions = game->getSafePositions(tank, game->map.base, false, true);
     if (!base_positions.empty()) {
         auto path = game->map.findPath(tank->getPosition(), base_positions,
                                        tank);
@@ -115,7 +114,7 @@ std::string StateCapture::onBaseAction() {
         auto shoot = game->selectBestShoot(game->getPossibleShoots(tank), tank, true);
         if (!shoot.empty())
             return shootToString(shoot);
-        auto safe_position = game->getSafePositions(tank, game->map.base, true);
+        auto safe_position = game->getSafePositions(tank, game->map.base, true, false);
         if (!safe_position.empty()) {
             auto path = game->map.findPath(tank->getPosition(), safe_position,
                                            tank);
@@ -130,8 +129,62 @@ std::string StateCapture::onBaseAction() {
     if (!possible_shoots.empty())
         return shootToString(game->selectBestShoot(possible_shoots, tank, false));
 
-    // TODO занять более сейвовую позицию с учетом предположений на все ходы в массиве ЕСЛИ В БЕЗОПАСНОСТИ
-    // TODO ЕСЛИ В ОПАСНОСТИ: если мы выигрываем за ход, то остаться | иначе уехать с базы в сейвовую позицию если такая есть
+    if (game->map.getHex(tank->getPosition())->danger[0] > 0) {
+        //  ЕСЛИ В ОПАСНОСТИ: если мы выигрываем за ход, то остаться | иначе уехать с базы в сейвовую позицию если такая есть
+        json capture_state = game->getCaptureState(tank);
+        auto player_id = tank->getPlayerId();
+        int opponent1 = -1;
+        int opponent2 = -1;
+        int player = 0;
+        int player_capture = 0;
+        for (auto it = capture_state.begin(); it != capture_state.end(); ++it) {
+            if (std::stoi(it.key()) == player_id) {
+                player = it.value()["tanks_on_base"].get<std::int32_t>();
+                player_capture = it.value()["capture_points"].get<std::int32_t>();
+            } else if (opponent1 == -1) {
+                opponent1 = it.value()["tanks_on_base"].get<std::int32_t>();
+            } else {
+                opponent2 = it.value()["tanks_on_base"].get<std::int32_t>();
+            }
+        }
+
+        if ((opponent1 == 0 || opponent2 == 0) && player_capture + player >= 5) {
+            return "";
+        } else {
+            auto safe_position = game->getSafePositions(tank, game->map.base, false, true);
+            if (!safe_position.empty()) {
+                auto path = game->map.findPath(tank->getPosition(), safe_position,
+                                               tank);
+                if (!path.empty())
+                    return moveToString(path[1]);
+            }
+        }
+
+
+    } else {
+        // занять более сейвовую позицию с учетом предположений на все ходы в массиве ЕСЛИ В БЕЗОПАСНОСТИ
+        auto safe_position = game->getSafePositions(tank, game->map.base, true, false);
+        if (!safe_position.empty()) {
+            Position best_position = tank->getPosition();
+            double best_danger = 9999;
+            for (Position pos: safe_position) {
+                int danger = 0;
+                auto hex = game->map.getHex(pos);
+                for (double dan: hex->danger) {
+                    danger += dan;
+                }
+                if (danger < best_danger && hex->danger[0] == 0) {
+                    best_danger = danger;
+                    best_position = pos;
+                }
+            }
+            auto path = game->map.findPath(tank->getPosition(), best_position,
+                                           tank);
+            if (!path.empty())
+                return moveToString(path[1]);
+        }
+
+    }
 
     return "";
 }
