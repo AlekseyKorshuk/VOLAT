@@ -22,7 +22,8 @@ public:
     std::vector<std::vector<std::shared_ptr<Hex>>> hexes_map;
 
     std::vector<Position> base;
-
+    std::vector<Position> light_repair;
+    std::vector<Position> hard_repair;
     int num_visited = 0;
 
     Map(json map_json, int radius = 10);

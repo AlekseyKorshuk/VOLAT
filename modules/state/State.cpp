@@ -61,7 +61,7 @@ void State::doAction(std::string action_s) {
             action["data"]["target"]["z"].get<std::int32_t>()
     );
     if (action["type"].get<std::string>() == "MOVE") {
-        game->map.changeOccupied(param->pos, true);
+        game->map.changeOccupied(param->pos, false);
     } else {
         bool f = true;
         for (auto tank: game->opponent_vehicles) {

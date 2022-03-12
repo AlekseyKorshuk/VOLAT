@@ -1,3 +1,4 @@
+#pragma comment(linker, "/STACK:16777216")
 #include <iostream>
 #include "modules/client/Client.h"
 #include "modules/core/Core.h"
@@ -12,7 +13,7 @@ int main(int argc, char **argv) {
     if (argc == 1) {
         name = "VOLAT_MAIN";
         password = "";
-        game = "testVOLAT123";
+        game = "testVOLAT1";
         num_turns = 45;
         num_players = 3;
         is_solo = 0;

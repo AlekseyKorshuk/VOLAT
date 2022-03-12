@@ -875,18 +875,279 @@ double Game::calculateCurrentStateScore() {
 void Game::checkingRepairs(const std::shared_ptr<Tank> &tank, std::shared_ptr<Hex> hex, double &param) {
     if (hex->content->content_type == ContentType::HARD_REPAIR &&
         (tank->getTankType() == TankType::HEAVY || tank->getTankType() == TankType::AT_SPG)) {
-        param += tank->getHealthPoints() - 1;
+        param -= tank->getHealthPoints() - 1;
     }
 
     if (hex->content->content_type == ContentType::LIGHT_RAPAIR &&
         tank->getTankType() == TankType::MEDIUM) {
-        param += tank->getHealthPoints() - 1;
+        param -= tank->getHealthPoints() - 1;
     }
 }
 
 
 std::vector<Position>
 Game::smartFindQuickPath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
+    if (type_find == 0) return map.findPath(start, ends, tank);
+    if (type_find == 2) return smartFindQuickPath_l(start, ends, tank);
+
+    if ((tank->getTankType() == TankType::AT_SPG ||
+         tank->getTankType() == TankType::SPG ||
+         tank->getTankType() == TankType::HEAVY) &&
+        tank->getPosition().getDistance(Position{0, 0, 0}) >= 4) {
+        return stupidFindPath(start, ends, tank);
+    }
+
+
+    Position tank_pos = tank->getPosition();
+
+    std::map<std::pair<Position, int>, std::vector<double> > mp;
+    for (auto hex: map.hexes) {
+        mp[{hex->pos, 0}] = {1e9, 1e9, 1e9};
+        mp[{hex->pos, 1}] = {1e9, 1e9, 1e9};
+    }
+    std::set<std::pair<std::vector<double>, std::pair<Position, int> > > q;
+
+    q.insert({{0, 0, 0}, {start, 0}});
+    mp[{start, 0}] = {0, 0, 0};
+
+
+    while(!q.empty()) {
+        Position current_pos = q.begin()->second.first;
+        int s = q.begin()->second.second;
+        q.erase(q.begin());
+
+        tank->update(current_pos);
+
+        std::vector<double> current_param = mp[{current_pos, s}];
+        if (current_param[0] >= 15) break;
+        for (auto pos: tank->getAchievableHexes(map)) {
+
+            int os = s;
+            std::vector<double> param = current_param;
+
+            if (pos == tank->getPosition()) os++; else
+                os = 0;
+            if (os == 2) continue;
+            if (os == 1 && param[0] != 0) continue;
+
+            param[0]++;
+            std::shared_ptr<Hex> hex = map.getHex(pos);
+
+            if (param[0] >= 2 || !hex->is_occupied || hex->pos == start) {
+
+                if (hex->danger.size() >= param[0]) {
+                    param[2] += hex->danger[param[0] - 1];
+                    param[1] += hex->visit[param[0] - 1];
+                }
+                checkingRepairs(tank, hex, param[1]);
+
+                std::vector<double> l_param = mp[{pos, os}];
+
+                if (param < l_param) {
+                    q.erase({l_param, {pos, os}});
+                    mp[{pos, os}] = param;
+                    hex->prev = current_pos;
+                    q.insert({param, {pos, os}});
+                }
+            }
+        }
+    }
+
+    std::vector<double> param = {1e9, 1e9, 1e9};
+    Position end = {-100, -100, -100};
+    for (auto pos: ends) {
+        if (param > mp[{pos, 0}]) {
+            end = pos;
+            param = mp[{pos, 0}];
+        }
+    }
+
+    tank->update(tank_pos);
+
+    std::vector<Position> path = map.traceRoute(end);
+    for (auto hex: map.hexes) {
+        hex->prev = {-100, -100, -100};
+    }
+    if (path.size() == 1) {
+        path.push_back(start);
+    }
+    return path;
+}
+
+std::vector<Position>
+Game::stupidFindPath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
+    Position tank_pos = tank->getPosition();
+
+    std::map<Position, std::vector<double> > mp;
+    for (auto hex: map.hexes) {
+        mp[hex->pos] = {1e9, 1e9, 1e9, 1e9};
+    }
+    std::set<std::pair<std::vector<double>, Position> > q;
+
+    q.insert({{0, 0, 0, 0}, start});
+    mp[start] = {0, 0, 0, 0};
+
+
+    while(!q.empty()) {
+        Position current_pos = q.begin()->second;
+        q.erase(q.begin());
+
+        tank->update(current_pos);
+
+        std::vector<double> current_param = mp[current_pos];
+        for (auto pos: tank->getAchievableHexes(map)) {
+            std::vector<double> param = current_param;
+            param[0]++;
+            std::shared_ptr<Hex> hex = map.getHex(pos);
+            if (param[0] >= 2 || !hex->is_occupied) {
+
+                int o = 1e9;
+                for (auto vehicles: player_vehicles) {
+                    if ((vehicles->getTankType() == TankType::AT_SPG ||
+                         vehicles->getTankType() == TankType::SPG ||
+                         vehicles->getTankType() == TankType::HEAVY) &&
+                        vehicles->getTankType() != tank->getTankType()) {
+
+                        int p = pos.getDistance(vehicles->getPosition());
+                        if (p < o) {
+                            o = p;
+                        }
+                    }
+                }
+                param[1] = -o;
+
+                if (hex->danger.size() >= param[0]) {
+                    param[2] += hex->danger[param[0] - 1];
+                    param[3] += hex->visit[param[0] - 1];
+                }
+                checkingRepairs(tank, hex, param[2]);
+
+                std::vector<double> l_param = mp[pos];
+
+                if (param < l_param) {
+                    q.erase({l_param, pos});
+                    mp[pos] = param;
+                    hex->prev = current_pos;
+                    q.insert({param, pos});
+                }
+            }
+        }
+    }
+
+    std::vector<double> param = {1e9, 1e9, 1e9, 1e9};
+    Position end = {-100, -100, -100};
+    for (auto pos: ends) {
+        if (param > mp[pos]) {
+            end = pos;
+            param = mp[pos];
+        }
+    }
+
+    tank->update(tank_pos);
+
+    std::vector<Position> path = map.traceRoute(end);
+    for (auto hex: map.hexes) {
+        hex->prev = {-100, -100, -100};
+    }
+    if (path.size() == 1) {
+        path.push_back(start);
+    }
+    return path;
+}
+
+
+std::vector<Position>
+Game::smartFindSafePath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
+    if (type_find == 0) return findSafePath(start, ends, tank);
+    if (type_find == 2) return smartFindSafePath_l(start, ends, tank);
+
+    if ((tank->getTankType() == TankType::AT_SPG ||
+         tank->getTankType() == TankType::SPG ||
+         tank->getTankType() == TankType::HEAVY) &&
+        tank->getPosition().getDistance(Position{0, 0, 0}) >= 4) {
+        return stupidFindPath(start, ends, tank);
+    }
+
+
+    Position tank_pos = tank->getPosition();
+
+    std::map<std::pair<Position, int>, std::vector<double> > mp;
+    for (auto hex: map.hexes) {
+        mp[{hex->pos, 0}] = {1e9, 1e9, 1e9};
+        mp[{hex->pos, 1}] = {1e9, 1e9, 1e9};
+    }
+    std::set<std::pair<std::vector<double>, std::pair<Position, int> > > q;
+
+    q.insert({{0, 0, 0}, {start, 0}});
+    mp[{start, 0}] = {0, 0, 0};
+
+
+    while(!q.empty()) {
+        Position current_pos = q.begin()->second.first;
+        int s = q.begin()->second.second;
+        q.erase(q.begin());
+
+        tank->update(current_pos);
+
+        std::vector<double> current_param = mp[{current_pos, s}];
+        if (current_param[0] >= 15) break;
+        for (auto pos: tank->getAchievableHexes(map)) {
+
+            int os = s;
+            std::vector<double> param = current_param;
+
+            if (pos == tank->getPosition()) os++; else
+                os = 0;
+            if (os == 2) continue;
+            if (os == 1 && param[0] != 0) continue;
+
+            param[0]++;
+            std::shared_ptr<Hex> hex = map.getHex(pos);
+
+            if (param[0] >= 2 || !hex->is_occupied || hex->pos == start) {
+
+                if (hex->danger.size() >= param[0]) {
+                    param[1] += hex->danger[param[0] - 1];
+                    param[2] += hex->visit[param[0] - 1];
+                }
+                checkingRepairs(tank, hex, param[2]);
+
+                std::vector<double> l_param = mp[{pos, os}];
+
+                if (param < l_param) {
+                    q.erase({l_param, {pos, os}});
+                    mp[{pos, os}] = param;
+                    hex->prev = current_pos;
+                    q.insert({param, {pos, os}});
+                }
+            }
+        }
+    }
+
+    std::vector<double> param = {1e9, 1e9, 1e9};
+    Position end = {-100, -100, -100};
+    for (auto pos: ends) {
+        if (param > mp[{pos, 0}]) {
+            end = pos;
+            param = mp[{pos, 0}];
+        }
+    }
+
+    tank->update(tank_pos);
+
+    std::vector<Position> path = map.traceRoute(end);
+    for (auto hex: map.hexes) {
+        hex->prev = {-100, -100, -100};
+    }
+    if (path.size() == 1) {
+        path.push_back(start);
+    }
+    return path;
+}
+
+
+std::vector<Position>
+Game::smartFindQuickPath_l(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
     if ((tank->getTankType() == TankType::AT_SPG ||
          tank->getTankType() == TankType::SPG ||
          tank->getTankType() == TankType::HEAVY) &&
@@ -969,7 +1230,7 @@ Game::smartFindQuickPath(const Position &start, std::vector<Position> ends, cons
 }
 
 std::vector<Position>
-Game::stupidFindPath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
+Game::stupidFindPath_l(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
     std::priority_queue<std::pair<std::vector<double>, std::vector<Position>>> Queue;
 
     Position pos_tank = tank->getPosition();
@@ -1050,12 +1311,12 @@ Game::stupidFindPath(const Position &start, std::vector<Position> ends, const st
 
 
 std::vector<Position>
-Game::smartFindSafePath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
+Game::smartFindSafePath_l(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
     if ((tank->getTankType() == TankType::AT_SPG ||
          tank->getTankType() == TankType::SPG ||
          tank->getTankType() == TankType::HEAVY) &&
         tank->getPosition().getDistance(Position{0, 0, 0}) >= 4) {
-        return stupidFindPath(start, ends, tank);
+        return stupidFindPath_l(start, ends, tank);
     }
 
     std::priority_queue<std::pair<std::vector<double>, std::vector<Position>>> Queue;
