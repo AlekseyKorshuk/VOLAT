@@ -35,6 +35,8 @@ public:
 
     bool isCaptureNeeded(const std::shared_ptr<Tank> &player_tank);
 
+    bool isHealthNeeded(const std::shared_ptr<Tank> &player_tank);
+
 
     //Finds a position from which tank_1 can safely shoot tank_2
     std::vector<Position>

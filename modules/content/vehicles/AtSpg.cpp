@@ -13,6 +13,7 @@ AtSpg::AtSpg(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z,
     this->max_shot_radius_ = 3;
     this->min_shot_radius_ = 1;
     this->destruction_points_ = 2;
+    this->max_health_points_ = 2;
 }
 
 std::vector<PosList> AtSpg::getShootingHexesAreas(Map &map) const {
@@ -20,7 +21,8 @@ std::vector<PosList> AtSpg::getShootingHexesAreas(Map &map) const {
     std::vector<PosList> shot_areas;
 
     std::vector<Position> position_directions =
-            {Position(1, 0, -1), Position(1, -1, 0), Position(0, -1, 1), Position(-1, 0, 1), Position(-1, 1, 0), Position(0, 1, -1)};
+            {Position(1, 0, -1), Position(1, -1, 0), Position(0, -1, 1), Position(-1, 0, 1), Position(-1, 1, 0),
+             Position(0, 1, -1)};
 
 
     for (Position pos: position_directions) {

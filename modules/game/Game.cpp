@@ -1124,3 +1124,16 @@ Game::smartFindSafePath(const Position &start, std::vector<Position> ends, const
     map.clearPath(visited_positions);
     return route;
 }
+
+bool Game::isHealthNeeded(const std::shared_ptr<Tank> &player_tank) {
+    auto position = player_tank->getPosition();
+    if (map.getHex(position)->danger[0] >= player_tank->getHealthPoints() && player_tank->getMaxHealthPoints() > player_tank->getHealthPoints()){
+//        auto path = findSafePath(player_tank->getPosition(), positions, player_tank);
+//        if (!path.empty() && map.getHex(path[1])->danger[0] < player_tank->getHealthPoints())
+//            moves.push_back(path[1]);
+    }
+
+    return false;
+}
+
+

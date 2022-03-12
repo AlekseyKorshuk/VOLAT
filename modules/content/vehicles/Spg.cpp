@@ -9,4 +9,5 @@ Spg::Spg(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z,
     this->max_shot_radius_ = 3;
     this->min_shot_radius_ = 3;
     this->destruction_points_ = 1;
+    this->max_health_points_ = 1;
 }

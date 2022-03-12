@@ -175,3 +175,7 @@ std::string Tank::getStringTankType() {
             return "[Unknown TankType]";
     }
 }
+
+int Tank::getMaxHealthPoints() {
+    return this->max_health_points_;
+}

@@ -43,6 +43,8 @@ public:
 
     int getHealthPoints();
 
+    int getMaxHealthPoints();
+
     int getDamage();
 
     int getDestructionPoints();
@@ -73,6 +75,7 @@ protected:
     Position pos_;
     Position spawn_pos_;
     int health_points_;
+    int max_health_points_;
     int capture_points_;
     int speed_points_;
     int damage_;
