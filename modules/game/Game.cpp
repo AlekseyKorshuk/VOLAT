@@ -1126,11 +1126,23 @@ Game::smartFindSafePath(const Position &start, std::vector<Position> ends, const
 }
 
 bool Game::isHealthNeeded(const std::shared_ptr<Tank> &player_tank) {
+    if (player_tank->getTankType() == TankType::LIGHT || player_tank->getTankType() == TankType::SPG)
+        return false;
+
+//    if (std::find(map.base.begin(), map.base.end(), player_tank->getPosition()) == map.base.end())
+//        return false;
+
     auto position = player_tank->getPosition();
-    if (map.getHex(position)->danger[0] >= player_tank->getHealthPoints() && player_tank->getMaxHealthPoints() > player_tank->getHealthPoints()){
-//        auto path = findSafePath(player_tank->getPosition(), positions, player_tank);
-//        if (!path.empty() && map.getHex(path[1])->danger[0] < player_tank->getHealthPoints())
-//            moves.push_back(path[1]);
+    auto data = canKillAndStayAlive(player_tank);
+    if (map.getHex(position)->danger[0] >= player_tank->getHealthPoints() &&
+        player_tank->getMaxHealthPoints() > player_tank->getHealthPoints() && data.empty()) {
+        std::vector<Position> path;
+        if (player_tank->getTankType() == TankType::HEAVY)
+            path = findSafePath(player_tank->getPosition(), map.hard_repair, player_tank);
+        else
+            path = findSafePath(player_tank->getPosition(), map.light_repair, player_tank);
+        if (!path.empty() && map.getHex(path[1])->danger[0] < player_tank->getHealthPoints())
+            return true;
     }
 
     return false;

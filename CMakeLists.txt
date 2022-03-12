@@ -67,6 +67,8 @@ SET(STATE
         modules/state/StateHunt.h
         modules/state/StateDefence.cpp
         modules/state/StateDefence.h
+        modules/state/StateHealth.cpp
+        modules/state/StateHealth.h
         )
 
 SET(STATE_MACHINE

@@ -110,7 +110,7 @@ public:
     std::shared_ptr<Player> getPlayer(int);
 
 private:
-    const int type_find = 2;
+    const int type_find = 1;
 
     void addTank(json, int);
 
