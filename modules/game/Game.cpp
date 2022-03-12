@@ -696,7 +696,7 @@ std::string Game::getSafeShootAction(const std::shared_ptr<Tank> &player_tank) {
 //        if (player_tank->getPosition() == positions[0])
 //            shoots.push_back(std::vector<std::shared_ptr<Tank>>{opponent_vehicle});
 
-        auto path = findSafePath(player_tank->getPosition(), positions, player_tank);
+        auto path = smartFindSafePath(player_tank->getPosition(), positions, player_tank);
         if (!path.empty() && map.getHex(path[1])->danger[0] < player_tank->getHealthPoints())
             moves.push_back(path[1]);
     }
@@ -1131,6 +1131,26 @@ bool Game::isHealthNeeded(const std::shared_ptr<Tank> &player_tank) {
 
 //    if (std::find(map.base.begin(), map.base.end(), player_tank->getPosition()) == map.base.end())
 //        return false;
+    auto capture_state = getCaptureState();
+
+    int opponent1 = -1;
+    int opponent2 = -1;
+    int player = 0;
+    int player_capture = 0;
+    for (auto it = capture_state.begin(); it != capture_state.end(); ++it) {
+        if (std::stoi(it.key()) == player_tank->getPlayerId()) {
+            player = it.value()["tanks_on_base"].get<std::int32_t>();
+            player_capture = it.value()["capture_points"].get<std::int32_t>();
+        } else if (opponent1 == -1) {
+            opponent1 = it.value()["tanks_on_base"].get<std::int32_t>();
+        } else {
+            opponent2 = it.value()["tanks_on_base"].get<std::int32_t>();
+        }
+    }
+
+    if ((opponent1 == 0 || opponent2 == 0) && player_capture + player >= 5) {
+        return false;
+    }
 
     auto position = player_tank->getPosition();
     auto data = canKillAndStayAlive(player_tank);
@@ -1138,9 +1158,9 @@ bool Game::isHealthNeeded(const std::shared_ptr<Tank> &player_tank) {
         player_tank->getMaxHealthPoints() > player_tank->getHealthPoints() && data.empty()) {
         std::vector<Position> path;
         if (player_tank->getTankType() == TankType::HEAVY)
-            path = findSafePath(player_tank->getPosition(), map.hard_repair, player_tank);
+            path = smartFindSafePath(player_tank->getPosition(), map.hard_repair, player_tank);
         else
-            path = findSafePath(player_tank->getPosition(), map.light_repair, player_tank);
+            path = smartFindSafePath(player_tank->getPosition(), map.light_repair, player_tank);
         if (!path.empty() && map.getHex(path[1])->danger[0] < player_tank->getHealthPoints())
             return true;
     }
