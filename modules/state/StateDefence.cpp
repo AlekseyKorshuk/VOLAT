@@ -19,7 +19,7 @@ std::string StateDefence::getType() {
 std::string StateDefence::calculateAction() {
     auto position = tank->getPosition();
 
-    auto shoots = game->getPossibleShoots(tank);
+    auto shoots = game->getPossibleShoots(tank, true);
 
     auto shoot = game->selectBestShootDefence(shoots, tank);
     if (!shoot.empty())
@@ -31,7 +31,7 @@ std::string StateDefence::calculateAction() {
         if (!path.empty())
             return moveToString(path[1]);
     }
-    auto possible_shoots = game->getPossibleShoots(tank);
+    auto possible_shoots = game->getPossibleShoots(tank, true);
     if (!possible_shoots.empty())
         return shootToString(game->selectBestShoot(possible_shoots, tank, false));
 

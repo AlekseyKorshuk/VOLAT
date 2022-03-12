@@ -14,4 +14,5 @@ void MediumTankStrategy::updateState() {
         changeState(std::make_shared<StateCapture>(tank, game, std::make_shared<Param>()));
     else
         changeState(std::make_shared<StateCamping>(tank, game, std::make_shared<Param>()));
+    state->setPriority(80);
 }

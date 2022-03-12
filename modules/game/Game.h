@@ -71,7 +71,7 @@ public:
     getSafePositions(const std::shared_ptr<Tank> &player_tank, const std::vector<Position> &area, bool is_zero_danger,
                      bool choose_best);
 
-    std::vector<std::vector<std::shared_ptr<Tank>>> getPossibleShoots(const std::shared_ptr<Tank> &player_tank);
+    std::vector<std::vector<std::shared_ptr<Tank>>> getPossibleShoots(const std::shared_ptr<Tank> &player_tank, bool check_neutral);
 
     std::vector<std::shared_ptr<Tank>> selectBestShootDefence(std::vector<std::vector<std::shared_ptr<Tank>>> shoots,
                                                               const std::shared_ptr<Tank> &player_tank);

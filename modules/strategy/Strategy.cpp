@@ -163,7 +163,6 @@ json Strategy::calculate_actions(int idx, json state) {
         }
     }
 
-
     std::cout << "Total elapsed: " << since(total_start).count() << " ms" << std::endl;
 
     actions = "{" + actions + "}";

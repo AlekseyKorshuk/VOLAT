@@ -99,7 +99,7 @@ std::string StateCapture::calculateAction() {
     if (!path.empty())
         return moveToString(path[1]);
 
-    auto possible_shoots = game->getPossibleShoots(tank);
+    auto possible_shoots = game->getPossibleShoots(tank, true);
     if (!possible_shoots.empty())
         return shootToString(game->selectBestShoot(possible_shoots, tank, false));
 
@@ -111,9 +111,6 @@ std::string StateCapture::onBaseAction() {
     if (game->map.getHex(tank->getPosition())->danger[0] > 0) {
         // in danger
 //        std::cout << "in danger! ";
-        auto shoot = game->selectBestShoot(game->getPossibleShoots(tank), tank, true);
-        if (!shoot.empty())
-            return shootToString(shoot);
         auto safe_position = game->getSafePositions(tank, game->map.base, true, false);
         if (!safe_position.empty()) {
             auto path = game->smartFindQuickPath(tank->getPosition(), safe_position,
@@ -121,11 +118,14 @@ std::string StateCapture::onBaseAction() {
             if (!path.empty())
                 return moveToString(path[1]);
         }
+        auto shoot = game->selectBestShoot(game->getPossibleShoots(tank, true), tank, true);
+        if (!shoot.empty())
+            return shootToString(shoot);
     }
 
     // in safe position OR the only way is to shoot
-    auto possible_shoots = game->getPossibleShoots(tank);
-    std::cout << possible_shoots.size();
+    auto possible_shoots = game->getPossibleShoots(tank, true);
+//    std::cout << possible_shoots.size();
     if (!possible_shoots.empty())
         return shootToString(game->selectBestShoot(possible_shoots, tank, false));
 

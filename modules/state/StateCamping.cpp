@@ -17,6 +17,10 @@ std::string StateCamping::calculateAction() {
     if (position->danger[0] != 0) {
         return performAggressiveAction();
     } else {
+        std::string action = game->getSafeShootAction(tank);
+        if (!action.empty()){
+            return action;
+        }
         auto safe_base = game->getSafePositions(tank, game->map.base, true, false);
         if (!safe_base.empty()) {
             auto path = game->smartFindQuickPath(tank->getPosition(), safe_base,
@@ -24,15 +28,14 @@ std::string StateCamping::calculateAction() {
             if (!path.empty())
                 return moveToString(path[1]);
         }
-        std::string action = game->getSafeShootAction(tank);
-        if (!action.empty())
-            return action;
+
     }
 
     auto shoot = game->canKillAndStayAlive(tank);
     if (!shoot.empty())
         return shootToString(shoot);
 
+    std::cout << "return findSafePosition();" << std::endl;
     return findSafePosition();
 }
 
@@ -69,7 +72,7 @@ std::string StateCamping::performAggressiveAction() {
     if (!action.empty())
         return action;
 
-    auto possible_shoots = game->getPossibleShoots(tank);
+    auto possible_shoots = game->getPossibleShoots(tank, true);
     if (!possible_shoots.empty())
         return shootToString(game->selectBestShoot(possible_shoots, tank, false));
 
