@@ -72,6 +72,15 @@ public:
 
     std::vector<std::shared_ptr<Tank>> selectBestShootDefence(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank> &player_tank);
 
+    std::vector<Position>
+    smartFindQuickPath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank);
+
+    std::vector<Position>
+    stupidFindPath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank);
+
+    std::vector<Position>
+    smartFindSafePath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank);
+
     Map map = Map();
 
     std::vector<std::shared_ptr<Tank>> all_vehicles;
@@ -94,6 +103,8 @@ private:
     void predictingTankBehavior(const std::shared_ptr<Tank> &);
 
     std::vector<int> definingDirectionSegments(Position, Position);
+
+    void checkingRepairs(const std::shared_ptr<Tank> &tank, std::shared_ptr<Hex> hex, double& param);
 
 };
 

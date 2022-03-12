@@ -830,3 +830,255 @@ json Game::getCaptureState(const std::shared_ptr<Tank>& player_tank) {
     return players_on_base;
 }
 
+
+void Game::checkingRepairs(const std::shared_ptr<Tank> &tank, std::shared_ptr<Hex> hex, double& param) {
+    if (hex->content->content_type == ContentType::HARD_REPAIR &&
+        (tank->getTankType() == TankType::HEAVY || tank->getTankType() == TankType::AT_SPG)) {
+        param += tank->getHealthPoints() - 1;
+    }
+
+    if (hex->content->content_type == ContentType::LIGHT_RAPAIR &&
+        tank->getTankType() == TankType::MEDIUM) {
+        param += tank->getHealthPoints() - 1;
+    }
+}
+
+
+std::vector<Position>
+Game::smartFindQuickPath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
+    if ((tank->getTankType() == TankType::AT_SPG ||
+         tank->getTankType() == TankType::SPG ||
+         tank->getTankType() == TankType::HEAVY) &&
+        tank->getPosition().getDistance(Position{0, 0, 0}) >= 4) {
+        return stupidFindPath(start, ends, tank);
+    }
+    std::priority_queue<std::pair<std::vector<double> , std::vector<Position>>> Queue;
+
+    Position pos_tank = tank->getPosition();
+
+    std::vector<Position> route;
+    std::vector<Position> visited_positions;
+
+    map.getHex(start)->visited = true;
+    visited_positions.push_back(start);
+
+    Queue.push({{0, -1e9, 0, 0}, {start}});
+    while (!Queue.empty()) {
+        std::vector<double> current_param = Queue.top().first;
+        std::vector<double> param = current_param;
+        Position current_pos = Queue.top().second.back();
+        std::vector<Position> path = Queue.top().second;
+        Queue.pop();
+
+        if (current_param[1] == 0) {
+            route = path;
+            if (route.size() == 1) {
+                route.push_back(current_pos);
+            }
+            break;
+        }
+
+        //std::cout << "go" << current_pos << " " << param[0] << " " << param[1] << '\n';
+
+        if (param[0] == -10) continue;
+
+        tank->update(current_pos);
+
+        std::vector<Position> achievable_hexes = tank->getAchievableHexes(map);
+
+        for (const Position &pos: achievable_hexes) {
+            std::shared_ptr<Hex> node = map.getHex(pos);
+            param = current_param;
+
+            param[0]--;
+            if ((-param[0] >= 2 || !node->is_occupied)
+            && (current_pos == pos || !node->visited)) {
+
+
+                int o = 1e9;
+                for(auto ends_pos: ends) {
+                    if (pos.getDistance(ends_pos) < o) {
+                        o = pos.getDistance(ends_pos);
+                    }
+                }
+                param[1] = -o;
+                if (param[1] < current_param[1]) continue;
+
+                if (node->danger.size() >= -param[0]) {
+                    param[2] += -node->danger[-param[0] - 1];
+                    param[3] += -node->visit[-param[0] - 1];
+                }
+                checkingRepairs(tank, node, param[2]);
+                path.push_back(pos);
+
+
+                node->visited = true;
+                visited_positions.push_back(pos);
+
+
+
+                Queue.push({param, path});
+                path.pop_back();
+            }
+        }
+    }
+    tank->update(pos_tank);
+    map.clearPath(visited_positions);
+    return route;
+}
+
+std::vector<Position>
+Game::stupidFindPath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
+    std::priority_queue<std::pair<std::vector<double> , std::vector<Position>>> Queue;
+
+    Position pos_tank = tank->getPosition();
+
+    std::vector<Position> route;
+
+
+    Queue.push({{0, 0, 0, 0, 0}, {start}});
+    while (!Queue.empty()) {
+        std::vector<double> current_param = Queue.top().first;
+        std::vector<double> param = current_param;
+        Position current_pos = Queue.top().second.back();
+        std::vector<Position> path = Queue.top().second;
+        Queue.pop();
+
+        if (std::find(ends.begin(), ends.end(), current_pos) != ends.end()) {
+            route = path;
+            if (route.size() == 1) {
+                route.push_back(current_pos);
+            }
+            break;
+        }
+
+        if (param[1] == -15) continue;
+
+        tank->update(current_pos);
+
+        std::vector<Position> achievable_hexes = tank->getAchievableHexes(map);
+
+        for (const Position &pos: achievable_hexes) {
+            std::shared_ptr<Hex> node = map.getHex(pos);
+            param = current_param;
+
+            param[1]--;
+            if (-param[1] >= 2 || !node->is_occupied) {
+
+
+
+                int o = 1e9;
+                for (auto vehicles: player_vehicles) {
+                    if ((vehicles->getTankType() == TankType::AT_SPG ||
+                        vehicles->getTankType() == TankType::SPG ||
+                        vehicles->getTankType() == TankType::HEAVY) &&
+                        vehicles->getTankType() != tank->getTankType()) {
+
+                        int p = pos.getDistance(vehicles->getPosition());
+                        if (p < o) {
+                            o = p;
+                        }
+                    }
+                }
+                param[2] = o;
+
+                o = 1e9;
+                for(auto ends_pos: ends) {
+                    if (pos.getDistance(ends_pos) < o) {
+                        o = pos.getDistance(ends_pos);
+                    }
+                }
+                param[0] = -o;
+
+                if (node->danger.size() >= -param[1]) {
+                    param[3] += -node->danger[-param[1] - 1];
+                    param[4] += -node->visit[-param[1] - 1];
+                }
+                checkingRepairs(tank, node, param[3]);
+                path.push_back(pos);
+
+                Queue.push({param, path});
+                path.pop_back();
+            }
+        }
+    }
+    tank->update(pos_tank);
+
+    return route;
+}
+
+
+std::vector<Position>
+Game::smartFindSafePath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
+    if ((tank->getTankType() == TankType::AT_SPG ||
+         tank->getTankType() == TankType::SPG ||
+         tank->getTankType() == TankType::HEAVY) &&
+        tank->getPosition().getDistance(Position{0, 0, 0}) >= 4) {
+        return stupidFindPath(start, ends, tank);
+    }
+
+    std::priority_queue<std::pair<std::vector<double> , std::vector<Position>>> Queue;
+
+
+    std::vector<Position> visited_positions;
+    Position pos_tank = tank->getPosition();
+
+    std::vector<Position> route;
+
+    Queue.push({{0, 0, 0, 0}, {start}});
+    while (!Queue.empty()) {
+        std::vector<double> current_param = Queue.top().first;
+        std::vector<double> param = current_param;
+        Position current_pos = Queue.top().second.back();
+        std::vector<Position> path = Queue.top().second;
+        Queue.pop();
+
+        if (std::find(ends.begin(), ends.end(), current_pos) != ends.end()) {
+            route = path;
+            if (route.size() == 1) {
+                route.push_back(current_pos);
+            }
+            break;
+        }
+
+        if (param[2] == -10 ) continue;
+
+        tank->update(current_pos);
+
+        std::vector<Position> achievable_hexes = tank->getAchievableHexes(map);
+
+        for (const Position &pos: achievable_hexes) {
+            std::shared_ptr<Hex> node = map.getHex(pos);
+            param = current_param;
+
+            param[2]--;
+            if ((-param[2] >= 2 || !node->is_occupied)
+            && (current_pos == pos || !node->visited)){
+
+
+                int o = 1e9;
+                for(auto ends_pos: ends) {
+                    if (pos.getDistance(ends_pos) < o) {
+                        o = pos.getDistance(ends_pos);
+                    }
+                }
+                param[0] = -o;
+
+                if (node->danger.size() >= -param[2]) {
+                    param[1] += -node->danger[-param[2] - 1];
+                    param[3] += -node->visit[-param[2] - 1];
+                }
+                checkingRepairs(tank, node, param[1]);
+                path.push_back(pos);
+
+                node->visited = true;
+                visited_positions.push_back(pos);
+                Queue.push({param, path});
+                path.pop_back();
+            }
+        }
+    }
+    tank->update(pos_tank);
+    map.clearPath(visited_positions);
+    return route;
+}

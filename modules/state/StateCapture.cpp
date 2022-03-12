@@ -84,7 +84,7 @@ std::string StateCapture::calculateAction() {
     // Not on base
     auto base_positions = game->getSafePositions(tank, game->map.base, false, true);
     if (!base_positions.empty()) {
-        auto path = game->map.findPath(tank->getPosition(), base_positions,
+        auto path = game->smartFindQuickPath(tank->getPosition(), base_positions,
                                        tank);
         if (!path.empty())
             return moveToString(path[1]);
@@ -94,7 +94,7 @@ std::string StateCapture::calculateAction() {
     if (!action.empty())
         return action;
 
-    auto path = game->findSafePath(position, game->map.base, tank);
+    auto path = game->smartFindQuickPath(position, game->map.base, tank);
 
     if (!path.empty())
         return moveToString(path[1]);
@@ -116,7 +116,7 @@ std::string StateCapture::onBaseAction() {
             return shootToString(shoot);
         auto safe_position = game->getSafePositions(tank, game->map.base, true, false);
         if (!safe_position.empty()) {
-            auto path = game->map.findPath(tank->getPosition(), safe_position,
+            auto path = game->smartFindQuickPath(tank->getPosition(), safe_position,
                                            tank);
             if (!path.empty())
                 return moveToString(path[1]);
@@ -153,7 +153,7 @@ std::string StateCapture::onBaseAction() {
         } else {
             auto safe_position = game->getSafePositions(tank, game->map.base, false, true);
             if (!safe_position.empty()) {
-                auto path = game->map.findPath(tank->getPosition(), safe_position,
+                auto path = game->smartFindQuickPath(tank->getPosition(), safe_position,
                                                tank);
                 if (!path.empty())
                     return moveToString(path[1]);
@@ -178,7 +178,7 @@ std::string StateCapture::onBaseAction() {
                     best_position = pos;
                 }
             }
-            auto path = game->map.findPath(tank->getPosition(), best_position,
+            auto path = game->smartFindQuickPath(tank->getPosition(), {best_position},
                                            tank);
             if (!path.empty())
                 return moveToString(path[1]);

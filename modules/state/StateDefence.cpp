@@ -27,7 +27,7 @@ std::string StateDefence::calculateAction() {
 
     if (std::find(game->map.base.begin(), game->map.base.end(), position) == game->map.base.end()) {
         // Not on base
-        auto path = game->map.findPath(tank->getPosition(), game->map.base, tank);
+        auto path = game->smartFindQuickPath(tank->getPosition(), game->map.base, tank);
         if (!path.empty())
             return moveToString(path[1]);
     }
@@ -41,7 +41,7 @@ std::string StateDefence::calculateAction() {
         auto positions = game->findSafePositionsToShoot(tank, opponent_tank, false);
         positions_list.insert(positions_list.end(), positions.begin(), positions.end());
     }
-    auto path = game->map.findPath(tank->getPosition(), positions_list, tank);
+    auto path = game->smartFindQuickPath(tank->getPosition(), positions_list, tank);
     if (!path.empty())
         return moveToString(path[1]);
     return "";

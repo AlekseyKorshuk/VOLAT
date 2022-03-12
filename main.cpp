@@ -12,10 +12,10 @@ int main(int argc, char **argv) {
     if (argc == 1) {
         name = "VOLAT_MAIN";
         password = "";
-        game = "test1234";
-        num_turns = 99;
+        game = "testVOLAT";
+        num_turns = 45;
         num_players = 3;
-        is_solo = 0;
+        is_solo = 1;
     } else {
         name = argv[1];
         password = argv[2];
