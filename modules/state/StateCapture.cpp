@@ -131,7 +131,7 @@ std::string StateCapture::onBaseAction() {
 
     if (game->map.getHex(tank->getPosition())->danger[0] > 0) {
         //  ЕСЛИ В ОПАСНОСТИ: если мы выигрываем за ход, то остаться | иначе уехать с базы в сейвовую позицию если такая есть
-        json capture_state = game->getCaptureState(tank);
+        json capture_state = game->getCaptureState();
         auto player_id = tank->getPlayerId();
         int opponent1 = -1;
         int opponent2 = -1;
