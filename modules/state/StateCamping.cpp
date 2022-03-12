@@ -23,7 +23,7 @@ std::string StateCamping::calculateAction() {
         }
         auto safe_base = game->getSafePositions(tank, game->map.base, true, false);
         if (!safe_base.empty()) {
-            auto path = game->smartFindQuickPath(tank->getPosition(), safe_base,
+            auto path = game->smartFindSafePath(tank->getPosition(), safe_base,
                                            tank);
             if (!path.empty())
                 return moveToString(path[1]);

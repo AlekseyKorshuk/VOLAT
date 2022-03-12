@@ -19,6 +19,8 @@ union Param {
 
     ~Param() {}
 
+    Position pos;
+
     std::shared_ptr<Tank> tank;
     int idp;
 };

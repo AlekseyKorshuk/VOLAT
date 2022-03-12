@@ -9,7 +9,10 @@ std::string State::moveToString(Position pos) {
     if (pos == tank->getPosition())
         return "";
 
-    game->map.changeOccupied(pos, true);
+    Position tank_pos = tank->getPosition();
+    game->updateTank(tank->id, pos.getX(), pos.getY(), pos.getZ());
+    param->pos = tank_pos;
+    game->map.changeOccupied(tank_pos, true);
 
     return "{\"type\":\"MOVE\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
            ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" + std::to_string(pos.getY()) + ",\"z\":" +
@@ -58,7 +61,7 @@ void State::doAction(std::string action_s) {
             action["data"]["target"]["z"].get<std::int32_t>()
     );
     if (action["type"].get<std::string>() == "MOVE") {
-        game->updateTank(tank->id, pos.getX(), pos.getY(), pos.getZ());
+        game->map.changeOccupied(param->pos, true);
     } else {
         bool f = true;
         for (auto tank: game->opponent_vehicles) {

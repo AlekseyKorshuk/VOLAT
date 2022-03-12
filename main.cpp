@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
     if (argc == 1) {
         name = "VOLAT_MAIN";
         password = "";
-        game = "testVOLAT13";
+        game = "testVOLAT123";
         num_turns = 5;
         num_players = 1;
         is_solo = 1;

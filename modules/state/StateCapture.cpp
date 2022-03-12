@@ -94,7 +94,7 @@ std::string StateCapture::calculateAction() {
     if (!action.empty())
         return action;
 
-    auto path = game->smartFindQuickPath(position, game->map.base, tank);
+    auto path = game->smartFindSafePath(position, game->map.base, tank);
 
     if (!path.empty())
         return moveToString(path[1]);
