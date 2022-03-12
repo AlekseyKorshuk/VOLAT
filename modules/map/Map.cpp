@@ -65,6 +65,7 @@ void Map::setLightRepair(json map_json) {
         Position hex = Position(pos["x"].get<std::int32_t>(),
                                 pos["y"].get<std::int32_t>(),
                                 pos["z"].get<std::int32_t>());
+        light_repair.push_back(hex);
         getHex(hex)->setHex(ContentType::LIGHT_RAPAIR);
     }
 }
@@ -77,6 +78,7 @@ void Map::setHardRepair(json map_json) {
         Position hex = Position(pos["x"].get<std::int32_t>(),
                                 pos["y"].get<std::int32_t>(),
                                 pos["z"].get<std::int32_t>());
+        hard_repair.push_back(hex);
         getHex(hex)->setHex(ContentType::HARD_REPAIR);
     }
 }
@@ -234,6 +236,7 @@ std::vector<Position> Map::traceRoute(Position end) {
     std::shared_ptr<Hex> node = getHex(end);
     while (node != nullptr) {
         route.push_front(node->pos);
+        if (node->pos == node->prev) break;
         node = getHex(node->prev);
     }
     std::vector<Position> v{std::begin(route), std::end(route)};

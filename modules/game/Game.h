@@ -86,10 +86,19 @@ public:
     smartFindQuickPath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank);
 
     std::vector<Position>
+    smartFindQuickPath_l(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank);
+
+    std::vector<Position>
     stupidFindPath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank);
 
     std::vector<Position>
+    stupidFindPath_l(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank);
+
+    std::vector<Position>
     smartFindSafePath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank);
+
+    std::vector<Position>
+    smartFindSafePath_l(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank);
 
     Map map = Map();
 
@@ -101,6 +110,8 @@ public:
     std::shared_ptr<Player> getPlayer(int);
 
 private:
+    const int type_find = 2;
+
     void addTank(json, int);
 
     void addPlayer(const json &);
