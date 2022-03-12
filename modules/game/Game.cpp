@@ -1083,7 +1083,7 @@ Game::smartFindSafePath(const Position &start, std::vector<Position> ends, const
             break;
         }
 
-        if (param[2] == -10) continue;
+        if (param[0] == -10) continue;
 
         tank->update(current_pos);
 
@@ -1093,8 +1093,8 @@ Game::smartFindSafePath(const Position &start, std::vector<Position> ends, const
             std::shared_ptr<Hex> node = map.getHex(pos);
             param = current_param;
 
-            param[2]--;
-            if ((-param[2] >= 2 || !node->is_occupied)
+            param[0]--;
+            if ((-param[0] >= 2 || !node->is_occupied)
                 && (current_pos == pos || !node->visited)) {
 
 
@@ -1104,11 +1104,11 @@ Game::smartFindSafePath(const Position &start, std::vector<Position> ends, const
                         o = pos.getDistance(ends_pos);
                     }
                 }
-                param[0] = -o;
+                param[2] = -o;
 
-                if (node->danger.size() >= -param[2]) {
-                    param[1] += -node->danger[-param[2] - 1];
-                    param[3] += -node->visit[-param[2] - 1];
+                if (node->danger.size() >= -param[0]) {
+                    param[1] += -node->danger[-param[0] - 1];
+                    param[3] += -node->visit[-param[0] - 1];
                 }
                 checkingRepairs(tank, node, param[1]);
                 path.push_back(pos);

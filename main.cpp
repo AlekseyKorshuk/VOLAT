@@ -13,9 +13,9 @@ int main(int argc, char **argv) {
         name = "VOLAT_MAIN";
         password = "";
         game = "testVOLAT123";
-        num_turns = 5;
-        num_players = 1;
-        is_solo = 1;
+        num_turns = 45;
+        num_players = 3;
+        is_solo = 0;
     } else {
         name = argv[1];
         password = argv[2];
