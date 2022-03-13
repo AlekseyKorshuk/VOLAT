@@ -1529,20 +1529,18 @@ json Game::calcSPG_Heavy_At(std::shared_ptr<Tank> spg_tank, std::shared_ptr<Tank
     json result;
     std::string spg_tank_action, heavy_tank_action, at_spg_tank_action;
 
-
     // TODO START calculate actions
     auto path = smartFindQuickPath(spg_tank->getPosition(), map.base, spg_tank);
     if (!path.empty())
-        spg_tank_action = spg_tank->current_strategy_->getState()->moveToString(path[1]);
+        spg_tank_action = moveToString(spg_tank, path[1]);
 
     path = smartFindQuickPath(heavy_tank->getPosition(), map.base, heavy_tank);
     if (!path.empty())
-        heavy_tank_action = heavy_tank->current_strategy_->getState()->moveToString(path[1]);
+        heavy_tank_action = moveToString(heavy_tank, path[1]);
 
     path = smartFindQuickPath(at_spg_tank->getPosition(), map.base, at_spg_tank);
     if (!path.empty())
-        at_spg_tank_action = at_spg_tank->current_strategy_->getState()->moveToString(path[1]);
-
+        at_spg_tank_action = moveToString(at_spg_tank, path[1]);
     // TODO END calculate actions
 
     result[spg_tank->getStringTankType()] = spg_tank_action;
@@ -1555,19 +1553,91 @@ json Game::calcLightMedium(std::shared_ptr<Tank> light_tank, std::shared_ptr<Tan
     json result;
     std::string light_tank_action, medium_tank_action;
 
-
     // TODO START calculate actions
     auto path = smartFindQuickPath(light_tank->getPosition(), map.base, light_tank);
     if (!path.empty())
-        light_tank_action = light_tank->current_strategy_->getState()->moveToString(path[1]);
+        light_tank_action = moveToString(light_tank, path[1]);
 
     path = smartFindQuickPath(medium_tank->getPosition(), map.base, medium_tank);
     if (!path.empty())
-        medium_tank_action = medium_tank->current_strategy_->getState()->moveToString(path[1]);
+        medium_tank_action = moveToString(medium_tank, path[1]);
 
     // TODO END calculate actions
 
     result[light_tank->getStringTankType()] = light_tank_action;
     result[medium_tank->getStringTankType()] = medium_tank_action;
     return result;
+}
+
+
+std::string Game::moveToString(std::shared_ptr<Tank> tank, Position pos) {
+    std::cout << tank->getPosition() << " " << pos << "\n";
+    if (pos == tank->getPosition())
+        return "";
+
+    Position tank_pos = tank->getPosition();
+    updateTank(tank->id, pos.getX(), pos.getY(), pos.getZ());
+//    pos = tank_pos;
+    map.changeOccupied(tank_pos, true);
+
+    return "{\"type\":\"MOVE\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
+           ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" + std::to_string(pos.getY()) + ",\"z\":" +
+           std::to_string(pos.getZ()) + "}}}";
+}
+
+std::string Game::shootToString(std::shared_ptr<Tank>tank, std::vector<std::shared_ptr<Tank>> tanks) {
+
+    Position pos = tanks[0]->getPosition();
+    if (tank->getTankType() == TankType::AT_SPG) {
+        Position pos_mis_dis = pos;
+        int min_dis = 1e9;
+        for (auto pos_neighbors: map.getHex(tank->getPosition())->neighbors) {
+
+            if (pos_neighbors.getDistance(pos) < min_dis) {
+                min_dis = pos_neighbors.getDistance(pos);
+                pos_mis_dis = pos_neighbors;
+            }
+        }
+        pos = pos_mis_dis;
+    }
+
+    for (auto tank: tanks) {
+        if (tank->getHealthPoints() == 1) {
+            Position sp_pos = tank->getSpawnPosition();
+            Position pos = tank->getPosition();
+            updateTank(tank->id, sp_pos.getX(), sp_pos.getY(), sp_pos.getZ());
+            map.changeOccupied(pos, true);
+        }
+        tank->update(tank->getHealthPoints() - 1);
+
+    }
+
+    return "{\"type\":\"SHOOT\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
+           ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" + std::to_string(pos.getY()) + ",\"z\":" +
+           std::to_string(pos.getZ()) + "}}}";
+}
+
+void Game::doAction(std::shared_ptr<Tank> tank, std::string action_s) {
+    if (action_s.empty()) return;
+
+    json action = json::parse(action_s);
+    Position pos = Position(
+            action["data"]["target"]["x"].get<std::int32_t>(),
+            action["data"]["target"]["y"].get<std::int32_t>(),
+            action["data"]["target"]["z"].get<std::int32_t>()
+    );
+    if (action["type"].get<std::string>() == "MOVE") {
+//        map.changeOccupied(param->pos, false);
+    } else {
+        bool f = true;
+        for (auto tank: opponent_vehicles) {
+            if (tank->getPosition() == pos) {
+                f = false;
+                break;
+            }
+        }
+        if (f) {
+            map.changeOccupied(pos, false);
+        }
+    }
 }
