@@ -1559,10 +1559,10 @@ json Game::calcSPG_Heavy_At(std::shared_ptr<Tank> spg_tank, std::shared_ptr<Tank
     return result;
 }
 
-bool sortbydistance(const Position &a,
-                    const Position &b, Position pos) {
-    return a.getDistance(pos) < a.getDistance(pos);
-}
+//bool sortbydistance(const Position &a,
+//                    const Position &b, Position pos) {
+//    return a.getDistance(pos) < a.getDistance(pos);
+//}
 
 json Game::calcLightMedium(std::shared_ptr<Tank> light_tank, std::shared_ptr<Tank> medium_tank) {
     json result;
@@ -1607,11 +1607,11 @@ json Game::calcLightMedium(std::shared_ptr<Tank> light_tank, std::shared_ptr<Tan
             }
 
             auto spawn_position = tank->getSpawnPosition();
-            std::sort(positions.begin(), positions.end(),
-                      [spawn_position](auto &&PH1, auto &&PH2) {
-                          return sortbydistance(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
-                                                spawn_position);
-                      });
+//            std::sort(positions.begin(), positions.end(),
+//                      [spawn_position](auto &&PH1, auto &&PH2) {
+//                          return sortbydistance(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
+//                                                spawn_position);
+//                      });
             if (!positions.empty()) {
                 result[tank->getStringTankType()] = moveToString(tank, positions[0]);
                 continue;

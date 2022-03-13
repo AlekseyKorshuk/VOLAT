@@ -89,9 +89,9 @@ std::string StateCapture::calculateAction() {
     auto shoot = game->selectBestShoot(game->getPossibleShoots(tank, true), tank, true);
     if (!shoot.empty())
         return shootToString(shoot);
-    
+
     // Not on base
-    auto base_positions = game->getSafePositions(tank, game->map.base, false, true);
+    auto base_positions = game->getSafePositions(tank, game->map.base, false, false);
     if (!base_positions.empty()) {
         auto path = game->smartFindQuickPath(tank->getPosition(), base_positions,
                                              tank);
@@ -115,8 +115,12 @@ std::string StateCapture::calculateAction() {
 
 }
 
+bool sortbydistance(const Position &a,
+                    const Position &b, Position pos) {
+    return a.getDistance(pos) < a.getDistance(pos);
+}
+
 std::string StateCapture::onBaseAction() {
-    std::cout << "Danger: " << game->map.getHex(tank->getPosition())->danger[0] << "!\n";
     if (game->map.getHex(tank->getPosition())->danger[0] > 0) {
         auto shoot = game->selectBestShoot(game->getPossibleShoots(tank, true), tank, true);
         if (!shoot.empty())
@@ -132,7 +136,20 @@ std::string StateCapture::onBaseAction() {
         }
 
     }
-
+    std::vector<Position> positions;
+    for (auto pos: tank->getAchievableHexes(game->map)) {
+        if (game->map.getHex(tank->getPosition())->danger[0] < tank->getHealthPoints()) {
+            positions.push_back(pos);
+        }
+    }
+    auto spawn_position = tank->getSpawnPosition();
+    std::sort(positions.begin(), positions.end(),
+              [spawn_position](auto &&PH1, auto &&PH2) {
+                  return sortbydistance(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
+                                        spawn_position);
+              });
+    if (!positions.empty())
+        return moveToString(positions[0]);
     // in safe position OR the only way is to shoot
     auto possible_shoots = game->getPossibleShoots(tank, true);
 //    std::cout << possible_shoots.size();

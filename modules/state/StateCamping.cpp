@@ -42,6 +42,7 @@ std::string StateCamping::calculateAction() {
     if (!shoot.empty())
         return shootToString(shoot);
 
+    return "";
     return findSafePosition();
 }
 
