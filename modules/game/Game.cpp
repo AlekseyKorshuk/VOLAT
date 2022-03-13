@@ -1581,7 +1581,10 @@ json Game::calcLightMedium(std::shared_ptr<Tank> light_tank, std::shared_ptr<Tan
 
 
 std::string Game::moveToString(std::shared_ptr<Tank> tank, Position pos) {
-    std::cout << tank->getPosition() << " " << pos << "\n";
+    while (numCalcAction != 5 && fCalcAction[numCalcAction] == true) {
+        doAction(tank, actions[numCalcAction++]);
+    }
+
     if (pos == tank->getPosition())
         return "";
 
