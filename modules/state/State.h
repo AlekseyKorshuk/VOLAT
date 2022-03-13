@@ -19,6 +19,8 @@ union Param {
 
     ~Param() {}
 
+    Position pos;
+
     std::shared_ptr<Tank> tank;
     int idp;
 };
@@ -32,15 +34,22 @@ public:
 
     virtual std::string calculateAction() = 0;
 
+    void doAction(std::string);
+
+    std::string moveToString(Position);
+
+    std::string shootToString(std::vector<std::shared_ptr<Tank>>);
+
     std::shared_ptr<Param> param;
+
+    int getPriority();
+
+    void setPriority(int);
 protected:
     std::shared_ptr<Tank> tank;
     std::shared_ptr<Game> game;
+    int priority_ = 0;
 
-
-    std::string moveToString(std::shared_ptr<Hex>);
-
-    std::string shootToString(std::vector<std::shared_ptr<Tank>>);
 };
 
 

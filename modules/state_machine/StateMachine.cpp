@@ -18,3 +18,15 @@ std::string StateMachine::calculateAction() {
 std::string StateMachine::getStateName() {
     return state->getType();
 }
+
+std::shared_ptr<State> StateMachine::getState() {
+    return state;
+}
+
+int StateMachine::getPriority() {
+    return state->getPriority();
+}
+
+void StateMachine::doAction(std::string s) {
+    state->doAction(s);
+}

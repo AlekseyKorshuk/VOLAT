@@ -10,75 +10,75 @@ int Tank::getPlayerId() {
     return player_id_;
 }
 
-Hex Tank::getPosition() const {
-    return Hex(x_, y_, z_);
+Position Tank::getPosition() const {
+    return pos_;
 }
 
-void Tank::update(int x, int y, int z, int health, int capture_points) {
+void Tank::update(int x, int y, int z, int health, int capture_points, int shoot_range_bonus) {
     update(x, y, z);
-    if (x == spawn_x_ && y == spawn_y_ && z == spawn_z_) {
+
+    if (pos_ == spawn_pos_) {
         list_moves_.clear();
     } else {
-        list_moves_.push_back(Hex(x, y, z));
+        list_moves_.push_back(Position(x, y, z));
     }
     health_points_ = health;
     capture_points_ = capture_points;
+    shoot_range_bonus_ = shoot_range_bonus;
 }
 
 void Tank::update(int x, int y, int z) {
-    x_ = x;
-    y_ = y;
-    z_ = z;
+    pos_ = Position(x, y, z);
 }
 
 void Tank::update(int health) {
     health_points_ = health;
 }
 
-void Tank::update(Hex hex) {
-    this->update(hex.x, hex.y, hex.z);
+void Tank::update(Position pos) {
+    this->update(pos.getX(), pos.getY(), pos.getZ());
 }
-
-void Tank::update(std::shared_ptr<Hex> hex) {
-    this->update(*hex);
-}
-
 
 Tank::Tank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z, int health_points, int capture_points, int id)
-        : Content(is_reacheble = false, content_type = ContentType::VEHICLE, id = id), x_(x), y_(y), z_(z),
-          spawn_x_(spawn_x), spawn_y_(spawn_y), spawn_z_(spawn_z), health_points_(health_points),
+        : Content(is_reacheble = false, content_type = ContentType::VEHICLE, id = id),
+          pos_(x, y, z),
+          spawn_pos_(spawn_x, spawn_y, spawn_z), health_points_(health_points),
           capture_points_(capture_points), current_strategy_(nullptr) {
 }
 
 Tank::Tank(json data, int id)
         : Content(is_reacheble = false, content_type = ContentType::VEHICLE, id = id),
-          x_(data["position"]["x"].get<std::int32_t>()), y_(data["position"]["y"].get<std::int32_t>()),
-          z_(data["position"]["z"].get<std::int32_t>()), health_points_(data["health"].get<std::int32_t>()),
+          pos_(data["position"]["x"].get<std::int32_t>(),
+               data["position"]["y"].get<std::int32_t>(),
+               data["position"]["z"].get<std::int32_t>()),
+          spawn_pos_(data["spawn_position"]["x"].get<std::int32_t>(),
+                     data["spawn_position"]["y"].get<std::int32_t>(),
+                     data["spawn_position"]["z"].get<std::int32_t>()),
+          health_points_(data["health"].get<std::int32_t>()),
           current_strategy_(nullptr) {
 }
 
-HexPtrList Tank::getAchievableHexes(Map &map) const {
-    auto position = map.getHex(getPosition());
-    std::vector<std::shared_ptr<Hex>> hexes;
-    std::vector<std::shared_ptr<Hex>> visited;
+PosList Tank::getAchievableHexes(Map &map) const {
+    std::vector<Position> hexes;
 
-    std::queue<std::pair<std::shared_ptr<Hex>, int> > Queue;
-    Queue.push({position, 0});
+    map.num_visited++;
+
+    std::queue<std::pair<Position, int> > Queue;
+    Queue.push({pos_, 0});
 
     while (!Queue.empty()) {
-        std::shared_ptr<Hex> current_node = Queue.front().first;
+        Position current_pos = Queue.front().first;
         int current_dist = Queue.front().second;
 
         Queue.pop();
         if (current_dist != speed_points_) {
-            for (std::shared_ptr<Hex> node: current_node->neighbors) {
-                if (std::find_if(visited.begin(), visited.end(),
-                                 [&node](std::shared_ptr<Hex> hex) { return hex->getJson() == node->getJson(); }) ==
-                    visited.end()) {
+            for (Position pos: map.getHex(current_pos)->neighbors) {
+                std::shared_ptr<Hex> node = map.getHex(pos);
+                if (node->visited_d < map.num_visited) {
+                    node->visited_d = map.num_visited;
                     if (node->content != nullptr && node->content->content_type != ContentType::OBSTACLE) {
-                        visited.push_back(node);
-                        Queue.push({node, current_dist + 1});
-                        hexes.push_back(node);
+                        Queue.push({pos, current_dist + 1});
+                        hexes.push_back(pos);
                     }
                 }
             }
@@ -88,28 +88,31 @@ HexPtrList Tank::getAchievableHexes(Map &map) const {
     return hexes;
 }
 
-HexPtrList Tank::getHexesInShotRadius(Map &map) const {
-    auto position = map.getHex(getPosition());
-    std::vector<std::shared_ptr<Hex> > hexes;
-    std::vector<std::shared_ptr<Hex> > visited;
+std::vector<PosList> Tank::getShootingHexesAreas(Map &map) const {
+    std::vector<PosList> hexes;
 
-    std::queue<std::pair<std::shared_ptr<Hex>, int> > Queue;
-    Queue.push({position, 0});
+    map.num_visited++;
+    map.getHex(pos_)->visited_d = map.num_visited;
+    std::queue<std::pair<Position, int> > Queue;
+    Queue.push({pos_, 0});
 
     while (!Queue.empty()) {
-        std::shared_ptr<Hex> current_node = Queue.front().first;
+        Position current_pos = Queue.front().first;
         int current_dist = Queue.front().second;
 
         Queue.pop();
-        if (current_dist != speed_points_) {
-            for (std::shared_ptr<Hex> node: current_node->neighbors) {
-                if (std::find_if(visited.begin(), visited.end(),
-                                 [&node](std::shared_ptr<Hex> hex) { return hex->getJson() == node->getJson(); }) ==
-                    visited.end()) {
-                    if (node->content != nullptr && node->content->is_reacheble) {
-                        visited.push_back(node);
-                        Queue.push({node, current_dist + 1});
-                        hexes.push_back(node);
+        if (current_dist != max_shot_radius_ + shoot_range_bonus_) {
+            for (Position pos: map.getHex(current_pos)->neighbors) {
+                std::shared_ptr<Hex> node = map.getHex(pos);
+                if (node->visited_d < map.num_visited) {
+                    node->visited_d = map.num_visited;
+                    if (node->content != nullptr) {
+                        Queue.push({pos, current_dist + 1});
+
+                        if (current_dist + 1 >= min_shot_radius_ &&
+                            current_dist + 1 <= max_shot_radius_ + shoot_range_bonus_) {
+                            hexes.push_back({pos});
+                        }
                     }
                 }
             }
@@ -117,21 +120,6 @@ HexPtrList Tank::getHexesInShotRadius(Map &map) const {
     }
 
     return hexes;
-}
-
-std::vector<HexPtrList> Tank::getShootingHexesAreas(Map &map) const {
-    auto hexes_in_shot_radius = getHexesInShotRadius(map);
-    std::vector<HexPtrList> shot_areas;
-    Hex position = getPosition();
-
-    for (const auto &hex: hexes_in_shot_radius) {
-        if (position.getDistance(*hex) == shot_radius_) {
-            shot_areas.push_back(HexPtrList(1, hex));
-        }
-    }
-    map.clearPath();
-
-    return shot_areas;
 }
 
 std::ostream &operator<<(std::ostream &stream, const Tank &tank) {
@@ -165,19 +153,27 @@ int Tank::getCapturePoints() {
     return capture_points_;
 }
 
-std::vector<int> Tank::getSpawnPosition()
-{
-    return {spawn_x_, spawn_y_, spawn_z_};
+Position Tank::getSpawnPosition() {
+    return spawn_pos_;
 }
 
 std::string Tank::getStringTankType() {
-    switch (getTankType())
-    {
-        case TankType::SPG:   return "SPG";
-        case TankType::AT_SPG:   return "AT_SPG";
-        case TankType::MEDIUM: return "MEDIUM";
-        case TankType::LIGHT: return "LIGHT";
-        case TankType::HEAVY: return "HEAVY";
-        default:      return "[Unknown TankType]";
+    switch (getTankType()) {
+        case TankType::SPG:
+            return "SPG";
+        case TankType::AT_SPG:
+            return "AT_SPG";
+        case TankType::MEDIUM:
+            return "MEDIUM";
+        case TankType::LIGHT:
+            return "LIGHT";
+        case TankType::HEAVY:
+            return "HEAVY";
+        default:
+            return "[Unknown TankType]";
     }
+}
+
+int Tank::getMaxHealthPoints() {
+    return this->max_health_points_;
 }

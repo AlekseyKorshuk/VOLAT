@@ -22,6 +22,12 @@ public:
 
     std::string getStateName();
 
+    std::shared_ptr<State> getState();
+
+    int getPriority();
+
+    void doAction(std::string);
+
 protected:
     std::shared_ptr<State> state = nullptr;
     std::shared_ptr<Game> game = nullptr;

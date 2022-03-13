@@ -95,6 +95,21 @@ class Map:
             hexes[(obstacle['x'], obstacle['y'], obstacle['z'])] = {
                 'color': 'black'
             }
+
+        for light_repair in map_data['content']['light_repair']:
+            hexes[(light_repair['x'], light_repair['y'], light_repair['z'])] = {
+                'color': 'yellow'
+            }
+
+        for hard_repair in map_data['content']['hard_repair']:
+            hexes[(hard_repair['x'], hard_repair['y'], hard_repair['z'])] = {
+                'color': 'red'
+            }
+
+        for catapult in map_data['content']['catapult']:
+            hexes[(catapult['x'], catapult['y'], catapult['z'])] = {
+                'color': 'aqua'
+            }
         return hexes
 
     def plot_map(self, current_position: bool = True) -> dict:

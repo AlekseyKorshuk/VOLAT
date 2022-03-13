@@ -1,7 +1,5 @@
 #include "StateDefence.h"
 #include <algorithm> //std::sort
-#include <iostream> //std::cout
-#include <string> //std::string
 #include <vector> //std::vector
 
 
@@ -17,35 +15,35 @@ std::string StateDefence::getType() {
 
 
 std::string StateDefence::calculateAction() {
-    std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
+    auto action_save = game->saveTeam(tank);
+    if (!action_save.empty())
+        return action_save;
 
-    std::vector<std::shared_ptr<Tank>> tanks_on_base = game->findTanksToShootOnArea(game->map.base);
+    auto position = tank->getPosition();
 
-    if (tanks_on_base.empty()) {
-        std::vector<std::shared_ptr<Hex> > path = game->map.findPath(position, game->map.base, tank);
+    auto shoots = game->getPossibleShoots(tank, true);
+
+    auto shoot = game->selectBestShootDefence(shoots, tank);
+    if (!shoot.empty())
+        return shootToString(shoot);
+
+    if (std::find(game->map.base.begin(), game->map.base.end(), position) == game->map.base.end()) {
+        // Not on base
+        auto path = game->smartFindQuickPath(tank->getPosition(), game->map.base, tank);
         if (!path.empty())
             return moveToString(path[1]);
-        return "";
     }
+    auto possible_shoots = game->getPossibleShoots(tank, true);
+    if (!possible_shoots.empty())
+        return shootToString(game->selectBestShoot(possible_shoots, tank, false));
 
-    std::shared_ptr<Tank> target = tanks_on_base[0];
-    for (auto tank_on_base: tanks_on_base)
-        if (target->getCapturePoints() <= tank_on_base->getCapturePoints() &&
-            target->getHealthPoints() <= tank_on_base->getHealthPoints() &&
-            tank->getPosition().getDistance(target->getPosition()) <
-            tank->getPosition().getDistance(tank_on_base->getPosition()))
-            target = tank_on_base;
-
-    std::vector<std::shared_ptr<Hex>> positions = game->findSortedSafePositionsToShoot(tank, target);
-
-    if (positions.empty())
-        return "";
-    
-    if (position == positions[0])
-        return shootToString(std::vector<std::shared_ptr<Tank>>{target});
-
-
-    std::vector<std::shared_ptr<Hex> > path = game->map.findPath(position, positions[0], tank);
+    auto tanks_on_base = game->findTanksToShootOnArea(game->map.base);
+    std::vector<Position> positions_list;
+    for (const auto &opponent_tank: tanks_on_base) {
+        auto positions = game->findSafePositionsToShoot(tank, opponent_tank, false);
+        positions_list.insert(positions_list.end(), positions.begin(), positions.end());
+    }
+    auto path = game->smartFindQuickPath(tank->getPosition(), positions_list, tank);
     if (!path.empty())
         return moveToString(path[1]);
     return "";

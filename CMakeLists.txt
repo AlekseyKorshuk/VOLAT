@@ -67,6 +67,8 @@ SET(STATE
         modules/state/StateHunt.h
         modules/state/StateDefence.cpp
         modules/state/StateDefence.h
+        modules/state/StateHealth.cpp
+        modules/state/StateHealth.h
         )
 
 SET(STATE_MACHINE
@@ -98,7 +100,7 @@ set(STRATEGY
         modules/state_machine/SpgStrategy.cpp
         modules/state_machine/SpgStrategy.h
 
-        modules/state/StateCamping.cpp modules/state/StateCamping.h)
+        modules/state/StateCamping.cpp modules/state/StateCamping.h  modules/map/Position.cpp modules/map/Position.h)
 
 
 add_executable(
