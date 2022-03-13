@@ -964,6 +964,9 @@ Game::smartFindQuickPath(const Position &start, std::vector<Position> ends, cons
     if (path.size() == 1) {
         path.push_back(start);
     }
+    if (path.size() == 2) {
+        if (map.getHex(path[1])->is_occupied) path.clear();
+    }
     return path;
 }
 
