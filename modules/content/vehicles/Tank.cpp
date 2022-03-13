@@ -39,7 +39,6 @@ void Tank::update(Position pos) {
     this->update(pos.getX(), pos.getY(), pos.getZ());
 }
 
-
 Tank::Tank(int x, int y, int z, int spawn_x, int spawn_y, int spawn_z, int health_points, int capture_points, int id)
         : Content(is_reacheble = false, content_type = ContentType::VEHICLE, id = id),
           pos_(x, y, z),
@@ -101,14 +100,13 @@ std::vector<PosList> Tank::getShootingHexesAreas(Map &map) const {
         Position current_pos = Queue.front().first;
         int current_dist = Queue.front().second;
 
-
         Queue.pop();
         if (current_dist != max_shot_radius_ + shoot_range_bonus_) {
             for (Position pos: map.getHex(current_pos)->neighbors) {
                 std::shared_ptr<Hex> node = map.getHex(pos);
                 if (node->visited_d < map.num_visited) {
                     node->visited_d = map.num_visited;
-                    if (node->content != nullptr && node->content->content_type != ContentType::OBSTACLE) {
+                    if (node->content != nullptr) {
                         Queue.push({pos, current_dist + 1});
 
                         if (current_dist + 1 >= min_shot_radius_ &&
