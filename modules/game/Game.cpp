@@ -1020,6 +1020,7 @@ Game::smartFindQuickPath(const Position &start, std::vector<Position> ends, cons
     }
 
 
+
     Position tank_pos = tank->getPosition();
 
     std::map<Position, std::vector<double> > mp;
@@ -1119,7 +1120,8 @@ Game::stupidFindPath(const Position &start, std::vector<Position> ends, const st
             std::vector<double> param = current_param;
             param[0]++;
             std::shared_ptr<Hex> hex = map.getHex(pos);
-            if (param[0] >= 2 || !hex->is_occupied) {
+            if (map.getHex(start)->content->content_type != ContentType::BASE
+            || !hex->is_occupied) {
 
                 int o = 1e9;
                 for (auto vehicles: player_vehicles) {
@@ -1183,6 +1185,13 @@ Game::stupidFindPath(const Position &start, std::vector<Position> ends, const st
     }
     if (path.size() == 1) {
         path.clear();
+    }
+    if (path.size() >= 2) {
+        if (map.getHex(path[1])->is_occupied) {
+            path.clear();
+            path.push_back(start);
+            path.push_back(start);
+        }
     }
     return path;
 }
