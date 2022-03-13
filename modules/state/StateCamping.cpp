@@ -12,8 +12,11 @@ std::string StateCamping::getType() {
 }
 
 std::string StateCamping::calculateAction() {
+    auto action_save = game->saveTeam(tank);
+    if (!action_save.empty())
+        return action_save;
+
     std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
-    std::cout << "Danger: " << position->danger[0] << std::endl;
     if (position->danger[0] != 0) {
         return performAggressiveAction();
     } else {

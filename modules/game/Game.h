@@ -36,14 +36,10 @@ public:
 
     json calcLightMedium(std::shared_ptr<Tank> light_tank, std::shared_ptr<Tank> medium_tank);
 
-
-
-
-
-
-
     //Return tanks that are under shoot from this tank
     std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(const std::shared_ptr<Tank> &);
+
+    std::vector<std::shared_ptr<Tank>> tanksShooting(const std::shared_ptr<Tank> &);
 
     bool isDefenceNeeded(const std::shared_ptr<Tank> &);
 
@@ -85,6 +81,9 @@ public:
 
     std::vector<std::shared_ptr<Tank>> canKillAndStayAlive(const std::shared_ptr<Tank> &player_tank);
 
+    std::string saveTeam(const std::shared_ptr<Tank> &player_tank);
+
+
     std::vector<Position>
     getSafePositions(const std::shared_ptr<Tank> &player_tank, const std::vector<Position> &area, bool is_zero_danger,
                      bool choose_best);
@@ -124,6 +123,8 @@ public:
     std::string moveToString(std::shared_ptr<Tank> tank, Position pos);
 
     void doAction(std::shared_ptr<Tank> tank, std::string action_s);
+
+
 
     Map map = Map();
 

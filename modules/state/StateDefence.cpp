@@ -17,6 +17,10 @@ std::string StateDefence::getType() {
 
 
 std::string StateDefence::calculateAction() {
+    auto action_save = game->saveTeam(tank);
+    if (!action_save.empty())
+        return action_save;
+
     auto position = tank->getPosition();
 
     auto shoots = game->getPossibleShoots(tank, true);

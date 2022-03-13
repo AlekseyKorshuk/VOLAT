@@ -1727,3 +1727,128 @@ void Game::doAction(std::shared_ptr<Tank> tank, std::string action_s) {
         }
     }
 }
+
+
+bool sortbydanger(const std::pair<std::shared_ptr<Tank>, double> &a,
+                  const std::pair<std::shared_ptr<Tank>, double> &b) {
+    if (a.second >= a.first->getHealthPoints() && b.second >= b.first->getHealthPoints()) {
+        return a.second < b.second;
+    }
+    return (a.second >= a.first->getHealthPoints());
+}
+
+template<typename T>
+void pop_front(std::vector<T> &vec) {
+    assert(!vec.empty());
+    vec.front() = std::move(vec.back());
+    vec.pop_back();
+}
+
+std::string Game::saveTeam(const std::shared_ptr<Tank> &player_tank) {
+    std::vector<std::pair<std::shared_ptr<Tank>, double>> danger;
+    for (const auto &tank: player_vehicles) {
+        danger.emplace_back(tank, map.getHex(tank->getPosition())->danger[0]);
+    }
+
+    std::sort(danger.begin(), danger.end(), sortbydanger);
+//    for (auto it: danger){
+//        std::cout << *it.first << ", Danger: " << it.second << std::endl;
+//    }
+//    std::cout << std::endl;
+
+    std::shared_ptr<Tank> best_tank_to_save = player_tank;
+    std::shared_ptr<Tank> best_tank_to_shoot = nullptr;
+    int best_possible_damage = 99999;
+    bool best_can_save = false;
+    for (auto it: danger) {
+        std::cout << "Trying to save: " << *it.first << std::endl;
+
+        int possible_damage = map.getHex(it.first->getPosition())->danger[0];
+        auto danger_tanks = tanksShooting(it.first);
+        std::sort(danger_tanks.begin(), danger_tanks.end(),
+                  [](const std::shared_ptr<Tank> &lhs, const std::shared_ptr<Tank> &rhs) {
+                      return lhs->getHealthPoints() < rhs->getHealthPoints();
+                  });
+
+        for (auto it: danger_tanks) {
+            std::cout << it->getHealthPoints() << std::endl;
+        }
+        std::cout << std::endl;
+        std::vector<int> damage(danger_tanks.size(), 0);
+        for (int i = 0; i < danger_tanks.size(); i++) {
+            damage[i] = danger_tanks[i]->getHealthPoints();
+        }
+        std::shared_ptr<Tank> tank_to_shoot = nullptr;
+
+        std::cout << "Num of danger tanks: " << danger_tanks.size() << std::endl;
+
+        for (auto team_tank: player_vehicles) {
+            std::cout << "team_tank: " << *team_tank << std::endl;
+
+            if (danger_tanks.empty()) break;
+            auto tanks_under_shoot = tanksUnderShoot(team_tank);
+            std::vector<std::shared_ptr<Tank>> to_shoot;
+            for (auto shoot: tanks_under_shoot)
+                for (auto t: shoot)
+                    to_shoot.push_back(t);
+            if (std::find(to_shoot.begin(), to_shoot.end(), danger_tanks[0]) != to_shoot.end()) {
+                std::cout << "CAN SHOOT!" << std::endl;
+
+                if (team_tank == player_tank) {
+                    std::cout << "I SHOOT!" << std::endl;
+
+                    tank_to_shoot = danger_tanks[0];
+                }
+                if (team_tank->getDamage() > damage[0]) {
+                    danger_tanks.erase(danger_tanks.begin());
+                    damage.erase(damage.begin());
+                } else {
+                    possible_damage -= danger_tanks[0]->getDamage();
+                }
+
+            }
+        }
+        std::cout << "worst_damage: " << map.getHex(it.first->getPosition())->danger[0] << std::endl;
+        std::cout << "possible_damage: " << possible_damage << std::endl;
+        std::cout << "it.first->getHealthPoints(): " << it.first->getHealthPoints() << std::endl;
+
+        if (possible_damage < map.getHex(it.first->getPosition())->danger[0]) {
+            if (best_can_save && possible_damage <= it.first->getHealthPoints()) {
+                best_can_save = true;
+                best_possible_damage = possible_damage;
+                best_tank_to_save = it.first;
+                best_tank_to_shoot = tank_to_shoot;
+            } else {
+                if (possible_damage <= it.first->getHealthPoints()) {
+                    best_can_save = true;
+                }
+                best_possible_damage = possible_damage;
+                best_tank_to_save = it.first;
+                best_tank_to_shoot = tank_to_shoot;
+            }
+        }
+
+    }
+
+    if (best_tank_to_shoot == nullptr) {
+        return "";
+    }
+    std::cout << "Best tank to shoot: " << *best_tank_to_shoot << std::endl;
+
+    return player_tank->current_strategy_->getState()->shootToString({best_tank_to_shoot});
+}
+
+
+std::vector<std::shared_ptr<Tank>> Game::tanksShooting(const std::shared_ptr<Tank> &player_tank) {
+    std::vector<std::shared_ptr<Tank>> tanks;
+    for (auto tank: opponent_vehicles) {
+        auto shoots = tank->getShootingHexesAreas(map);
+        for (auto shoot: shoots) {
+            if (std::find(shoot.begin(), shoot.end(), player_tank->getPosition()) != shoot.end()) {
+                tanks.push_back(tank);
+                break;
+            }
+        }
+    }
+    return tanks;
+}

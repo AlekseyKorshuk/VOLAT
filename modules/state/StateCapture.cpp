@@ -75,6 +75,10 @@ bool checkPosition(std::vector<std::pair<Position, int>> moves, Position positio
 }
 
 std::string StateCapture::calculateAction() {
+    auto action_save = game->saveTeam(tank);
+    if (!action_save.empty())
+        return action_save;
+
     auto position = tank->getPosition();
 
     if (std::find(game->map.base.begin(), game->map.base.end(), position) != game->map.base.end()) {
@@ -100,7 +104,6 @@ std::string StateCapture::calculateAction() {
         return action;
 
     auto path = game->smartFindSafePath(position, game->map.base, tank);
-
     if (!path.empty())
         return moveToString(path[1]);
 
