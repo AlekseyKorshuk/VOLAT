@@ -28,7 +28,30 @@ std::string StateCamping::calculateAction() {
         if (!action.empty()) {
             return action;
         }
-        auto posit = game->getHexesByRadius(3);
+
+
+
+
+        auto position = tank->getPosition();
+        json players_on_base = game->getCaptureState();
+        auto player_id = tank->getPlayerId();
+
+        int total_num_vehicles_on_base = 0;
+        for (const auto &vehicle: game->all_vehicles) {
+            if (vehicle == nullptr) continue;
+            if (std::find(game->map.base.begin(), game->map.base.end(), vehicle->getPosition()) != game->map.base.end()) {
+                total_num_vehicles_on_base++;
+            }
+        }
+
+        std::vector<Position> posit;
+        if (players_on_base[std::to_string(player_id)]["tanks_on_base"].get<std::int32_t>() > 1 &&
+            total_num_vehicles_on_base - players_on_base[std::to_string(player_id)]["tanks_on_base"].get<std::int32_t>() <= 1)
+            posit = game->map.base;
+        else{
+            posit = game->getHexesByRadius(2);
+        }
+
         auto safe_base = game->getSafePositions(tank, posit, true, false);
         if (!safe_base.empty()) {
             auto path = game->smartFindSafePath(tank->getPosition(), safe_base,

@@ -10,7 +10,6 @@ using json = nlohmann::json;
 #include "../client/Client.h"
 #include "../strategy/Strategy.h"
 
-
 Core::Core(const std::string &name, const std::string &password) {
     this->name = name;
     this->password = password;
@@ -45,16 +44,10 @@ void Core::play(std::string game, int num_turns, int num_players) {
     while (true) {
         json state = client.game_state().msg;
 
-
         if (state["finished"]) {
             std::cout << "Game is finished" << std::endl;
             break;
         }
-//        else{
-//            std::cout << state["current_turn"] << endl;
-//            std::cout << state["win_points"] << endl;
-//        }
-
 
         if (idx == state["current_player_idx"].get<std::int32_t>()) {
             std::cout << "OUR TURN #" << state["current_turn"] << std::endl;

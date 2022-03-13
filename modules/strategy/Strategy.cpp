@@ -1,13 +1,10 @@
 #include "Strategy.h"
-#include "../content/vehicles/Tank.h"
 #include "../state_machine/MediumTankStrategy.h"
 #include "../state_machine/SpgStrategy.h"
 #include "../state_machine/LightTankStrategy.h"
 #include "../state_machine/HeavyTankStrategy.h"
 #include "../state_machine/AtSpgStrategy.h"
 #include <iostream>
-#include <cstdio>
-#include <cstring>
 #include <nlohmann/json.hpp>
 #include <memory>
 #include <chrono>
@@ -74,49 +71,6 @@ json Strategy::calculate_actions_old(int idx, json state) {
     for (auto tank: game->player_vehicles)
         tank->current_strategy_->updateState();
 
-//    std::vector<std::shared_ptr<Tank>> tanks(game->player_vehicles.size());
-//    std::copy(game->player_vehicles.begin(), game->player_vehicles.end(), tanks.begin());
-
-//    std::vector<std::pair<int,std::string>> id_action;
-//
-//    while (!tanks.empty()){
-//        double best_score = -99999999;
-//        int best_index = 0;
-//        std::string best_action;
-//        for (int i = 0; i < tanks.size(); i++){
-//            game->update(state);
-//            for (const auto& it: id_action){
-//                std::shared_ptr<Tank> this_tank;
-//                for (auto t: game->player_vehicles)
-//                    if (t->id == )
-//                tanks[i]->current_strategy_->doAction(it.second);
-//            }
-//            tanks[i]->current_strategy_->updateState();
-//            auto action = tanks[i]->current_strategy_->calculateAction();
-//            tanks[i]->current_strategy_->doAction(action);
-//            auto score = game->calculateCurrentStateScore();
-//            if (best_score < score){
-//                best_score = score;
-//                best_index = i;
-//                best_action = action;
-//            }
-//        }
-////        tanks[best_index]->current_strategy_->doAction(best_action);
-//        id_action.emplace_back(tanks[best_index]->getTankType(), best_action);
-//        tanks.erase (tanks.begin() + best_index);
-//    }
-//
-//    std::sort(id_action.begin(), id_action.end());
-//    for(int i = 0; i < id_action.size(); i++){
-//        if (!id_action[i].second.empty()) {
-//            if (!actions.empty()) {
-//                actions += ',';
-//            }
-//            actions += "\"" + std::to_string(i) + "\":" + id_action[i].second;
-//        }
-//    }
-
-//    game->update(state);
     std::vector<std::string> actionList(5);
     std::vector<bool> fCalcAction(5);
     std::vector<std::pair<int, int> > calcAction;
@@ -214,7 +168,7 @@ json Strategy::calculate_actions(int idx, json state) {
     auto second_part = game->calcSPG_Heavy_At(spg_tank, heavy_tank, at_spg_tank);
     std::cout << "SPG & Heavy & AtSPG elapsed: " << since(start).count() << " ms" << std::endl;
 
-    for(auto data: {first_part, second_part})
+    for (auto data: {first_part, second_part})
         for (json::iterator it = data.begin(); it != data.end(); ++it) {
             std::string action = it.value().get<std::string>();
             if (!action.empty()) {
@@ -223,23 +177,23 @@ json Strategy::calculate_actions(int idx, json state) {
         }
     int counter = 0;
     json ordered_action = {};
-    if (actions.contains(spg_tank->getStringTankType())){
+    if (actions.contains(spg_tank->getStringTankType())) {
         ordered_action[counter] = actions[spg_tank->getStringTankType()];
         counter++;
     }
-    if (actions.contains(light_tank->getStringTankType())){
+    if (actions.contains(light_tank->getStringTankType())) {
         ordered_action[counter] = actions[light_tank->getStringTankType()];
         counter++;
     }
-    if (actions.contains(heavy_tank->getStringTankType())){
+    if (actions.contains(heavy_tank->getStringTankType())) {
         ordered_action[counter] = actions[heavy_tank->getStringTankType()];
         counter++;
     }
-    if (actions.contains(medium_tank->getStringTankType())){
+    if (actions.contains(medium_tank->getStringTankType())) {
         ordered_action[counter] = actions[medium_tank->getStringTankType()];
         counter++;
     }
-    if (actions.contains(at_spg_tank->getStringTankType())){
+    if (actions.contains(at_spg_tank->getStringTankType())) {
         ordered_action[counter] = actions[at_spg_tank->getStringTankType()];
         counter++;
     }

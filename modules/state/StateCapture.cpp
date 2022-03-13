@@ -1,7 +1,6 @@
 #include "StateCapture.h"
 #include <algorithm> //std::sort
 #include <vector> //std::vector
-#include <numeric>
 
 
 StateCapture::StateCapture(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game, std::shared_ptr<Param> param)
@@ -102,10 +101,6 @@ std::string StateCapture::calculateAction() {
     std::string action = game->getSafeShootAction(tank);
     if (!action.empty())
         return action;
-
-//    auto path = game->smartFindSafePath(position, game->map.base, tank);
-//    if (!path.empty())
-//        return moveToString(path[1]);
 
     auto possible_shoots = game->getPossibleShoots(tank, true);
     if (!possible_shoots.empty())

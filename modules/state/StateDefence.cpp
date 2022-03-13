@@ -1,7 +1,5 @@
 #include "StateDefence.h"
 #include <algorithm> //std::sort
-#include <iostream> //std::cout
-#include <string> //std::string
 #include <vector> //std::vector
 
 
