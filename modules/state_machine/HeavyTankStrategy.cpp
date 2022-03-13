@@ -7,6 +7,9 @@ HeavyTankStrategy::HeavyTankStrategy(std::shared_ptr<Tank> tank, std::shared_ptr
 }
 
 void HeavyTankStrategy::updateState() {
+    //changeState(std::make_shared<StateCapture>(tank, game, std::make_shared<Param>()));
+    //return;
+
     if (state != nullptr) {
         if (state->getType() == "health" && tank->getHealthPoints() != tank->getDestructionPoints()) return;
     }

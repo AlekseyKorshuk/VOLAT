@@ -8,6 +8,9 @@ MediumTankStrategy::MediumTankStrategy(std::shared_ptr<Tank> tank, std::shared_p
 }
 
 void MediumTankStrategy::updateState() {
+    //changeState(std::make_shared<StateCapture>(tank, game, std::make_shared<Param>()));
+    //return;
+
     if (game->isDefenceNeeded(tank))
         changeState(std::make_shared<StateDefence>(tank, game, std::make_shared<Param>()));
     else if (game->isCaptureNeeded(tank))
