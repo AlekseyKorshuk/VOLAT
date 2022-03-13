@@ -925,7 +925,10 @@ Game::smartFindQuickPath(const Position &start, std::vector<Position> ends, cons
             param[0]++;
             std::shared_ptr<Hex> hex = map.getHex(pos);
 
-            if (map.getHex(tank->getPosition())->content->content_type != ContentType::BASE ||
+            if ( ((tank->getTankType() == TankType::AT_SPG ||
+                    tank->getTankType() == TankType::SPG ||
+                    tank->getTankType() == TankType::HEAVY) &&
+                    map.getHex(tank->getPosition())->content->content_type != ContentType::BASE) ||
                 param[0] >= 2 || !hex->is_occupied ) {
 
                 if (hex->danger.size() >= param[0]) {
