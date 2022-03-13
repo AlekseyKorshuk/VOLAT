@@ -24,6 +24,8 @@ public:
     std::vector<Position> base;
     std::vector<Position> light_repair;
     std::vector<Position> hard_repair;
+    std::vector<Position> obstacle;
+
     int num_visited = 0;
 
     Map(json map_json, int radius = 10);

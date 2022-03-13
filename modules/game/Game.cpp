@@ -462,7 +462,12 @@ void Game::predictingBehaviorOpponentsTanks() {
     }
 
     for (const auto &tank: opponent_vehicles) {
-        predictingTankBehavior(tank);
+        for (auto posList: tank->getShootingHexesAreas(map)) {
+            for (auto pos: posList) {
+                map.getHex(pos)->danger[0]++;
+            }
+        }
+        //predictingTankBehavior(tank);
     }
 }
 
@@ -1032,12 +1037,12 @@ Game::stupidFindPath(const Position &start, std::vector<Position> ends, const st
 
     std::map<Position, std::vector<double> > mp;
     for (auto hex: map.hexes) {
-        mp[hex->pos] = {1e9, 1e9, 1e9, 1e9};
+        mp[hex->pos] = {1e9, 1e9, 1e9, 1e9, 1e9};
     }
     std::set<std::pair<std::vector<double>, Position> > q;
 
-    q.insert({{0, 0, 0, 0}, start});
-    mp[start] = {0, 0, 0, 0};
+    q.insert({{0, 0, 0, 0, 0}, start});
+    mp[start] = {0, 0, 0, 0, 0};
 
 
     while (!q.empty()) {
@@ -1068,11 +1073,23 @@ Game::stupidFindPath(const Position &start, std::vector<Position> ends, const st
                 }
                 param[1] = -o;
 
-                if (hex->danger.size() >= param[0]) {
-                    param[2] += hex->danger[param[0] - 1];
-                    param[3] += hex->visit[param[0] - 1];
+
+                o = 1e9;
+                for (auto pos: map.obstacle) {
+                    int p = pos.getDistance(pos);
+                    if (p < o) {
+                        o = p;
+                    }
                 }
-                checkingRepairs(tank, hex, param[2]);
+
+                param[2] = -o;
+
+
+                if (hex->danger.size() >= param[0]) {
+                    param[3] += hex->danger[param[0] - 1];
+                    param[4] += hex->visit[param[0] - 1];
+                }
+                checkingRepairs(tank, hex, param[3]);
 
                 std::vector<double> l_param = mp[pos];
 
@@ -1086,7 +1103,7 @@ Game::stupidFindPath(const Position &start, std::vector<Position> ends, const st
         }
     }
 
-    std::vector<double> param = {1e9, 1e9, 1e9, 1e9};
+    std::vector<double> param = {1e9, 1e9, 1e9, 1e9, 1e9};
     Position end = {-100, -100, -100};
     for (auto pos: ends) {
         if (param > mp[pos]) {

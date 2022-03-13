@@ -44,11 +44,12 @@ void Map::setSpawnPoints(json map_json) {
 void Map::setObstacle(json map_json) {
     json obstacles = map_json["content"]["obstacle"];
 
-    for (auto obstacle = obstacles.begin(); obstacle != obstacles.end(); ++obstacle) {
-        json pos = obstacle.value();
+    for (auto obstacle_ = obstacles.begin(); obstacle_ != obstacles.end(); ++obstacle_) {
+        json pos = obstacle_.value();
         Position position = Position(pos["x"].get<std::int32_t>(),
                                      pos["y"].get<std::int32_t>(),
                                      pos["z"].get<std::int32_t>());
+        obstacle.push_back(position);
         getHex(position)->setHex(ContentType::OBSTACLE);
     }
 }
