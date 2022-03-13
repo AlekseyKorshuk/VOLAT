@@ -28,7 +28,8 @@ std::string StateCamping::calculateAction() {
         if (!action.empty()) {
             return action;
         }
-        auto safe_base = game->getSafePositions(tank, game->map.base, true, false);
+        auto posit = game->getHexesByRadius(3);
+        auto safe_base = game->getSafePositions(tank, posit, true, false);
         if (!safe_base.empty()) {
             auto path = game->smartFindSafePath(tank->getPosition(), safe_base,
                                                 tank);
@@ -70,6 +71,12 @@ std::string StateCamping::findSafePosition() {
     return "";
 }
 
+bool sortbydistance2(const Position &a,
+                    const Position &b, Position pos) {
+    return a.getDistance(pos) < a.getDistance(pos);
+}
+
+
 std::string StateCamping::performAggressiveAction() {
     auto shoots = game->getPossibleShoots(tank, true);
     std::cout << "HERE\n";
@@ -91,6 +98,21 @@ std::string StateCamping::performAggressiveAction() {
     auto possible_shoots = game->getPossibleShoots(tank, true);
     if (!possible_shoots.empty())
         return shootToString(game->selectBestShoot(possible_shoots, tank, false));
+
+    std::vector<Position> positions;
+    for (auto pos: tank->getAchievableHexes(game->map)) {
+        if (game->map.getHex(tank->getPosition())->danger[0] < tank->getHealthPoints()) {
+            positions.push_back(pos);
+        }
+    }
+    auto spawn_position = tank->getSpawnPosition();
+    std::sort(positions.begin(), positions.end(),
+              [spawn_position](auto &&PH1, auto &&PH2) {
+                  return sortbydistance2(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
+                                        spawn_position);
+              });
+    if (!positions.empty())
+        return moveToString(positions[0]);
 
     return "";
 }

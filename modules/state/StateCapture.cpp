@@ -103,13 +103,13 @@ std::string StateCapture::calculateAction() {
     if (!action.empty())
         return action;
 
-    auto path = game->smartFindSafePath(position, game->map.base, tank);
-    if (!path.empty())
-        return moveToString(path[1]);
+//    auto path = game->smartFindSafePath(position, game->map.base, tank);
+//    if (!path.empty())
+//        return moveToString(path[1]);
 
     auto possible_shoots = game->getPossibleShoots(tank, true);
     if (!possible_shoots.empty())
-        return shootToString(game->selectBestShoot(possible_shoots, tank, false));
+        return shootToString(game->selectBestShoot(possible_shoots, tank, true));
 
     return "";
 
@@ -189,33 +189,20 @@ std::string StateCapture::onBaseAction() {
 
 
     } else {
-//        std::cout << "занять более сейвовую позицию с учетом предположений на все ходы в массиве ЕСЛИ В БЕЗОПАСНОСТИ"
-//                  << std::endl;
-        // занять более сейвовую позицию с учетом предположений на все ходы в массиве ЕСЛИ В БЕЗОПАСНОСТИ
-        auto safe_position = game->getSafePositions(tank, game->map.base, true, false);
-        if (!safe_position.empty()) {
-            Position best_position = tank->getPosition();
-            double best_danger = 9999;
-            for (Position pos: safe_position) {
-                int danger = 0;
-                auto hex = game->map.getHex(pos);
-                for (double dan: hex->danger) {
-                    danger += dan;
-                }
-                if (danger < best_danger && hex->danger[0] == 0 && !hex->is_occupied) {
-                    best_danger = danger;
-                    best_position = pos;
-                }
-            }
-            auto path = game->smartFindQuickPath(tank->getPosition(), {best_position},
-                                                 tank);
-            if (!path.empty()) {
-//                std::cout << "НАШЕЛ " << best_position << std::endl;
-                return moveToString(path[1]);
-
+        std::vector<Position> positions;
+        for (auto pos: tank->getAchievableHexes(game->map)) {
+            if (game->map.getHex(tank->getPosition())->danger[0] < tank->getHealthPoints()) {
+                positions.push_back(pos);
             }
         }
-
+        auto spawn_position = tank->getSpawnPosition();
+        std::sort(positions.begin(), positions.end(),
+                  [spawn_position](auto &&PH1, auto &&PH2) {
+                      return sortbydistance(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
+                                            spawn_position);
+                  });
+        if (!positions.empty())
+            return moveToString(positions[0]);
     }
 
     return "";

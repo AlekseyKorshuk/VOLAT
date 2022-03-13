@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
         game = "ultratest2";
         num_turns = 45;
         num_players = 3;
-        is_solo = 0;
+        is_solo = 1;
     } else {
         name = argv[1];
         password = argv[2];
