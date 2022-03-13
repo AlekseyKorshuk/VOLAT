@@ -1,4 +1,5 @@
 #pragma comment(linker, "/STACK:16777216")
+
 #include <iostream>
 #include "modules/client/Client.h"
 #include "modules/core/Core.h"
@@ -11,9 +12,9 @@ int main(int argc, char **argv) {
     int num_turns, num_players, is_solo;
     std::thread t1, t2, t3;
     if (argc == 1) {
-        name = "VOLAT0";
+        name = "VOLAT";
         password = "";
-        game = "testVOLAT";
+        game = "superttest";
         num_turns = 45;
         num_players = 3;
         is_solo = 0;
@@ -40,8 +41,7 @@ int main(int argc, char **argv) {
         t1.join();
         t2.join();
         t3.join();
-    }
-    else{
+    } else {
         core1.play(game, num_turns, num_players);
     }
 

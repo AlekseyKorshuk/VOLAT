@@ -81,11 +81,16 @@ std::string StateCapture::calculateAction() {
         // Already on base
         return onBaseAction();
     }
+
+    auto shoot = game->selectBestShoot(game->getPossibleShoots(tank, true), tank, true);
+    if (!shoot.empty())
+        return shootToString(shoot);
+    
     // Not on base
     auto base_positions = game->getSafePositions(tank, game->map.base, false, true);
     if (!base_positions.empty()) {
         auto path = game->smartFindQuickPath(tank->getPosition(), base_positions,
-                                       tank);
+                                             tank);
         if (!path.empty())
             return moveToString(path[1]);
     }
@@ -108,19 +113,21 @@ std::string StateCapture::calculateAction() {
 }
 
 std::string StateCapture::onBaseAction() {
+    std::cout << "Danger: " << game->map.getHex(tank->getPosition())->danger[0] << "!\n";
     if (game->map.getHex(tank->getPosition())->danger[0] > 0) {
+        auto shoot = game->selectBestShoot(game->getPossibleShoots(tank, true), tank, true);
+        if (!shoot.empty())
+            return shootToString(shoot);
         // in danger
 //        std::cout << "in danger! ";
         auto safe_position = game->getSafePositions(tank, game->map.base, true, false);
         if (!safe_position.empty()) {
             auto path = game->smartFindQuickPath(tank->getPosition(), safe_position,
-                                           tank);
+                                                 tank);
             if (!path.empty())
                 return moveToString(path[1]);
         }
-        auto shoot = game->selectBestShoot(game->getPossibleShoots(tank, true), tank, true);
-        if (!shoot.empty())
-            return shootToString(shoot);
+
     }
 
     // in safe position OR the only way is to shoot
@@ -154,7 +161,7 @@ std::string StateCapture::onBaseAction() {
             auto safe_position = game->getSafePositions(tank, game->map.base, false, true);
             if (!safe_position.empty()) {
                 auto path = game->smartFindQuickPath(tank->getPosition(), safe_position,
-                                               tank);
+                                                     tank);
                 if (!path.empty())
                     return moveToString(path[1]);
             }
@@ -162,6 +169,8 @@ std::string StateCapture::onBaseAction() {
 
 
     } else {
+//        std::cout << "занять более сейвовую позицию с учетом предположений на все ходы в массиве ЕСЛИ В БЕЗОПАСНОСТИ"
+//                  << std::endl;
         // занять более сейвовую позицию с учетом предположений на все ходы в массиве ЕСЛИ В БЕЗОПАСНОСТИ
         auto safe_position = game->getSafePositions(tank, game->map.base, true, false);
         if (!safe_position.empty()) {
@@ -173,15 +182,18 @@ std::string StateCapture::onBaseAction() {
                 for (double dan: hex->danger) {
                     danger += dan;
                 }
-                if (danger < best_danger && hex->danger[0] == 0) {
+                if (danger < best_danger && hex->danger[0] == 0 && !hex->is_occupied) {
                     best_danger = danger;
                     best_position = pos;
                 }
             }
             auto path = game->smartFindQuickPath(tank->getPosition(), {best_position},
-                                           tank);
-            if (!path.empty())
+                                                 tank);
+            if (!path.empty()) {
+//                std::cout << "НАШЕЛ " << best_position << std::endl;
                 return moveToString(path[1]);
+
+            }
         }
 
     }

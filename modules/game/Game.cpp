@@ -686,6 +686,42 @@ Game::getSafePositions(const std::shared_ptr<Tank> &player_tank, const std::vect
     return list;
 }
 
+std::vector<Position> Game::getHexesByRadius(int radius){
+    std::vector<Position> positions;
+
+    Position pos_ = {0,0,0};
+    map.num_visited++;
+    map.getHex(pos_)->visited_d = map.num_visited;
+    std::queue<std::pair<Position, int> > Queue;
+    Queue.push({pos_, 0});
+
+    while (!Queue.empty()) {
+        Position current_pos = Queue.front().first;
+        int current_dist = Queue.front().second;
+
+
+        Queue.pop();
+        if (current_dist != radius) {
+            for (Position pos: map.getHex(current_pos)->neighbors) {
+                std::shared_ptr<Hex> node = map.getHex(pos);
+                if (node->visited_d < map.num_visited) {
+                    node->visited_d = map.num_visited;
+                    if (node->content != nullptr && node->content->content_type != ContentType::OBSTACLE) {
+                        Queue.push({pos, current_dist + 1});
+
+                        if (current_dist + 1 >= radius &&
+                            current_dist + 1 <= radius) {
+                            positions.push_back(pos);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return positions;
+}
+
 std::string Game::getSafeShootAction(const std::shared_ptr<Tank> &player_tank) {
     std::vector<std::vector<std::shared_ptr<Tank>>> shoots = getPossibleShoots(player_tank, true);
     std::vector<Position> moves;
@@ -695,7 +731,7 @@ std::string Game::getSafeShootAction(const std::shared_ptr<Tank> &player_tank) {
 
 //        if (player_tank->getPosition() == positions[0])
 //            shoots.push_back(std::vector<std::shared_ptr<Tank>>{opponent_vehicle});
- auto path = findSafePath(player_tank->getPosition(), positions, player_tank);
+        auto path = findSafePath(player_tank->getPosition(), positions, player_tank);
         if (!path.empty() && map.getHex(path[1])->danger[0] < player_tank->getHealthPoints())
             moves.push_back(path[1]);
     }
@@ -709,11 +745,31 @@ std::string Game::getSafeShootAction(const std::shared_ptr<Tank> &player_tank) {
     }
 
 
-    if (!moves.empty())
+    if (!moves.empty() &&
+    player_tank->getTankType() == TankType::HEAVY &&
+    player_tank->getTankType() == TankType::LIGHT &&
+    player_tank->getTankType() == TankType::MEDIUM
+    )
         return player_tank->current_strategy_->getState()->moveToString(selectBestMove(moves, player_tank));
+    else{
+        std::vector<Position> positions;
+        if (player_tank->getTankType() == TankType::SPG){
+            positions = getHexesByRadius(3);
+        }
+        else{
+            positions = getHexesByRadius(2);
+        }
+        auto path = smartFindQuickPath(player_tank->getPosition(), positions,
+                                       player_tank);
+        if (!path.empty())
+            return player_tank->current_strategy_->getState()->moveToString(path[1]);
+
+    }
 
     return "";
 }
+
+
 
 std::vector<std::shared_ptr<Tank>>
 Game::selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank> &player_tank,
@@ -737,7 +793,7 @@ Game::selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, co
         if (kill_points >= best_kill_points && damage > best_damage) {
             bool add = true;
             if (stay_alive)
-                if (player_tank->getHealthPoints() <= income_damage)
+                if (player_tank->getHealthPoints() > income_damage)
                     add = false;
             if (add) {
                 best_shoot = shoot;
@@ -909,7 +965,7 @@ Game::smartFindQuickPath(const Position &start, std::vector<Position> ends, cons
     mp[start] = {0, 0, 0};
 
 
-    while(!q.empty()) {
+    while (!q.empty()) {
         Position current_pos = q.begin()->second;
         q.erase(q.begin());
 
@@ -926,7 +982,7 @@ Game::smartFindQuickPath(const Position &start, std::vector<Position> ends, cons
             std::shared_ptr<Hex> hex = map.getHex(pos);
 
             if (map.getHex(tank->getPosition())->content->content_type != ContentType::BASE ||
-                param[0] >= 2 || !hex->is_occupied ) {
+                param[0] >= 2 || !hex->is_occupied) {
 
                 if (hex->danger.size() >= param[0]) {
                     param[2] += hex->danger[param[0] - 1];
@@ -984,7 +1040,7 @@ Game::stupidFindPath(const Position &start, std::vector<Position> ends, const st
     mp[start] = {0, 0, 0, 0};
 
 
-    while(!q.empty()) {
+    while (!q.empty()) {
         Position current_pos = q.begin()->second;
         q.erase(q.begin());
 
@@ -1072,13 +1128,13 @@ Game::smartFindSafePath(const Position &start, std::vector<Position> ends, const
         mp[hex->pos] = {1e9, 1e9, 1e9};
 
     }
-    std::set<std::pair<std::vector<double>, Position > > q;
+    std::set<std::pair<std::vector<double>, Position> > q;
 
     q.insert({{0, 0, 0}, start});
     mp[start] = {0, 0, 0};
 
 
-    while(!q.empty()) {
+    while (!q.empty()) {
         Position current_pos = q.begin()->second;
         q.erase(q.begin());
 

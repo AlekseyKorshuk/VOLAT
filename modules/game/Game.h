@@ -82,6 +82,8 @@ public:
 
     double calculateCurrentStateScore();
 
+    std::vector<Position> getHexesByRadius(int radius);
+
     std::vector<Position>
     smartFindQuickPath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank);
 
