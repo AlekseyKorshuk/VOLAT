@@ -23,6 +23,54 @@ Game::Game(int idx, json map_json, json state_json) : idx(idx) {
         json vehicle = it.value();
         addTank(vehicle, vehicle_id);
     }
+
+    int md = 1e9;
+    std::vector<Position> listPos = getHexesByRadius(2);
+
+    for (auto pos: listPos) {
+        if (md > player_vehicles[2]->getPosition().getDistance(pos)) {
+            Heavy_pos = pos;
+            md = player_vehicles[2]->getPosition().getDistance(pos);
+        }
+    }
+
+    listPos = getHexesByRadius(3);
+
+    md = 1e9;
+    Position bp = {-100, -100, -100};
+    for (auto pos: map.obstacle) {
+        if (md > player_vehicles[0]->getPosition().getDistance(pos)) {
+            md = player_vehicles[0]->getPosition().getDistance(pos);
+            bp = pos;
+        }
+    }
+    md = 1e9;
+
+    for (auto pos: listPos) {
+        if (md > bp.getDistance(pos)) {
+            SPG_pos = pos;
+            md = bp.getDistance(pos);
+        }
+    }
+
+    md = 1e9;
+    bp = {-100, -100, -100};
+    for (auto pos: map.obstacle) {
+        if (md > player_vehicles[4]->getPosition().getDistance(pos)) {
+            md = player_vehicles[4]->getPosition().getDistance(pos);
+            bp = pos;
+        }
+    }
+    md = 1e9;
+
+    for (auto pos: listPos) {
+        if (md > bp.getDistance(pos)) {
+            AT_pos = pos;
+            md = bp.getDistance(pos);
+        }
+    }
+
+
 }
 
 void Game::update(json state_json) {
@@ -48,6 +96,12 @@ void Game::update(json state_json) {
             updateTank(vehicle_id, x, y, z, health, capture_points, shoot_range_bonus);
         }
     }
+
+    if (player_vehicles[0]->getPosition() == SPG_pos) SPG_def = true;
+    if (player_vehicles[2]->getPosition() == SPG_pos) Heavy_def = true;
+    if (player_vehicles[4]->getPosition() == SPG_pos) AT_def = true;
+
+    if (SPG_def && Heavy_def && AT_def) state_def = true;
 }
 
 
@@ -1471,3 +1525,11 @@ Game::smartFindSafePath_l(const Position &start, std::vector<Position> ends, con
     return route;
 }
 
+
+
+json Game::calcSPG_Heavy_At()
+{
+    if (!SPG_def)
+
+    return json::parse("{}");
+}

@@ -26,6 +26,14 @@ public:
 
     std::shared_ptr<Tank> getTankByID(int id);
 
+
+    json calcSPG_Heavy_At();
+
+
+
+
+
+
     //Return tanks that are under shoot from this tank
     std::vector<std::vector<std::shared_ptr<Tank> > > tanksUnderShoot(const std::shared_ptr<Tank> &);
 
@@ -112,6 +120,16 @@ public:
     std::shared_ptr<Player> getPlayer(int);
 
 private:
+    int step = 0;
+    Position SPG_pos = {-100, -100, -100};
+    Position Heavy_pos = {-100, -100, -100};
+    Position AT_pos = {-100, -100, -100};
+
+    bool state_def = false;
+    bool SPG_def = false;
+    bool Heavy_def = false;
+    bool AT_def = false;
+
     const int type_find = 1;
 
     void addTank(json, int);
