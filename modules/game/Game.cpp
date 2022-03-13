@@ -745,10 +745,10 @@ Game::getSafePositions(const std::shared_ptr<Tank> &player_tank, const std::vect
     return list;
 }
 
-std::vector<Position> Game::getHexesByRadius(int radius){
+std::vector<Position> Game::getHexesByRadius(int radius) {
     std::vector<Position> positions;
 
-    Position pos_ = {0,0,0};
+    Position pos_ = {0, 0, 0};
     map.num_visited++;
     map.getHex(pos_)->visited_d = map.num_visited;
     std::queue<std::pair<Position, int> > Queue;
@@ -804,30 +804,28 @@ std::string Game::getSafeShootAction(const std::shared_ptr<Tank> &player_tank) {
     }
 
 
-    if (!moves.empty() &&
-    player_tank->getTankType() == TankType::HEAVY &&
-    player_tank->getTankType() == TankType::LIGHT &&
-    player_tank->getTankType() == TankType::MEDIUM
-    )
+    if (!moves.empty()
+//        && player_tank->getTankType() == TankType::HEAVY &&
+//        player_tank->getTankType() == TankType::LIGHT &&
+//        player_tank->getTankType() == TankType::MEDIUM
+            )
         return player_tank->current_strategy_->getState()->moveToString(selectBestMove(moves, player_tank));
-    else{
-        std::vector<Position> positions;
-        if (player_tank->getTankType() == TankType::SPG){
-            positions = getHexesByRadius(3);
-        }
-        else{
-            positions = getHexesByRadius(2);
-        }
-        auto path = smartFindQuickPath(player_tank->getPosition(), positions,
-                                       player_tank);
-        if (!path.empty())
-            return player_tank->current_strategy_->getState()->moveToString(path[1]);
-
-    }
+//    else {
+//        std::vector<Position> positions;
+//        if (player_tank->getTankType() == TankType::SPG) {
+//            positions = getHexesByRadius(3);
+//        } else {
+//            positions = getHexesByRadius(2);
+//        }
+//        auto path = smartFindQuickPath(player_tank->getPosition(), positions,
+//                                       player_tank);
+//        if (!path.empty())
+//            return player_tank->current_strategy_->getState()->moveToString(path[1]);
+//
+//    }
 
     return "";
 }
-
 
 
 std::vector<std::shared_ptr<Tank>>
@@ -835,7 +833,7 @@ Game::selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, co
                       bool stay_alive = false) {
     if (shoots.empty())
         return std::vector<std::shared_ptr<Tank>>(0);
-    auto best_shoot = shoots[0];
+    std::vector<std::shared_ptr<Tank>> best_shoot;
     int best_damage = -1, best_kill_points = -1;
     for (const auto &shoot: shoots) {
         int damage = 0, kill_points = 0;
@@ -852,7 +850,7 @@ Game::selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, co
         if (kill_points >= best_kill_points && damage > best_damage) {
             bool add = true;
             if (stay_alive)
-                if (player_tank->getHealthPoints() > income_damage)
+                if (player_tank->getHealthPoints() <= income_damage)
                     add = false;
             if (add) {
                 best_shoot = shoot;
@@ -1136,7 +1134,7 @@ Game::stupidFindPath(const Position &start, std::vector<Position> ends, const st
                     }
                 }
 
-                param[2] = -o;
+                param[2] = 0;
 
 
                 if (hex->danger.size() >= param[0]) {
@@ -1526,10 +1524,50 @@ Game::smartFindSafePath_l(const Position &start, std::vector<Position> ends, con
 }
 
 
+json Game::calcSPG_Heavy_At(std::shared_ptr<Tank> spg_tank, std::shared_ptr<Tank> heavy_tank,
+                            std::shared_ptr<Tank> at_spg_tank) {
+    json result;
+    std::string spg_tank_action, heavy_tank_action, at_spg_tank_action;
 
-json Game::calcSPG_Heavy_At()
-{
-    if (!SPG_def)
 
-    return json::parse("{}");
+    // TODO START calculate actions
+    auto path = smartFindQuickPath(spg_tank->getPosition(), map.base, spg_tank);
+    if (!path.empty())
+        spg_tank_action = spg_tank->current_strategy_->getState()->moveToString(path[1]);
+
+    path = smartFindQuickPath(heavy_tank->getPosition(), map.base, heavy_tank);
+    if (!path.empty())
+        heavy_tank_action = heavy_tank->current_strategy_->getState()->moveToString(path[1]);
+
+    path = smartFindQuickPath(at_spg_tank->getPosition(), map.base, at_spg_tank);
+    if (!path.empty())
+        at_spg_tank_action = at_spg_tank->current_strategy_->getState()->moveToString(path[1]);
+
+    // TODO END calculate actions
+
+    result[spg_tank->getStringTankType()] = spg_tank_action;
+    result[heavy_tank->getStringTankType()] = heavy_tank_action;
+    result[at_spg_tank->getStringTankType()] = at_spg_tank_action;
+    return result;
+}
+
+json Game::calcLightMedium(std::shared_ptr<Tank> light_tank, std::shared_ptr<Tank> medium_tank) {
+    json result;
+    std::string light_tank_action, medium_tank_action;
+
+
+    // TODO START calculate actions
+    auto path = smartFindQuickPath(light_tank->getPosition(), map.base, light_tank);
+    if (!path.empty())
+        light_tank_action = light_tank->current_strategy_->getState()->moveToString(path[1]);
+
+    path = smartFindQuickPath(medium_tank->getPosition(), map.base, medium_tank);
+    if (!path.empty())
+        medium_tank_action = medium_tank->current_strategy_->getState()->moveToString(path[1]);
+
+    // TODO END calculate actions
+
+    result[light_tank->getStringTankType()] = light_tank_action;
+    result[medium_tank->getStringTankType()] = medium_tank_action;
+    return result;
 }

@@ -27,7 +27,10 @@ public:
     std::shared_ptr<Tank> getTankByID(int id);
 
 
-    json calcSPG_Heavy_At();
+    json calcSPG_Heavy_At(std::shared_ptr<Tank> spg_tank, std::shared_ptr<Tank> heavy_tank, std::shared_ptr<Tank> at_spg_tank);
+
+    json calcLightMedium(std::shared_ptr<Tank> light_tank, std::shared_ptr<Tank> medium_tank);
+
 
 
 

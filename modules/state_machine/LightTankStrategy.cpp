@@ -8,8 +8,14 @@ LightTankStrategy::LightTankStrategy(std::shared_ptr<Tank> tank, std::shared_ptr
 }
 
 void LightTankStrategy::updateState() {
-    //changeState(std::make_shared<StateCapture>(tank, game, std::make_shared<Param>()));
-    //return;
+
+//    if (game->isDefenceNeeded(tank))
+//        changeState(std::make_shared<StateDefence>(tank, game, std::make_shared<Param>()));
+//    else
+//        changeState(std::make_shared<StateCapture>(tank, game, std::make_shared<Param>()));
+//    state->setPriority(20);
+//
+//    return;
 
     if (game->isDefenceNeeded(tank))
         changeState(std::make_shared<StateDefence>(tank, game, std::make_shared<Param>()));
@@ -18,5 +24,6 @@ void LightTankStrategy::updateState() {
     else
         changeState(std::make_shared<StateCamping>(tank, game, std::make_shared<Param>()));
     state->setPriority(20);
+
 
 }

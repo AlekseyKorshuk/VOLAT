@@ -7,8 +7,14 @@ SpgStrategy::SpgStrategy(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game)
 }
 
 void SpgStrategy::updateState() {
-    //changeState(std::make_shared<StateCapture>(tank, game, std::make_shared<Param>()));
-    //return;
+
+//    if (game->isDefenceNeeded(tank))
+//        changeState(std::make_shared<StateDefence>(tank, game, std::make_shared<Param>()));
+//    else
+//        changeState(std::make_shared<StateCamping>(tank, game, std::make_shared<Param>()));
+//    state->setPriority(60);
+//
+//    return;
 
     if (game->isDefenceNeeded(tank))
         changeState(std::make_shared<StateDefence>(tank, game, std::make_shared<Param>()));
@@ -17,5 +23,6 @@ void SpgStrategy::updateState() {
     else
         changeState(std::make_shared<StateCamping>(tank, game, std::make_shared<Param>()));
     state->setPriority(60);
+
 
 }

@@ -13,7 +13,7 @@ std::string StateCamping::getType() {
 
 std::string StateCamping::calculateAction() {
     std::shared_ptr<Hex> position = game->map.getHex(tank->getPosition());
-
+    std::cout << "Danger: " << position->danger[0] << std::endl;
     if (position->danger[0] != 0) {
         return performAggressiveAction();
     } else {
@@ -67,7 +67,16 @@ std::string StateCamping::findSafePosition() {
 }
 
 std::string StateCamping::performAggressiveAction() {
-    auto shoot = game->selectBestShoot(game->getPossibleShoots(tank, true), tank, true);
+    auto shoots = game->getPossibleShoots(tank, true);
+    std::cout << "HERE\n";
+
+    for (auto s: shoots) {
+        for (auto t: s) {
+            std::cout << *t << " ";
+        }
+        std::cout << "\n";
+    }
+    auto shoot = game->selectBestShoot(shoots, tank, true);
     if (!shoot.empty())
         return shootToString(shoot);
 

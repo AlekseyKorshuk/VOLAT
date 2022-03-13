@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     if (argc == 1) {
         name = "VOLAT";
         password = "";
-        game = "superttest";
+        game = "ultratest2";
         num_turns = 45;
         num_players = 3;
         is_solo = 0;
