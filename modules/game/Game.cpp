@@ -1043,7 +1043,7 @@ Game::stupidFindPath(const Position &start, std::vector<Position> ends, const st
         hex->prev = {-100, -100, -100};
     }
     if (path.size() == 1) {
-        path.clear()
+        path.clear();
     }
     return path;
 }
