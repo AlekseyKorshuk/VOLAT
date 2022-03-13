@@ -7,6 +7,12 @@
 
 class Position {
 public:
+    Position() {
+        x_= -100;
+        y_= -100;
+        z_= -100;
+    }
+
     Position(int x, int y, int z);
 
     Position(const Position &pos);

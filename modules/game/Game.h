@@ -13,6 +13,11 @@ public:
     int idx;
 
     json current_game_state;
+    int numCalcAction = 0;
+    std::vector<bool> fCalcAction;
+    std::vector<std::string> actionList;
+    std::vector<Position> param;
+    std::vector<std::string> actions;
 
     Game() {};
 
@@ -113,11 +118,12 @@ public:
     std::vector<Position>
     smartFindSafePath_l(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank);
 
-    std::string shootToString(std::vector<std::shared_ptr<Tank>> tanks);
 
     std::string shootToString(std::shared_ptr<Tank> tank, std::vector<std::shared_ptr<Tank>> tanks);
 
     std::string moveToString(std::shared_ptr<Tank> tank, Position pos);
+
+    void doAction(std::shared_ptr<Tank> tank, std::string action_s);
 
     Map map = Map();
 
@@ -153,8 +159,5 @@ private:
     std::vector<int> definingDirectionSegments(Position, Position);
 
     void checkingRepairs(const std::shared_ptr<Tank> &tank, std::shared_ptr<Hex> hex, double& param);
-
-
-    void doAction(std::shared_ptr<Tank> tank, std::string action_s);
 };
 

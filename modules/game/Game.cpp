@@ -7,6 +7,8 @@
 
 
 Game::Game(int idx, json map_json, json state_json) : idx(idx) {
+    actions = std::vector<std::string>(5);
+    param = std::vector<Position>(5);
     map = Map(map_json);
     for (int i = 0; i < 15; i++) all_vehicles.push_back(nullptr);
 
@@ -97,9 +99,17 @@ void Game::update(json state_json) {
         }
     }
 
+    numCalcAction = 0;
+    fCalcAction.clear();
+    fCalcAction = std::vector<bool>(5);
+    actionList.clear();
+    actionList = std::vector<std::string>(5);
+
+
     if (player_vehicles[0]->getPosition() == SPG_pos) SPG_def = true;
     if (player_vehicles[2]->getPosition() == SPG_pos) Heavy_def = true;
     if (player_vehicles[4]->getPosition() == SPG_pos) AT_def = true;
+
 
     if (SPG_def && Heavy_def && AT_def) state_def = true;
 }
@@ -1577,15 +1587,24 @@ std::string Game::moveToString(std::shared_ptr<Tank> tank, Position pos) {
 
     Position tank_pos = tank->getPosition();
     updateTank(tank->id, pos.getX(), pos.getY(), pos.getZ());
-//    pos = tank_pos;
+    std::cout << int(tank->getTankType()) << '\n';
+
+    param[int(tank->getTankType())] = tank_pos;
     map.changeOccupied(tank_pos, true);
 
-    return "{\"type\":\"MOVE\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
-           ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" + std::to_string(pos.getY()) + ",\"z\":" +
-           std::to_string(pos.getZ()) + "}}}";
+    actions[int(tank->getTankType())] = "{\"type\":\"MOVE\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
+                                        ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" + std::to_string(pos.getY()) + ",\"z\":" +
+                                        std::to_string(pos.getZ()) + "}}}";
+    fCalcAction[int(tank->getTankType())] = true;
+
+    return actions[int(tank->getTankType())];
 }
 
 std::string Game::shootToString(std::shared_ptr<Tank>tank, std::vector<std::shared_ptr<Tank>> tanks) {
+
+    while (numCalcAction != 5 && fCalcAction[numCalcAction] == true) {
+        doAction(tank, actions[numCalcAction++]);
+    }
 
     Position pos = tanks[0]->getPosition();
     if (tank->getTankType() == TankType::AT_SPG) {
@@ -1612,9 +1631,12 @@ std::string Game::shootToString(std::shared_ptr<Tank>tank, std::vector<std::shar
 
     }
 
-    return "{\"type\":\"SHOOT\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
-           ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" + std::to_string(pos.getY()) + ",\"z\":" +
-           std::to_string(pos.getZ()) + "}}}";
+    actions[int(tank->getTankType())] = "{\"type\":\"SHOOT\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
+                                        ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" + std::to_string(pos.getY()) + ",\"z\":" +
+                                        std::to_string(pos.getZ()) + "}}}";
+    fCalcAction[int(tank->getTankType())] = true;
+
+    return actions[int(tank->getTankType())];
 }
 
 void Game::doAction(std::shared_ptr<Tank> tank, std::string action_s) {
@@ -1627,7 +1649,7 @@ void Game::doAction(std::shared_ptr<Tank> tank, std::string action_s) {
             action["data"]["target"]["z"].get<std::int32_t>()
     );
     if (action["type"].get<std::string>() == "MOVE") {
-//        map.changeOccupied(param->pos, false);
+        map.changeOccupied(param[int(tank->getTankType())], false);
     } else {
         bool f = true;
         for (auto tank: opponent_vehicles) {
