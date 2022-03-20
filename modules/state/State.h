@@ -3,9 +3,11 @@
 
 #include <iostream>
 #include <string>
+#include "../map/Map.h"
 #include "../content/vehicles/Tank.h"
 
 class Tank;
+
 class Game;
 
 /**
@@ -18,6 +20,11 @@ union Param {
     Param() {
         idp = -1;
     }
+
+    /**
+     * Destructor
+     */
+    ~Param() {}
 
     /**
      * Constructor tank parameter

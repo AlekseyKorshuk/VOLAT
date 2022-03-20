@@ -5,7 +5,7 @@
 [![CMake Build Matrix](https://github.com/AlekseyKorshuk/VOLAT/actions/workflows/c-cpp.yml/badge.svg?branch=main)](https://github.com/AlekseyKorshuk/VOLAT/actions/workflows/c-cpp.yml)
 
 ## Description
-The Bot for a turn-based strategy game based on the original World of tanks game. The game can be played by 3 people, under the control of which there are 5 different types of equipment with their own characteristics.
+The Bot for a turn-based strategy game based on the original World of Tanks game. The game can be played by 3 people, under the control of which there are 5 different types of equipment with their own characteristics.
 
 ![Demo game](https://i.postimg.cc/yN7ym6Db/test-VOLAT2.gif)
 
