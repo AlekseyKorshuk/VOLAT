@@ -51,7 +51,7 @@ void Core::play(std::string game, int num_turns, int num_players) {
 
         if (idx == state["current_player_idx"].get<std::int32_t>()) {
             std::cout << "OUR TURN #" << state["current_turn"] << std::endl;
-            json actions = strategy.calculate_actions_old(idx, state);
+            json actions = strategy.calculate_actions(idx, state);
             for (json::iterator it = actions.begin(); it != actions.end(); ++it) {
                 json action = it.value();
                 json data = action["data"];

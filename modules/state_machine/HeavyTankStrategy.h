@@ -3,11 +3,22 @@
 
 #include "StateMachine.h"
 
+/**
+ * Heavy Strategy class
+ */
 class HeavyTankStrategy : public StateMachine {
 public:
+    /**
+     * Method that updates tank state
+     */
     virtual void updateState();
 
-    HeavyTankStrategy(std::shared_ptr<Tank>, std::shared_ptr<Game>);
+    /**
+     * Constructor
+     * @param tank Tank
+     * @param game Game
+     */
+    HeavyTankStrategy(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game);
 };
 
 

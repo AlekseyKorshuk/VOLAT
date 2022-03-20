@@ -57,7 +57,7 @@ Strategy::Strategy(int idx, json map_json, json state_json) {
     }
 }
 
-json Strategy::calculate_actions_old(int idx, json state) {
+json Strategy::calculate_actions(int idx, json state) {
     std::string actions;
 
     auto total_start = std::chrono::steady_clock::now();
@@ -121,84 +121,4 @@ json Strategy::calculate_actions_old(int idx, json state) {
 
     actions = "{" + actions + "}";
     return json::parse(actions);
-}
-
-json Strategy::calculate_actions(int idx, json state) {
-    json actions;
-
-    auto total_start = std::chrono::steady_clock::now();
-
-    auto start = std::chrono::steady_clock::now();
-    game->update(state);
-    game->predictingBehaviorOpponentsTanks();
-
-    std::cout << "update: " << since(start).count() << " ms" << std::endl;
-
-    for (auto tank: game->player_vehicles)
-        tank->current_strategy_->updateState();
-
-    std::shared_ptr<Tank> medium_tank, light_tank, heavy_tank, spg_tank, at_spg_tank;
-    for (const auto &tank: game->player_vehicles) {
-        switch (tank->getTankType()) {
-            case TankType::MEDIUM:
-                medium_tank = tank;
-                break;
-            case TankType::LIGHT:
-                light_tank = tank;
-                break;
-            case TankType::HEAVY:
-                heavy_tank = tank;
-                break;
-            case TankType::SPG:
-                spg_tank = tank;
-                break;
-            case TankType::AT_SPG:
-                at_spg_tank = tank;
-                break;
-            default:
-                break;
-        }
-    }
-
-    start = std::chrono::steady_clock::now();
-    auto first_part = game->calcLightMedium(light_tank, medium_tank);
-    std::cout << "Light & Medium elapsed: " << since(start).count() << " ms" << std::endl;
-
-    start = std::chrono::steady_clock::now();
-    auto second_part = game->calcSPG_Heavy_At(spg_tank, heavy_tank, at_spg_tank);
-    std::cout << "SPG & Heavy & AtSPG elapsed: " << since(start).count() << " ms" << std::endl;
-
-    for (auto data: {first_part, second_part})
-        for (json::iterator it = data.begin(); it != data.end(); ++it) {
-            std::string action = it.value().get<std::string>();
-            if (!action.empty()) {
-                actions[it.key()] = json::parse(action);
-            }
-        }
-    int counter = 0;
-    json ordered_action = {};
-    if (actions.contains(spg_tank->getStringTankType())) {
-        ordered_action[counter] = actions[spg_tank->getStringTankType()];
-        counter++;
-    }
-    if (actions.contains(light_tank->getStringTankType())) {
-        ordered_action[counter] = actions[light_tank->getStringTankType()];
-        counter++;
-    }
-    if (actions.contains(heavy_tank->getStringTankType())) {
-        ordered_action[counter] = actions[heavy_tank->getStringTankType()];
-        counter++;
-    }
-    if (actions.contains(medium_tank->getStringTankType())) {
-        ordered_action[counter] = actions[medium_tank->getStringTankType()];
-        counter++;
-    }
-    if (actions.contains(at_spg_tank->getStringTankType())) {
-        ordered_action[counter] = actions[at_spg_tank->getStringTankType()];
-        counter++;
-    }
-
-    std::cout << "Total elapsed: " << since(total_start).count() << " ms" << std::endl;
-
-    return ordered_action;
 }
