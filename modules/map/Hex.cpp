@@ -51,6 +51,5 @@ void Hex::clear() {
     content.reset();
     content = nullptr;
     visited = false;
-//    delete prev;
     prev = {-100, -100, -100};
 }

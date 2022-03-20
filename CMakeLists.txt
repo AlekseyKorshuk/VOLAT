@@ -21,6 +21,13 @@ ENDIF ()
 
 
 # Set all modules here
+
+set(MAP
+        modules/map/Hex.cpp
+        modules/map/Hex.h
+        modules/map/Map.cpp
+        modules/map/Map.h
+        )
 set(CLIENT
         modules/client/Client.cpp
         modules/client/Client.h
@@ -31,12 +38,6 @@ set(CORE
         modules/core/Core.h
         )
 
-set(MAP
-        modules/map/Hex.cpp
-        modules/map/Hex.h
-        modules/map/Map.cpp
-        modules/map/Map.h
-        )
 
 set(CONTENT
         modules/content/Content.h
@@ -100,22 +101,20 @@ set(STRATEGY
         modules/state_machine/SpgStrategy.cpp
         modules/state_machine/SpgStrategy.h
 
-        modules/state/StateCamping.cpp modules/state/StateCamping.h  modules/map/Position.cpp modules/map/Position.h)
+        modules/state/StateCamping.cpp modules/state/StateCamping.h modules/map/Position.cpp modules/map/Position.h)
 
 
 add_executable(
         WGForgeProject
         main.cpp
 
-        #how_to_use_map.cpp
-
         # Add all modules here
+        ${VEHICLES}
+        ${MAP}
         ${CLIENT}
         ${CORE}
         ${STRATEGY}
-        ${MAP}
         ${CONTENT}
-        ${VEHICLES}
         ${STATE}
         ${STATE_MACHINE}
         ${GAME}

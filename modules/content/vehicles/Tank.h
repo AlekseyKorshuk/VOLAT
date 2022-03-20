@@ -4,8 +4,9 @@
 
 #include "../Content.h"
 #include "../../map/Hex.h"
-#include "../../map/Map.h"
 #include "../../state_machine/StateMachine.h"
+#include "../../map/Map.h"
+
 
 class StateMachine;
 

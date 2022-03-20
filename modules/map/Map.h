@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <queue>
-#include<list>
-#include<map>
+#include <list>
+#include <map>
 #include "Hex.h"
 
 
