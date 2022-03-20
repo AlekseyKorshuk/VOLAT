@@ -12,9 +12,9 @@ Client::Client() {
         std::cout << "Socket creation failed with error: " << WSAGetLastError() << std::endl;
     }
 
-    addr.sin_addr.s_addr = inet_addr(inetAddr); //������� � �������
+    addr.sin_addr.s_addr = inet_addr(inetAddr);
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(port); //����
+    addr.sin_port = htons(port);
 
     if (connect(server, (SOCKADDR *) &addr, sizeof(addr)) == SOCKET_ERROR) {
         std::cout << "Server connection failed with error: " << WSAGetLastError() << std::endl;

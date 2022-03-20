@@ -6,14 +6,26 @@
 
 using json = nlohmann::json;
 
+/**
+ * Strategy class
+ */
 class Strategy {
 public:
-    Strategy(int idx, json, json);
+    /**
+     * Strategy constructor
+     * @param idx ID
+     * @param map_json Map in json format
+     * @param state_json Game state in json format
+     */
+    Strategy(int idx, json map_json, json state_json);
 
-    json calculate_actions_old(int idx, json state);
-
-
+    /**
+     * Method to calculate actions
+     * @param idx ID
+     * @param state Game state
+     * @return Resulting json with actions
+     */
     json calculate_actions(int idx, json state);
 
-    std::shared_ptr<Game> game;
+    std::shared_ptr<Game> game; // Game
 };

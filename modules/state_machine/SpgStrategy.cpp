@@ -1,7 +1,6 @@
 #include "SpgStrategy.h"
 #include "../state/StateDefence.h"
 #include "../state/StateCamping.h"
-#include "../state/StateCapture.h"
 
 SpgStrategy::SpgStrategy(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game) : StateMachine(tank, game) {
 }

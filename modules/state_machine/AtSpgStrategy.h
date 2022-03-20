@@ -2,11 +2,22 @@
 
 #include "StateMachine.h"
 
+/**
+ * AT-SPG Strategy class
+ */
 class AtSpgStrategy : public StateMachine {
 public:
+    /**
+     * Method that updates tank state
+     */
     virtual void updateState();
 
-    AtSpgStrategy(std::shared_ptr<Tank>, std::shared_ptr<Game>);
+    /**
+     * Constructor
+     * @param tank Tank
+     * @param game Game
+     */
+    AtSpgStrategy(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game);
 };
 
 

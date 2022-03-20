@@ -114,7 +114,6 @@ void Game::update(json state_json) {
     if (SPG_def && Heavy_def && AT_def) state_def = true;
 }
 
-
 void Game::addTank(json vehicle, int vehicle_id) {
 
     int x = vehicle["position"]["x"].get<std::int32_t>();
@@ -278,7 +277,6 @@ std::vector<std::vector<std::shared_ptr<Tank> > > Game::tanksUnderShoot(const st
     return tanks;
 }
 
-
 std::vector<Position>
 Game::findSafePositionsToShoot(const std::shared_ptr<Tank> &player_tank, const std::shared_ptr<Tank> &opponent_tank,
                                bool is_zero_danger) {
@@ -306,13 +304,10 @@ Game::findSafePositionsToShoot(const std::shared_ptr<Tank> &player_tank, const s
 }
 
 std::vector<Position> Game::findNearestSafePositions(const Position &start) {
-
     std::vector<Position> hexes;
-
     std::vector<Position> visited_positions;
     std::queue<Position> Queue;
     Queue.push(start);
-
 
     bool reached_end = false;
 
@@ -517,7 +512,6 @@ std::shared_ptr<Tank> Game::getTankByID(int id) {
     return nullptr;
 }
 
-
 void Game::predictingBehaviorOpponentsTanks() {
 
     for (const auto &hex: map.hexes) {
@@ -534,9 +528,7 @@ void Game::predictingBehaviorOpponentsTanks() {
     }
 }
 
-
 void Game::predictingTankBehavior(const std::shared_ptr<Tank> &tank) {
-
 
     int max_prediction_step = 3;
 
@@ -565,14 +557,6 @@ void Game::predictingTankBehavior(const std::shared_ptr<Tank> &tank) {
     Position pos_tank = tank->getPosition();
 
     visit_map[0][pos_tank.getX() + map_radius][pos_tank.getY() + map_radius] = 1;
-    /*
-    for (const auto &hexList: tank->getShootingHexesAreas(map)) {
-        for (const auto &pos: hexList) {
-            danger_map[0][pos.getX() + map_radius][pos.getY() + map_radius] += 1;
-        }
-    }
-    */
-
 
     std::queue<std::pair<Position, int>> Queue;
     Queue.push({tank->getPosition(), 0});
@@ -703,7 +687,6 @@ bool Game::isDefenceNeeded(const std::shared_ptr<Tank> &player_tank) {
     return false;
 }
 
-
 bool Game::isCaptureNeeded(const std::shared_ptr<Tank> &player_tank) {
     for (const auto &position: map.base) {
         auto hex = map.getHex(position);
@@ -813,7 +796,6 @@ std::string Game::getSafeShootAction(const std::shared_ptr<Tank> &player_tank) {
         return player_tank->current_strategy_->getState()->moveToString(selectBestMove(moves, player_tank));
     return "";
 }
-
 
 std::vector<std::shared_ptr<Tank>>
 Game::selectBestShoot(std::vector<std::vector<std::shared_ptr<Tank>>> shoots, const std::shared_ptr<Tank> &player_tank,
@@ -1170,7 +1152,6 @@ Game::stupidFindPath(const Position &start, std::vector<Position> ends, const st
     return path;
 }
 
-
 std::vector<Position>
 Game::smartFindSafePath(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
     if (type_find == 0) return findSafePath(start, ends, tank);
@@ -1252,7 +1233,6 @@ Game::smartFindSafePath(const Position &start, std::vector<Position> ends, const
     }
     return path;
 }
-
 
 bool Game::isHealthNeeded(const std::shared_ptr<Tank> &player_tank) {
     if (player_tank->getTankType() == TankType::LIGHT || player_tank->getTankType() == TankType::SPG)
@@ -1435,7 +1415,6 @@ Game::stupidFindPath_l(const Position &start, std::vector<Position> ends, const 
     return route;
 }
 
-
 std::vector<Position>
 Game::smartFindSafePath_l(const Position &start, std::vector<Position> ends, const std::shared_ptr<Tank> &tank) {
     if ((tank->getTankType() == TankType::AT_SPG ||
@@ -1512,159 +1491,6 @@ Game::smartFindSafePath_l(const Position &start, std::vector<Position> ends, con
     return route;
 }
 
-
-json Game::calcSPG_Heavy_At(std::shared_ptr<Tank> spg_tank, std::shared_ptr<Tank> heavy_tank,
-                            std::shared_ptr<Tank> at_spg_tank) {
-    json result;
-    std::string spg_tank_action, heavy_tank_action, at_spg_tank_action;
-
-    auto path = smartFindQuickPath(spg_tank->getPosition(), map.base, spg_tank);
-    if (!path.empty())
-        spg_tank_action = moveToString(spg_tank, path[1]);
-
-    path = smartFindQuickPath(heavy_tank->getPosition(), map.base, heavy_tank);
-    if (!path.empty())
-        heavy_tank_action = moveToString(heavy_tank, path[1]);
-
-    path = smartFindQuickPath(at_spg_tank->getPosition(), map.base, at_spg_tank);
-    if (!path.empty())
-        at_spg_tank_action = moveToString(at_spg_tank, path[1]);
-
-    result[spg_tank->getStringTankType()] = spg_tank_action;
-    result[heavy_tank->getStringTankType()] = heavy_tank_action;
-    result[at_spg_tank->getStringTankType()] = at_spg_tank_action;
-    return result;
-}
-
-
-json Game::calcLightMedium(std::shared_ptr<Tank> light_tank, std::shared_ptr<Tank> medium_tank) {
-    json result;
-    std::string light_tank_action, medium_tank_action;
-    result[light_tank->getStringTankType()] = light_tank_action;
-    result[medium_tank->getStringTankType()] = medium_tank_action;
-
-    for (const auto &tank: {medium_tank, light_tank}) {
-        auto shoots = getPossibleShoots(tank, true);
-        auto shoot = selectBestShoot(shoots, tank, true);
-        if (!shoot.empty()) {
-            result[tank->getStringTankType()] = shootToString(tank, shoot);
-            continue;
-        }
-        auto base_positions = getSafePositions(tank, map.base, true, true);
-        if (!base_positions.empty()) {
-            auto path = smartFindSafePath(tank->getPosition(), base_positions,
-                                          tank);
-            if (!path.empty() && map.getHex(path[1])->danger[0] < tank->getHealthPoints()) {
-                result[tank->getStringTankType()] = moveToString(tank, path[1]);
-                continue;
-            }
-        }
-
-        if (map.getHex(tank->getPosition())->danger[0] > 0) {
-
-            std::vector<Position> positions;
-            for (auto pos: tank->getAchievableHexes(map)) {
-                if (map.getHex(tank->getPosition())->danger[0] < tank->getHealthPoints()) {
-                    positions.push_back(pos);
-                }
-            }
-            for (auto pos: positions) {
-                if (std::find(map.base.begin(), map.base.end(), pos) != map.base.end()) {
-                    result[tank->getStringTankType()] = moveToString(tank, pos);
-                    continue;
-                }
-            }
-
-            auto spawn_position = tank->getSpawnPosition();
-            if (!positions.empty()) {
-                result[tank->getStringTankType()] = moveToString(tank, positions[0]);
-                continue;
-            } else {
-                auto shoot = selectBestShoot(getPossibleShoots(tank, true), tank, false);
-                if (!shoot.empty()) {
-                    result[tank->getStringTankType()] = shootToString(tank, shoot);
-                    continue;
-                }
-            }
-        } else {
-            shoots = getPossibleShoots(tank, true);
-            shoot = selectBestShoot(shoots, tank, false);
-            if (!shoot.empty()) {
-                result[tank->getStringTankType()] = shootToString(tank, shoot);
-                continue;
-            }
-        }
-
-
-    }
-
-    return result;
-}
-
-
-std::string Game::moveToString(std::shared_ptr<Tank> tank, Position pos) {
-    while (numCalcAction != 5 && fCalcAction[numCalcAction] == true) {
-        doAction(player_vehicles[numCalcAction], actions[numCalcAction++]);
-    }
-
-    if (pos == tank->getPosition())
-        return "";
-
-    Position tank_pos = tank->getPosition();
-    updateTank(tank->id, pos.getX(), pos.getY(), pos.getZ());
-
-    param[int(tank->getTankType())] = tank_pos;
-    map.changeOccupied(tank_pos, true);
-
-    actions[int(tank->getTankType())] = "{\"type\":\"MOVE\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
-                                        ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" +
-                                        std::to_string(pos.getY()) + ",\"z\":" +
-                                        std::to_string(pos.getZ()) + "}}}";
-    fCalcAction[int(tank->getTankType())] = true;
-
-    return actions[int(tank->getTankType())];
-}
-
-std::string Game::shootToString(std::shared_ptr<Tank> tank, std::vector<std::shared_ptr<Tank>> tanks) {
-
-    while (numCalcAction != 5 && fCalcAction[numCalcAction] == true) {
-        doAction(player_vehicles[numCalcAction], actions[numCalcAction++]);
-    }
-
-    Position pos = tanks[0]->getPosition();
-    if (tank->getTankType() == TankType::AT_SPG) {
-        Position pos_mis_dis = pos;
-        int min_dis = 1e9;
-        for (auto pos_neighbors: map.getHex(tank->getPosition())->neighbors) {
-
-            if (pos_neighbors.getDistance(pos) < min_dis) {
-                min_dis = pos_neighbors.getDistance(pos);
-                pos_mis_dis = pos_neighbors;
-            }
-        }
-        pos = pos_mis_dis;
-    }
-
-    for (auto tank: tanks) {
-        if (tank->getHealthPoints() == 1) {
-            Position sp_pos = tank->getSpawnPosition();
-            Position pos = tank->getPosition();
-            updateTank(tank->id, sp_pos.getX(), sp_pos.getY(), sp_pos.getZ());
-            map.changeOccupied(pos, true);
-        }
-        tank->update(tank->getHealthPoints() - 1);
-
-    }
-
-    actions[int(tank->getTankType())] = "{\"type\":\"SHOOT\",\"data\":{\"vehicle_id\":" + std::to_string(tank->id) +
-                                        ",\"target\":{\"x\":" + std::to_string(pos.getX()) + ",\"y\":" +
-                                        std::to_string(pos.getY()) + ",\"z\":" +
-                                        std::to_string(pos.getZ()) + "}}}";
-    fCalcAction[int(tank->getTankType())] = true;
-
-    return actions[int(tank->getTankType())];
-}
-
 void Game::doAction(std::shared_ptr<Tank> tank, std::string action_s) {
     if (action_s.empty()) return;
 
@@ -1689,7 +1515,6 @@ void Game::doAction(std::shared_ptr<Tank> tank, std::string action_s) {
         }
     }
 }
-
 
 bool sortbydanger(const std::pair<std::shared_ptr<Tank>, double> &a,
                   const std::pair<std::shared_ptr<Tank>, double> &b) {
@@ -1777,7 +1602,6 @@ std::string Game::saveTeam(const std::shared_ptr<Tank> &player_tank) {
     }
     return player_tank->current_strategy_->getState()->shootToString({best_tank_to_shoot});
 }
-
 
 std::vector<std::shared_ptr<Tank>> Game::tanksShooting(const std::shared_ptr<Tank> &player_tank) {
     std::vector<std::shared_ptr<Tank>> tanks;

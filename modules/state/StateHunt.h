@@ -5,10 +5,19 @@
 #include "../content/vehicles/Tank.h"
 #include "../map/Hex.h"
 
-
+/**
+ * StateHunt class
+ */
 class StateHunt : public State {
 public:
-    StateHunt(std::shared_ptr<Tank>, std::shared_ptr<Game>, std::shared_ptr<Param> = std::make_shared<Param>());
+    /**
+     * Constructor
+     * @param tank Tank
+     * @param game Game
+     * @param param Param
+     */
+    StateHunt(std::shared_ptr<Tank> tank, std::shared_ptr<Game> game,
+              std::shared_ptr<Param> param = std::make_shared<Param>());
 
     virtual std::string getType();
 
